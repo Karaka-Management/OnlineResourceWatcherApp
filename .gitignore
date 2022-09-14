@@ -1,0 +1,6 @@
+.vs
+obj/
+*.cache
+.directory
+bin/Debug
+x64/Debug

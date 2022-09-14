@@ -1,0 +1,3 @@
+[submodule "app/server/cOMS"]
+	path = app/server/cOMS
+	url = https://github.com/Karaka-Management/cOMS.git
