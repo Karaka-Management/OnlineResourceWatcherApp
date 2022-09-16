@@ -1,0 +1,8 @@
+/* TEAM */
+Location: Frankfurt, Germany
+Main developers: Dennis Eichhorn
+
+/* SITE */
+Last update: 2022
+Standards: PHP 8.1, HTML5, CSS3, JavaScript
+Software: Sublime Text, Github, Git, Visual Studio Code

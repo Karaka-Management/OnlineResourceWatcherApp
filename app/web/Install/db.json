@@ -1,0 +1,513 @@
+{
+    "country": {
+        "name": "country",
+        "fields": {
+            "country_id": {
+                "name": "country_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "country_name": {
+                "name": "country_name",
+                "type": "VARCHAR(100)",
+                "null": false
+            },
+            "country_code2": {
+                "name": "country_code2",
+                "type": "VARCHAR(2)",
+                "null": false,
+                "unique": true
+            },
+            "country_code3": {
+                "name": "country_code3",
+                "type": "VARCHAR(3)",
+                "null": false
+            },
+            "country_numeric": {
+                "name": "country_numeric",
+                "type": "INT(11)",
+                "null": false
+            },
+            "country_region": {
+                "name": "country_region",
+                "type": "VARCHAR(15)",
+                "null": true
+            },
+            "country_developed": {
+                "name": "country_developed",
+                "type": "TINYINT",
+                "null": false
+            }
+        }
+    },
+    "address": {
+        "name": "address",
+        "fields": {
+            "address_id": {
+                "name": "address_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "address_name": {
+                "name": "address_name",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "address_addition": {
+                "name": "address_addition",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "address_address": {
+                "name": "address_address",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "address_postal": {
+                "name": "address_postal",
+                "type": "VARCHAR(30)",
+                "null": false
+            },
+            "address_state": {
+                "name": "address_state",
+                "type": "VARCHAR(255)",
+                "null": true,
+                "default": null
+            },
+            "address_city": {
+                "name": "address_city",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "address_country": {
+                "name": "address_country",
+                "type": "VARCHAR(2)",
+                "null": true,
+                "default": null,
+                "foreignTable": "country",
+                "foreignKey": "country_code2"
+            },
+            "address_type": {
+                "name": "address_type",
+                "type": "INT",
+                "null": false
+            }
+        }
+    },
+    "org": {
+        "name": "org",
+        "fields": {
+            "org_id": {
+                "name": "org_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "org_status": {
+                "name": "org_status",
+                "type": "TINYINT",
+                "null": false
+            },
+            "org_name1": {
+                "name": "org_name1",
+                "type": "VARCHAR(255)",
+                "null": false,
+                "annotations": {
+                    "gdpr": true
+                }
+            },
+            "org_name2": {
+                "name": "org_name2",
+                "type": "VARCHAR(255)",
+                "null": false,
+                "annotations": {
+                    "gdpr": true
+                }
+            },
+            "org_name3": {
+                "name": "org_name3",
+                "type": "VARCHAR(255)",
+                "null": false,
+                "annotations": {
+                    "gdpr": true
+                }
+            },
+            "org_filesize_limit": {
+                "name": "org_filesize_limit",
+                "type": "INT",
+                "null": false
+            },
+            "org_resource_limit": {
+                "name": "org_resource_limit",
+                "type": "INT",
+                "null": false
+            },
+            "org_resource_pricing": {
+                "name": "org_resource_pricing",
+                "type": "INT",
+                "null": false
+            },
+            "org_created_at": {
+                "name": "org_created_at",
+                "type": "DATETIME",
+                "null": false
+            }
+        }
+    },
+    "org_addressrel": {
+        "name": "org_addressrel",
+        "fields": {
+            "org_addressrel_id": {
+                "name": "org_addressrel_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "org_addressrel_org": {
+                "name": "org_addressrel_org",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "org",
+                "foreignKey": "org_id"
+            },
+            "org_addressrel_address": {
+                "name": "org_addressrel_address",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "address",
+                "foreignKey": "address_id"
+            }
+        }
+    },
+    "account": {
+        "name": "account",
+        "fields": {
+            "account_id": {
+                "name": "account_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "account_status": {
+                "name": "account_status",
+                "type": "TINYINT",
+                "null": false
+            },
+            "account_login": {
+                "name": "account_login",
+                "type": "VARCHAR(50)",
+                "default": null,
+                "null": true,
+                "unique": true
+            },
+            "account_password": {
+                "name": "account_password",
+                "type": "VARCHAR(64)",
+                "default": null,
+                "null": true
+            },
+            "account_reset_hash": {
+                "name": "account_reset_hash",
+                "type": "VARCHAR(64)",
+                "default": null,
+                "null": true
+            },
+            "account_email": {
+                "name": "account_email",
+                "type": "VARCHAR(70)",
+                "null": false,
+                "annotations": {
+                    "gdpr": true
+                }
+            },
+            "account_tries": {
+                "name": "account_tries",
+                "type": "TINYINT",
+                "null": false,
+                "default": 0
+            },
+            "account_lang": {
+                "name": "account_lang",
+                "type": "VARCHAR(2)",
+                "null": false
+            },
+            "account_org": {
+                "name": "account_org",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "org",
+                "foreignKey": "org_id"
+            },
+            "account_created_at": {
+                "name": "account_created_at",
+                "type": "DATETIME",
+                "null": false
+            }
+        }
+    },
+    "org_bill": {
+        "name": "org_bill",
+        "fields": {
+            "org_bill_id": {
+                "name": "org_bill_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "org_bill_path": {
+                "name": "org_bill_path",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "org_bill_org": {
+                "name": "org_bill_org",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "org",
+                "foreignKey": "org_id"
+            },
+            "org_bill_created_at": {
+                "name": "org_bill_created_at",
+                "type": "DATETIME",
+                "null": false
+            }
+        }
+    },
+    "resource": {
+        "name": "resource",
+        "fields": {
+            "resource_id": {
+                "name": "resource_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "resource_status": {
+                "name": "resource_status",
+                "type": "TINYINT",
+                "null": false
+            },
+            "resource_uri": {
+                "name": "resource_uri",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "resource_hash": {
+                "name": "resource_hash",
+                "type": "BLOB(64)",
+                "null": false
+            },
+            "resource_last_version_path": {
+                "name": "resource_last_version_path",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "resource_last_version_date": {
+                "name": "resource_last_version_date",
+                "type": "DATETIME",
+                "null": false
+            },
+            "resource_checked_at": {
+                "name": "resource_checked_at",
+                "type": "DATETIME",
+                "null": false
+            },
+            "resource_org": {
+                "name": "resource_org",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "org",
+                "foreignKey": "org_id"
+            },
+            "resource_created_at": {
+                "name": "resource_created_at",
+                "type": "DATETIME",
+                "null": false
+            }
+        }
+    },
+    "resource_check": {
+        "name": "resource_check",
+        "fields": {
+            "resource_check_id": {
+                "name": "resource_check_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "resource_check_status": {
+                "name": "resource_check_status",
+                "type": "TINYINT",
+                "null": false
+            },
+            "resource_check_change": {
+                "name": "resource_check_change",
+                "type": "TEXT",
+                "null": false
+            },
+            "resource_check_created_at": {
+                "name": "resource_check_created_at",
+                "type": "DATETIME",
+                "null": false
+            },
+            "resource_check_resource": {
+                "name": "resource_check_resource",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "resource",
+                "foreignKey": "resource_id"
+            }
+        }
+    },
+    "resource_info": {
+        "name": "resource_info",
+        "fields": {
+            "resource_info_id": {
+                "name": "resource_info_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "resource_info_mail": {
+                "name": "resource_info_mail",
+                "type": "VARCHAR(255)",
+                "null": true,
+                "default": null,
+                "annotations": {
+                    "gdpr": true
+                }
+            },
+            "resource_info_account": {
+                "name": "resource_info_account",
+                "type": "VARCHAR(255)",
+                "null": true,
+                "default": null,
+                "foreignTable": "account",
+                "foreignKey": "account_id"
+            },
+            "resource_info_resource": {
+                "name": "resource_info_resource",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "resource",
+                "foreignKey": "resource_id"
+            },
+            "resource_check_created_at": {
+                "name": "resource_check_created_at",
+                "type": "DATETIME",
+                "null": false
+            }
+        }
+    },
+    "resource_blacklist": {
+        "name": "resource_blacklist",
+        "fields": {
+            "resource_blacklist_id": {
+                "name": "resource_blacklist_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "resource_blacklist_mail": {
+                "name": "resource_blacklist_mail",
+                "type": "VARCHAR(255)",
+                "null": true,
+                "default": null,
+                "annotations": {
+                    "gdpr": true
+                }
+            },
+            "resource_blacklist_created_at": {
+                "name": "resource_blacklist_created_at",
+                "type": "DATETIME",
+                "null": false
+            }
+        }
+    },
+    "auditor_audit": {
+        "name": "auditor_audit",
+        "fields": {
+            "auditor_audit_id": {
+                "name": "auditor_audit_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "auditor_audit_module": {
+                "name": "auditor_audit_module",
+                "type": "VARCHAR(255)",
+                "default": null,
+                "null": true
+            },
+            "auditor_audit_ref": {
+                "name": "auditor_audit_ref",
+                "type": "VARCHAR(255)",
+                "default": null,
+                "null": true
+            },
+            "auditor_audit_type": {
+                "name": "auditor_audit_type",
+                "type": "INT",
+                "null": false
+            },
+            "auditor_audit_trigger": {
+                "name": "auditor_audit_trigger",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "auditor_audit_content": {
+                "name": "auditor_audit_content",
+                "type": "TEXT",
+                "default": null,
+                "null": true
+            },
+            "auditor_audit_old": {
+                "name": "auditor_audit_old",
+                "type": "BLOB",
+                "default": null,
+                "null": true
+            },
+            "auditor_audit_new": {
+                "name": "auditor_audit_new",
+                "type": "BLOB",
+                "default": null,
+                "null": true
+            },
+            "auditor_audit_created_at": {
+                "name": "auditor_audit_created_at",
+                "type": "DATETIME",
+                "null": false
+            },
+            "auditor_audit_created_by": {
+                "name": "auditor_audit_created_by",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "account",
+                "foreignKey": "account_id"
+            },
+            "auditor_audit_ip": {
+                "name": "auditor_audit_ip",
+                "type": "BIGINT(20)",
+                "null": false
+            }
+        }
+    }
+}

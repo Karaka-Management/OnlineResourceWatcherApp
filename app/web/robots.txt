@@ -1,0 +1,5 @@
+User-Agent: *
+Disallow:
+Disallow: /Controllers
+Disallow: /Install
+Disallow: /phpOMS

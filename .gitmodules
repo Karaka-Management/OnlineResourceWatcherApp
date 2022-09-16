@@ -4,3 +4,6 @@
 [submodule "app/web/phpOMS"]
 	path = app/web/phpOMS
 	url = https://github.com/Karaka-Management/phpOMS.git
+[submodule "app/web/Resources"]
+	path = app/web/Resources
+	url = https://github.com/Karaka-Management/Resources.git
