@@ -4,3 +4,5 @@ obj/
 .directory
 bin/Debug
 x64/Debug
+app/server/Libraries
+.vscode

@@ -303,6 +303,11 @@
                 "type": "VARCHAR(255)",
                 "null": false
             },
+            "resource_xpath": {
+                "name": "resource_xpath",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
             "resource_hash": {
                 "name": "resource_hash",
                 "type": "BLOB(64)",
