@@ -7,3 +7,6 @@
 [submodule "app/web/Resources"]
 	path = app/web/Resources
 	url = https://github.com/Karaka-Management/Resources.git
+[submodule "app/web/cssOMS"]
+	path = app/web/cssOMS
+	url = https://github.com/Karaka-Management/cssOMS.git

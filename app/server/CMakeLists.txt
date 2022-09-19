@@ -7,5 +7,8 @@ include_directories( /usr/include )
 link_directories( /usr/lib )
 target_link_libraries( OnlineResourceWatcherServerApp sqlite3 )
 
+# Libcurl
+target_link_libraries( OnlineResourceWatcherServerApp libcurl )
+
 # cmake -DCMAKE_BUILD_TYPE=Debug -DOMS_DEBUG=true
 # cmake -DCMAKE_BUILD_TYPE=Release -DOMS_DEMO=true
