@@ -10,22 +10,25 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <mysql.h>
-#include <curl/curl.h>
+#include <regex.h>
 
 #include "cOMS/Utils/ArrayUtils.h"
 #include "cOMS/Utils/FileUtils.h"
+#include "cOMS/Utils/WebUtils.h"
 #include "cOMS/Hash/MeowHash.h"
 #include "cOMS/Utils/Parser/Json.h"
+#include "Stdlib/HashTable.h"
 
 #include "Models/Db.h"
+#include "Models/InstallType.h"
 
 #ifndef OMS_DEMO
     #define OMS_DEMO false
 #endif
 
-void printHelp()
+void (*f_ptr)(int, char **);
+
+void printHelp(int argc, char **argv)
 {
     printf("    The Online Resource Watcher app developed by jingga checks online or local resources\n");
     printf("    for changes and and informs the user about them.\n\n");
@@ -42,6 +45,19 @@ void printVersion()
     printf("Version: 1.0.0\n");
 }
 
+void install(Models::InstallType type = Models::InstallType::LOCAL)
+{
+    if (type == Models::InstallType::LOCAL) {
+        // create sqlite database
+
+    } else {
+
+    }
+
+    // create config file
+    nlohmann::json config;
+}
+
 void parseConfigFile()
 {
     FILE *fp = fopen("config.json");
@@ -49,39 +65,73 @@ void parseConfigFile()
     nlohmann::json config = nlohmann::json::parse(fp);
 }
 
-bool isResourceModified(char *filename, time_t last_change)
+inline
+bool isResourceDateModified(char *filename, time_t lastChange)
 {
-    return oms_abs(Utils::FileUtils::last_modification(filename) - last_change) > 1;
+    return oms_abs(Utils::FileUtils::last_modification(filename) - lastChange) > 1;
 }
 
-bool hasResourceContentChanged(char *filename1, char *filename2)
+inline
+bool hasResourceContentChanged(Utils::FileUtils::file_body f1, Utils::FileUtils::file_body f2)
 {
-    Utils::FileUtils::file_body f1 = Utils::FileUtils::read_file(filename1);
-    Utils::FileUtils::file_body f2 = Utils::FileUtils::read_file(filename2);
-
     Hash::Meow::meow_u128 h1 = Hash::Meow::MeowHash(Hash::Meow::MeowDefaultSeed, f1.size, f1.content);
     Hash::Meow::meow_u128 h2 = Hash::Meow::MeowHash(Hash::Meow::MeowDefaultSeed, f2.size, f2.content);
 
-    bool areHashesEqual = Hash::Meow::MeowHashesAreEqual(h1, h2);
+    return Hash::Meow::MeowHashesAreEqual(h1, h2);
+}
+
+Utils::FileUtils::file_body hasChanged(char *oldResource, char *newResource, time_t lastChange)
+{
+    char *t;
+    int length = 0;
+
+    for (t = newResource; *t != '\0' && length < 7; ++t) {
+        ++length;
+    }
+
+    Utils::FileUtils::file_body f1;
+    Utils::FileUtils::file_body f2;
+
+    bool isFileModified = false;
+    if (length > 5
+        && (strncmp(newResource, "https:", 6) || strncmp(newResource, "www.", 4))
+    ) {
+        // web resource
+        f1 = Utils::FileUtils::read_file(oldResource);
+        f2 = Utils::WebUtils::download(newResource);
+    } else {
+        // local resource
+        isFileModified = isResourceDateModified(oldResource, lastChange);
+        if (isFileModified) {
+            f1 = Utils::FileUtils::read_file(oldResource);
+            f2 = Utils::FileUtils::read_file(newResource);
+        }
+    }
+
+    bool hasChanged = isFileModified || hasResourceContentChanged(f1, f2);
 
     free(f1.content);
-    free(f2.content);
 
-    return areHashesEqual;
+    if (hasChanged) {
+        free(f2.content);
+        f2.size = -1;
+    }
+
+    return f2;
 }
 
-void saveResourceChange()
+void saveResourceChange(char *url, char *oldResource)
 {
+    Utils::FileUtils::file_body dowloadData = Utils::WebUtils::download(url);
 
+    Utils::FileUtils::file_body fileData = Utils::FileUtils::read_file(oldResource);
 }
-
-MYSQL *con = null;
 
 int main(int argc, char **argv)
 {
     bool hasHelpCmd = Utils::ArrayUtils::has_arg("-h", argv, argc);
     if (hasHelpCmd) {
-        printHelp();
+        printHelp(argc, argv);
 
         return 0;
     }
@@ -93,6 +143,27 @@ int main(int argc, char **argv)
         return 0;
     }
 
+    f_ptr = &printHelp;
+
+    Stdlib::HashTable::ht *table = Stdlib::HashTable::create_table();
+    if (table == NULL) {
+        return -1;
+    }
+
+    Stdlib::HashTable::set_entry(table, "-h", &printHelp);
+
+    regex_t regex;
+    regcomp(&regex, "\-h", 0);
+    regexec(&regex, argv[0], 0, NULL, 0) == 0;
+
+    // @todo handle install
+    // create config
+    // check install type
+        // web = copy config from web
+        // local
+            // create sqlite db
+            // create config from template
+
     if (!Utils::FileUtils::file_exists("config.json")) {
         printf("No config file available.");
 
@@ -101,15 +172,17 @@ int main(int argc, char **argv)
 
     unsigned long resourceId = (unsigned long) Utils::ArrayUtils::get_arg("-r", argv, argc);
 
+    // @todo handle resources
+    // load config
+    // get resources
+        // active
+        // last check older than 23 h
+    // check if resource changed
+        // save new version
+        // find differences
+    // inform users
 
-    // read config file
-    // create database connection (either mariadb or sqlite)
-    // @todo create wrapper for sqlite, mysql and postgresql
+    Resource res[10];
 
-    con = mysql_init(NULL);
-    if (mysql_real_connect(con, "localhost", "root", "root_passwd", NULL, 0, NULL, 0) == NULL) {
-        fprintf(stderr, "%s\n", mysql_error(con));
-        mysql_close(con);
-        exit(1);
-    }
+    Stdlib::HashTable::free_table(table);
 }

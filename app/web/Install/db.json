@@ -159,25 +159,25 @@
             }
         }
     },
-    "org_addressrel": {
-        "name": "org_addressrel",
+    "org_address_rel": {
+        "name": "org_address_rel",
         "fields": {
-            "org_addressrel_id": {
-                "name": "org_addressrel_id",
+            "org_address_rel_id": {
+                "name": "org_address_rel_id",
                 "type": "INT",
                 "null": false,
                 "primary": true,
                 "autoincrement": true
             },
-            "org_addressrel_org": {
-                "name": "org_addressrel_org",
+            "org_address_rel_org": {
+                "name": "org_address_rel_org",
                 "type": "INT",
                 "null": false,
                 "foreignTable": "org",
                 "foreignKey": "org_id"
             },
-            "org_addressrel_address": {
-                "name": "org_addressrel_address",
+            "org_address_rel_address": {
+                "name": "org_address_rel_address",
                 "type": "INT",
                 "null": false,
                 "foreignTable": "address",
@@ -413,8 +413,8 @@
                 "foreignTable": "resource",
                 "foreignKey": "resource_id"
             },
-            "resource_check_created_at": {
-                "name": "resource_check_created_at",
+            "resource_info_created_at": {
+                "name": "resource_info_created_at",
                 "type": "DATETIME",
                 "null": false
             }

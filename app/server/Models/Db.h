@@ -10,17 +10,21 @@
 #ifndef MODELS_DB_H
 #define MODELS_DB_H
 
-namespace Models {
-    class Db {
-        private:
+#include <stdio.h>
 
-        public:
-            static inline
-            int setup_connection (char *cfg)
-            {
-                return 0;
-            }
-    };
+namespace Models {
+    namespace Db {
+        inline
+        int setup_connection (char *cfg)
+        {
+            return 0;
+        }
+
+        Resource *get_unchecked_resources(time_t olderThan)
+        {
+
+        }
+    }
 }
 
 #endif
