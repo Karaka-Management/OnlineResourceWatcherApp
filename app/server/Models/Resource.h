@@ -43,7 +43,7 @@ namespace Models {
     } Resource;
 
     inline
-    void freeResource(Resource *obj)
+    void free_Resource(Resource *obj)
     {
         if (obj->uri != NULL) {
             free(obj->uri);
@@ -70,18 +70,20 @@ namespace Models {
         }
 
         if (obj->info != NULL) {
+            free_ResourceInfo(obj->info);
             free(obj->info);
+
             obj->info = NULL;
 
         }
 
         if (obj->org != NULL) {
-            freeOrganization(obj->org);
+            free_Organization(obj->org);
+            free(obj->org);
+
             obj->org = NULL;
 
         }
-
-        free(obj);
     }
 }
 

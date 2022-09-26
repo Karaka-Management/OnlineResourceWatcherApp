@@ -27,7 +27,7 @@ namespace Models {
     } ResourceInfo;
 
     inline
-    void freeResourceInfo(ResourceInfo *obj)
+    void free_ResourceInfo(ResourceInfo *obj)
     {
         if (obj->mail != NULL) {
             free(obj->mail);
@@ -36,11 +36,11 @@ namespace Models {
         }
 
         if (obj->account != NULL) {
-            freeAccount(obj->account);
+            free_Account(obj->account);
+            free(obj->account);
+
             obj->account = NULL;
         }
-
-        free(obj);
     }
 }
 

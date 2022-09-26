@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cOMS/Utils/ApplicationUtils.h"
+#include "DataStorage/Database/Connection/ConnectionAbstract.h"
 #include "cOMS/Utils/Parser/Json.h"
 #include "Stdlib/HashTable.h"
 
@@ -20,47 +22,30 @@
     #define OMS_DEMO false
 #endif
 
-void parseConfigFile()
-{
-    FILE *fp = fopen("config.json", "r");
+typedef struct {
+    DataStorage::Database::ConnectionAbstract *db;
+    nlohmann::json config;
+} App;
 
-    nlohmann::json config = nlohmann::json::parse(fp);
-}
-
-char *compile_arg_line(int argc, char **argv)
-{
-    size_t max    = 512;
-    size_t length = 0;
-    char *arg     = (char *) calloc(max, sizeof(char));
-
-    for (int i = 1; i < argc; ++i) {
-        size_t argv_length = strlen(argv[i]);
-        if (length + strlen(argv[i]) + 1 > max) {
-            char *tmp = (char *) calloc(max + 128, sizeof(char));
-            memcpy(tmp, arg, (length + 1) * sizeof(char));
-
-            free(arg);
-            arg  = tmp;
-            max += 128;
-        }
-
-        strcat(arg, argv[i]);
-        length += argv_length;
-    }
-
-    return arg;
-}
+App app;
 
 int main(int argc, char **argv)
 {
-    char *arg = compile_arg_line(argc, argv);
+    char *arg = Utils::ApplicationUtils::compile_arg_line(argc, argv);
 
-    // @todo: Check is installed?
-        // no? install
+    // Set program path as cwd
+    char *cwd = Utils::ApplicationUtils::cwd();
+    if (cwd == NULL) {
+        printf("Couldn't get the CWD\n");
+
+        return -1;
+    }
+
+    Utils::ApplicationUtils::chdir_application(cwd, argv[0]);
 
     // Load config
     if (!Utils::FileUtils::file_exists("config.json")) {
-        printf("No config file available.");
+        Controller::ApiController::notInstalled(argc, argv);
 
         return -1;
     }
@@ -77,6 +62,17 @@ int main(int argc, char **argv)
     (*ptr)(argc, argv);
 
     Stdlib::HashTable::free_table(routes);
+    free(routes);
+
     free(arg);
     arg = NULL;
+
+    // Reset CWD (don't know if this is necessary)
+    #ifdef _WIN32
+        _chdir(cwd);
+    #else
+        chdir(cwd);
+    #endif
+
+    free(cwd);
 }

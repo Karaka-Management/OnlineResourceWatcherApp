@@ -32,7 +32,7 @@ namespace Models {
     } Account;
 
     inline
-    void freeAccount(Account *obj)
+    void free_Account(Account *obj)
     {
         if (obj->email != NULL) {
             free(obj->email);
@@ -47,12 +47,11 @@ namespace Models {
         }
 
         if (obj->org != NULL) {
-            freeOrganization(obj->org);
+            free_Organization(obj->org);
+            free(obj->org);
+
             obj->org = NULL;
-
         }
-
-        free(obj);
     }
 }
 

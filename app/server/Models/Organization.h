@@ -21,9 +21,8 @@ namespace Models {
     } Organization;
 
     inline
-    void freeOrganization(Organization *obj)
+    void free_Organization(Organization *obj)
     {
-        free(obj);
     }
 }
 

@@ -12,8 +12,8 @@
 
 namespace Models {
     typedef enum {
-        WEB = 0,
-        LOCAL = 1
+        WEB = 1,
+        LOCAL = 2
     } InstallType;
 }
 

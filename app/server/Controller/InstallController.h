@@ -12,8 +12,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 
 #include "cOMS/Utils/Parser/Json.h"
+#include "cOMS/Utils/ArrayUtils.h"
+#include "DataStorage/Database/Connection/ConnectionFactory.h"
+#include "DataStorage/Database/Connection/ConnectionAbstract.h"
+#include "DataStorage/Database/Connection/DbConnectionConfig.h"
 
 #include "../Models/InstallType.h"
 
@@ -21,26 +26,92 @@ namespace Controller {
     namespace InstallController {
         void installApplication(int argc, char **argv)
         {
-            // @todo handle install
-            // create config
-            // check install type
-                // web = copy config from web
-                // local
-                    // create sqlite db
-                    // create config from template
-        }
+            Models::InstallType type = (Models::InstallType) atoi(Utils::ArrayUtils::get_arg("-t", argv, argc));
 
-        void install(Models::InstallType type = Models::InstallType::LOCAL)
-        {
-            if (type == Models::InstallType::LOCAL) {
-                // create sqlite database
-
+            int status = 0;
+            if (type == Models::InstallType::WEB) {
+                status = installWeb();
             } else {
-
+                status = installLocal();
             }
 
-            // create config file
-            nlohmann::json config;
+            if (status == 0) {
+                printf("Application successfully installed\n");
+            } else {
+                printf("Application installation failed\n");
+            }
+        }
+
+        int installWeb()
+        {
+            // Create config by copying weg config (nothing else necessary)
+            Utils::FileUtils::file_body config = Utils::FileUtils::read_file("../web/config.json");
+
+            FILE *fp = fopen("config.json", "w");
+            if (fp == NULL || config.content == NULL) {
+                if (config.content != NULL) {
+                    free(config.content);
+                }
+
+                return -1;
+            }
+
+            fwrite(config.content, sizeof(char), config.size, fp);
+            fclose(fp);
+
+            free(config.content);
+
+            return 0;
+        }
+
+        int installLocal()
+        {
+            // Create config by copying config template
+            FILE *in = fopen("Install/config.json", "r");
+            if (in == NULL) {
+                return -1;
+            }
+
+            nlohmann::json config = nlohmann::json::parse(in);
+
+            std::string strJson = config.dump(4);
+
+            FILE *out = fopen("config.json", "w");
+            if (out == NULL) {
+                return -1;
+            }
+
+            fwrite(strJson.c_str(), sizeof(char), strJson.size(), out);
+
+            fclose(in);
+            fclose(out);
+
+            // Create sqlite database
+            FILE *fp = fopen("db.sqlite", "w");
+            if (fp == NULL) {
+                return -2;
+            }
+            fclose(fp);
+
+            DataStorage::Database::DbConnectionConfig dbdata;
+            DataStorage::Database::ConnectionAbstract *db = DataStorage::Database::create_connection(dbdata);
+            if (db == NULL) {
+                return -2;
+            }
+
+            // DbSchema *schema = DbSchema::fromJson(jsonString);
+            // QueryBuilder::createFromSchema(schema);
+                // QueryBuilder query = QueryBuilder(db, false);
+                // query.createTable()
+                //  .field()
+                //  .field()
+                // query->execute();
+
+            DataStorage::Database::close(db, dbdata);
+            free(db);
+            DataStorage::Database::free_DbConnectionConfig(&dbdata);
+
+            return 0;
         }
 
         void parseConfigFile()

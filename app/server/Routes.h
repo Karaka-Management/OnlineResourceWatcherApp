@@ -22,7 +22,7 @@ typedef void (*Fptr)(int, char **);
 
 Stdlib::HashTable::ht *generate_routes()
 {
-    Stdlib::HashTable::ht *table = Stdlib::HashTable::create_table();
+    Stdlib::HashTable::ht *table = Stdlib::HashTable::create_table(4, true);
     if (table == NULL) {
         return NULL;
     }

@@ -38,6 +38,17 @@ namespace Controller {
             printf("Version: 1.0.0\n");
         }
 
+        void notInstalled(int argc, char **argv)
+        {
+            printf("No config file available, is the application installed?\n");
+            printf("If not, run the application with:\n");
+            printf("    --install -t 1  or\n");
+            printf("    --install -t 2\n");
+            printf("where 1 = web installation and 2 = local installation.\n\n");
+            printf("Usually, '-t 2' is necessary if you see this message since the web\n");
+            printf("installation is performed in the web installer as described in the README.\n");
+        }
+
         void checkResources(int argc, char **argv)
         {
             unsigned long long resourceId = atoll(Utils::ArrayUtils::get_arg("-r", argv, argc));

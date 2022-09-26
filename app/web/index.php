@@ -5,8 +5,9 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/phpOMS/Autoloader.php';
 
-$App = new \Application();
-echo $App->run();
+$config = require_once __DIR__ . '/config.php';
+
+$App = new \WebApplication($config);
 
 if (\ob_get_level() > 0) {
     \ob_end_flush();
