@@ -31,6 +31,8 @@ App app;
 
 int main(int argc, char **argv)
 {
+    /* --------------- Basic setup --------------- */
+
     char *arg = Utils::ApplicationUtils::compile_arg_line(argc, argv);
 
     // Set program path as cwd
@@ -43,12 +45,39 @@ int main(int argc, char **argv)
 
     Utils::ApplicationUtils::chdir_application(cwd, argv[0]);
 
-    // Load config
+    // Check config
     if (!Utils::FileUtils::file_exists("config.json")) {
         Controller::ApiController::notInstalled(argc, argv);
 
         return -1;
     }
+
+    /* --------------- App setup --------------- */
+
+    // Load config
+    FILE *in = fopen("config.json", "r");
+    if (in == NULL) {
+        return -1;
+    }
+
+    app.config = nlohmann::json::parse(in);
+
+    fclose(in);
+
+    // Setup db connection
+    DataStorage::Database::DbConnectionConfig dbdata = (DataStorage::Database::DbConnectionConfig) {
+        db       = DataStorage::Database::database_type_from_str(&app.config["db"]["core"]["masters"]["admin"]["db"]),
+        database = &app.config["db"]["core"]["masters"]["admin"]["database"],
+        host     = &app.config["db"]["core"]["masters"]["admin"]["host"],
+        port     = app.config["db"]["core"]["masters"]["admin"]["port"],
+        login    = &app.config["db"]["core"]["masters"]["admin"]["login"],
+        password = &app.config["db"]["core"]["masters"]["admin"]["password"],
+    };
+
+    app->db = DataStorage::Database::create_connection(dbdata);
+    app->db->connect();
+
+    /* --------------- Handle request --------------- */
 
     // Handle routes
     Stdlib::HashTable::ht *routes = generate_routes();
@@ -61,8 +90,14 @@ int main(int argc, char **argv)
     // Dispatch found endpoint
     (*ptr)(argc, argv);
 
+    /* --------------- Cleanup --------------- */
+
+    app->db->close();
+    $app->db = NULL;
+
     Stdlib::HashTable::free_table(routes);
     free(routes);
+    routes = NULL;
 
     free(arg);
     arg = NULL;

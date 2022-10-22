@@ -159,7 +159,12 @@ class WebApplication extends ApplicationAbstract
         $appName = $this->getApplicationNameFromString($appName);
 
         if ($appName !== 'E500') {
-            UriFactory::setQuery('/prefix', (empty(UriFactory::getQuery('/prefix')) ? '' : UriFactory::getQuery('/prefix') . '/') . $uri->getPathElement($subDirDepth + 1) . '/');
+            UriFactory::setQuery(
+                '/prefix',
+                empty(UriFactory::getQuery('/prefix')
+                    ? ''
+                    : UriFactory::getQuery('/prefix') . '/') . $uri->getPathElement($subDirDepth + 1) . '/'
+            );
 
             return $appName;
         }
@@ -170,7 +175,12 @@ class WebApplication extends ApplicationAbstract
             $appName = $this->getApplicationNameFromString($appName);
 
             if ($appName !== 'E500') {
-                UriFactory::setQuery('/prefix', (empty(UriFactory::getQuery('/prefix')) ? '' : UriFactory::getQuery('/prefix') . '/') . $uri->getPathElement($subDirDepth + 1) . '/');
+                UriFactory::setQuery(
+                    '/prefix',
+                    empty(UriFactory::getQuery('/prefix')
+                        ? ''
+                        : UriFactory::getQuery('/prefix') . '/') . $uri->getPathElement($subDirDepth + 1) . '/'
+                );
 
                 return $appName;
             }
