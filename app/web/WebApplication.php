@@ -25,6 +25,7 @@ class WebApplication extends ApplicationAbstract
             $this->logger = FileLogger::getInstance($config['log']['file']['path'], false);
 
             UriFactory::setQuery('/prefix', '');
+            UriFactory::setQuery('/backend', 'backend/');
             UriFactory::setQuery('/api', 'api/');
             $applicationName = $this->getApplicationName(HttpUri::fromCurrent(), $config['app'], $config['page']['root']);
             $request         = $this->initRequest($config['page']['root'], $config['app']);

@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Install;
 
-use Models\CoreSettings;
 use Models\Account;
 use Models\AccountCredentialMapper;
 use Models\Group;
@@ -22,9 +21,6 @@ use Models\GroupMapper;
 use Models\GroupPermission;
 use Models\GroupPermissionMapper;
 use Models\PermissionCategory;
-use Models\ModuleStatusUpdateType;
-use Models\NullAccount;
-use phpOMS\Account\AccountManager;
 use phpOMS\Account\AccountStatus;
 use phpOMS\Account\AccountType;
 use phpOMS\Account\GroupStatus;
@@ -32,48 +28,11 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\DataStorage\Database\Connection\ConnectionAbstract;
 use phpOMS\DataStorage\Database\Connection\ConnectionFactory;
-use phpOMS\DataStorage\Database\DatabasePool;
 use phpOMS\DataStorage\Database\Schema\Builder as SchemaBuilder;
-use phpOMS\DataStorage\Session\HttpSession;
-use phpOMS\Dispatcher\Dispatcher;
-use phpOMS\Event\EventManager;
-use phpOMS\Localization\Localization;
-use phpOMS\Message\Http\HttpRequest;
-use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\RequestAbstract;
-use phpOMS\Module\ModuleManager;
-use phpOMS\System\File\Local\Directory;
-use phpOMS\System\MimeType;
-use phpOMS\Uri\HttpUri;
-use phpOMS\Utils\IO\Zip\Zip;
-use phpOMS\Utils\TestUtils;
 
-/**
- * Application class.
- *
- * @package Install
- * @license OMS License 1.0
- * @link    https://karaka.app
- * @since   1.0.0
- */
 abstract class InstallAbstract extends ApplicationAbstract
 {
-    /**
-     * Module manager
-     *
-     * @var null|ModuleManager
-     * @since 1.0.0
-     */
-    protected static ?ModuleManager $mManager = null;
-
-    /**
-     * Setup general handlers for the application.
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     * @codeCoverageIgnore
-     */
     protected function setupHandlers() : void
     {
         \set_exception_handler(['\phpOMS\UnhandledHandler', 'exceptionHandler']);
@@ -82,71 +41,23 @@ abstract class InstallAbstract extends ApplicationAbstract
         \mb_internal_encoding('UTF-8');
     }
 
-    /**
-     * Clear old install
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function clearOld() : void
     {
-        \file_put_contents(__DIR__ . '/../Cli/Routes.php', '<?php return [];');
-        \file_put_contents(__DIR__ . '/../Cli/Hooks.php', '<?php return [];');
-
-        $dirs = \scandir(__DIR__ . '/../Web');
-        if ($dirs === false) {
-            return; // @codeCoverageIgnore
-        }
-
-        foreach ($dirs as $dir) {
-            if ($dir === '.' || $dir === '..'
-                || $dir === 'Exception'
-                || $dir === 'WebApplication.php'
-            ) {
-                continue;
-            }
-
-            Directory::delete(__DIR__ . '/../Web/' . $dir);
-        }
+        \file_put_contents(__DIR__ . '/../Routes.php', '<?php return [];');
+        \file_put_contents(__DIR__ . '/../Hooks.php', '<?php return [];');
     }
 
-    /**
-     * Check if has certain php extensions enabled
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
     protected static function hasPhpExtensions() : bool
     {
         return \extension_loaded('pdo')
             && \extension_loaded('mbstring');
     }
 
-    /**
-     * Check if database connection is correct and working
-     *
-     * @param RequestAbstract $request Request
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
     protected static function testDbConnection(RequestAbstract $request) : bool
     {
         return true;
     }
 
-    /**
-     * Create database connection
-     *
-     * @param RequestAbstract $request Request
-     *
-     * @return ConnectionAbstract
-     *
-     * @since 1.0.0
-     */
     protected static function setupDatabaseConnection(RequestAbstract $request) : ConnectionAbstract
     {
         return ConnectionFactory::create([
@@ -159,30 +70,12 @@ abstract class InstallAbstract extends ApplicationAbstract
         ]);
     }
 
-    /**
-     * Install/setup configuration
-     *
-     * @param RequestAbstract $request Request
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function installConfigFile(RequestAbstract $request) : void
     {
         self::editConfigFile($request);
         self::editHtaccessFile($request);
     }
 
-    /**
-     * Modify config file
-     *
-     * @param RequestAbstract $request Request
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function editConfigFile(RequestAbstract $request) : void
     {
         $db     = $request->getData('dbtype');
@@ -200,23 +93,20 @@ abstract class InstallAbstract extends ApplicationAbstract
         $subdir = $request->getData('websubdir');
         $tld    = $request->getData('domain');
 
-        $tldOrg     = 1;
-        $defaultOrg = 1;
+        $pageType = $request->getData('installtype');
+
+        $defaultApp = 'Frontend';
+        if ($pageType === 'oem') {
+            $defaultApp = 'Backend';
+        }
+
+        $defaultAppLower = \strtolower($defaultApp);
 
         $config = include __DIR__ . '/Templates/config.tpl.php';
 
         \file_put_contents(__DIR__ . '/../config.php', $config);
     }
 
-    /**
-     * Modify htaccess file
-     *
-     * @param RequestAbstract $request Request
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function editHtaccessFile(RequestAbstract $request) : void
     {
         $fullTLD = $request->getData('domain');
@@ -226,31 +116,14 @@ abstract class InstallAbstract extends ApplicationAbstract
         $config = include __DIR__ . '/Templates/htaccess.tpl.php';
 
         \file_put_contents(__DIR__ . '/../.htaccess', $config);
+        \file_put_contents(__DIR__ . '/../../server/config.json', \json_encode($config, \JSON_PRETTY_PRINT));
     }
 
-    /**
-     * Install core functionality
-     *
-     * @param ConnectionAbstract $db Database connection
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function installCore(ConnectionAbstract $db) : void
     {
         self::createBaseTables($db);
     }
 
-    /**
-     * Create module table
-     *
-     * @param ConnectionAbstract $db Database connection
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function createBaseTables(ConnectionAbstract $db) : void
     {
         $path = __DIR__ . '/db.json';
@@ -269,30 +142,12 @@ abstract class InstallAbstract extends ApplicationAbstract
         }
     }
 
-    /**
-     * Install basic groups
-     *
-     * @param ConnectionAbstract $db Database connection
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function installGroups(ConnectionAbstract $db) : void
     {
         self::installMainGroups($db);
         self::installGroupPermissions($db);
     }
 
-    /**
-     * Create basic groups in db
-     *
-     * @param ConnectionAbstract $db Database connection
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function installMainGroups(ConnectionAbstract $db) : void
     {
         $guest = new Group('guest');
@@ -308,15 +163,6 @@ abstract class InstallAbstract extends ApplicationAbstract
         GroupMapper::create()->execute($admin);
     }
 
-    /**
-     * Set permissions of basic groups
-     *
-     * @param ConnectionAbstract $db Database connection
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function installGroupPermissions(ConnectionAbstract $db) : void
     {
         $searchPermission = new GroupPermission(
@@ -334,75 +180,20 @@ abstract class InstallAbstract extends ApplicationAbstract
         GroupPermissionMapper::create()->execute($adminPermission);
     }
 
-    /**
-     * Install users
-     *
-     * @param RequestAbstract    $request Request
-     * @param ConnectionAbstract $db      Database connection
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function installUsers(RequestAbstract $request, ConnectionAbstract $db) : void
     {
         self::installMainUser($request, $db);
     }
 
-    /**
-     * Install applications
-     *
-     * @param RequestAbstract    $request Request
-     * @param ConnectionAbstract $db      Database connection
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function installApplications(RequestAbstract $request, ConnectionAbstract $db) : void
     {
-        if (self::$mManager === null) {
-            return;
-        }
-
-        $apps  = $request->getDataList('apps');
-        $theme = 'Default';
-
-        /** @var \Modules\CMS\Controller\ApiController $module */
-        $module = self::$mManager->get('CMS');
-
-        foreach ($apps as $app) {
-            $temp                  = new HttpRequest(new HttpUri(''));
-            $temp->header->account = 1;
-            $temp->setData('name', \basename($app));
-            $temp->setData('theme', $theme);
-
-            Zip::pack(__DIR__ . '/../' . $app, __DIR__ . '/' . \basename($app) . '.zip');
-
-            TestUtils::setMember($temp, 'files', [
-                [
-                    'name'     => \basename($app) . '.zip',
-                    'type'     => MimeType::M_ZIP,
-                    'tmp_name' => __DIR__ . '/' . \basename($app) . '.zip',
-                    'error'    => \UPLOAD_ERR_OK,
-                    'size'     => \filesize(__DIR__ . '/' . \basename($app) . '.zip'),
-                ],
-            ]);
-
-            $module->apiApplicationInstall($temp, new HttpResponse());
+        if ($request->getData('installtype') === 'orm') {
+            \copy(__DIR__ . '/Templates/ORMRoutes.php', __DIR__ . '/../Routes.php');
+        } else {
+            \copy(__DIR__ . '/Templates/DistRoutes.php', __DIR__ . '/../Routes.php');
         }
     }
 
-    /**
-     * Setup root user in database
-     *
-     * @param RequestAbstract    $request Request
-     * @param ConnectionAbstract $db      Database connection
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
     protected static function installMainUser(RequestAbstract $request, ConnectionAbstract $db) : void
     {
         $account = new Account();

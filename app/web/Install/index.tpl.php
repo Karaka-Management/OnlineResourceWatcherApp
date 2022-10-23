@@ -27,17 +27,11 @@ declare(strict_types=1);
             <img alt="Logo" src="img/logo.png" class="logo" width="50">
             <h1>Welcome</h1>
             <div>
-                <p>Karaka is a WebApp written in PHP and JavaScript supporting various database
-                and caching technologies. Many modules/extensions provide functionality for businesses,
-                education facilities, healthcare facilities and organizations in general.<p>
+                <p>The Online Resource Watcher allows you to watch online resources such as websites, PDFs etc. for changes and receive an email if the resource changes. It's also possible to watch local resources which can be helpful for monitoring file changes on shared files and drives in a company network.<p>
 
                 <p>In the following pages you'll be guided through the installation process for the WebApp.
                 Most of the customization can be done after installation such as configuring localization,
                 installing additional modules, creating organization etc.</p>
-
-                <p>In case you don't want to use this web installation tool you can also use the console
-                installation tool. Just navigate in your shell to the install directory and then into
-                Console the subdirectory. There you simply run the install script and are good to go.</p>
 
                 <p>In case you encounter any problems during the installation process please feel free to
                 ask for help on our website or contact our support email at
@@ -88,7 +82,7 @@ declare(strict_types=1);
                 features. All critical elements must be fixed before you can continue with the installation.</p>
 
                 <p>For help please check our <a href="https://karaka.app">Installation Guide</a>.</p>
-                <?php $isOK = \version_compare('8.0.0', \PHP_VERSION) < 1 && \extension_loaded('pdo'); ?>
+                <?php $isOK = \version_compare('8.1.0', \PHP_VERSION) < 1 && \extension_loaded('pdo'); ?>
                 <table>
                     <thead>
                         <tr>
@@ -98,16 +92,15 @@ declare(strict_types=1);
                             <th>Your Environment
                     <tbody>
                         <tr>
-                            <td class="<?= \version_compare('8.0.0', \PHP_VERSION) < 1 ? 'OK' : 'FAILED'; ?>"><?= \version_compare('8.0.0', \PHP_VERSION) < 1 ? 'OK' : 'FAILED'; ?>
+                            <td class="<?= \version_compare('8.1.0', \PHP_VERSION) < 1 ? 'OK' : 'FAILED'; ?>"><?= \version_compare('8.1.0', \PHP_VERSION) < 1 ? 'OK' : 'FAILED'; ?>
                             <td>Critcal
-                            <td>PHP version >= 8.0.0
+                            <td>PHP version >= 8.1.0
                             <td><?= \PHP_VERSION; ?>
                         <tr>
                             <td class="<?= ($filePerm = \is_writable(__DIR__ . '/../Install')
-                                && \is_writable(__DIR__ . '/../Modules')
-                                && \is_writable(__DIR__ . '/../Modules/Media/Files')
-                                && \is_writable(__DIR__ . '/../Web')
-                                && \is_writable(__DIR__ . '/../Console')) ? 'OK' : 'FAILED'; ?>">
+                                && \is_writable(__DIR__ . '/../../server')
+                                && \is_writable(__DIR__ . '/../../server/data')
+                                && \is_writable(__DIR__ . '/../')) ? 'OK' : 'FAILED'; ?>">
                                 <?= $filePerm ? 'OK' : 'FAILED'; ?>
                             <td>Critcal
                             <td><strong>File permissions <?php if ($filePerm) : ?><?php else : ?>(<span class="FAILED">write permissions required!</span>)<?php endif; ?></strong>
@@ -115,28 +108,18 @@ declare(strict_types=1);
                         <tr>
                             <td>
                             <td>Critcal
-                            <td>/Install
+                            <td>./
+                            <td class="<?= \is_writable(__DIR__ . '/../') ? 'OK' : 'FAILED'; ?>"><?= \decoct(\fileperms(__DIR__ . '/../') & 0777); ?>
+                        <tr>
+                            <td>
+                            <td>Critcal
+                            <td>./Install
                             <td class="<?= \is_writable(__DIR__ . '/../Install') ? 'OK' : 'FAILED'; ?>"><?= \decoct(\fileperms(__DIR__ . '/../Install') & 0777); ?>
                         <tr>
                             <td>
                             <td>Critcal
-                            <td>/Modules
-                            <td class="<?= \is_writable(__DIR__ . '/../Modules') ? 'OK' : 'FAILED'; ?>"><?= \decoct(\fileperms(__DIR__ . '/../Modules') & 0777); ?>
-                        <tr>
-                            <td>
-                            <td>Critcal
-                            <td>/Modules
-                            <td class="<?= \is_writable(__DIR__ . '/../Modules/Media/Files') ? 'OK' : 'FAILED'; ?>"><?= \decoct(\fileperms(__DIR__ . '/../Modules/Media/Files') & 0777); ?>
-                        <tr>
-                            <td>
-                            <td>Critcal
-                            <td>/Web
-                            <td class="<?= \is_writable(__DIR__ . '/../Web') ? 'OK' : 'FAILED'; ?>"><?= \decoct(\fileperms(__DIR__ . '/../Web') & 0777); ?>
-                        <tr>
-                            <td>
-                            <td>Critcal
-                            <td>/Console
-                            <td class="<?= \is_writable(__DIR__ . '/../Console') ? 'OK' : 'FAILED'; ?>"><?= \decoct(\fileperms(__DIR__ . '/../Console') & 0777); ?>
+                            <td>./../../server
+                            <td class="<?= \is_writable(__DIR__ . '/../../server') ? 'OK' : 'FAILED'; ?>"><?= \decoct(\fileperms(__DIR__ . '/../../server') & 0777); ?>
                         <tr>
                             <td class="<?= \extension_loaded('pdo') ? 'OK' : 'FAILED'; ?>"><?= \extension_loaded('pdo') ? 'OK' : 'FAILED'; ?>
                             <td>Critcal
@@ -215,14 +198,12 @@ declare(strict_types=1);
                         <li><label for="iDbType">Type</label>
                         <li><select id="iDbType" name="dbtype">
                                 <option value="mysql" selected>MySQL
-                                <option value="postgresql">PostgreSQL
-                                <option value="mssql">MSSQL
                             </select>
                         <li><label for="iDbPort">Port</label>
                         <li><input id="iDbPort" name="dbport" type="number" value="3306" required>
                         <li><label for="iDbName">Database</label>
                         <li><strong class="FAILED">Please make sure that you have created this database. Please also make sure that this database is empty!</strong>
-                        <li><input id="iDbName" name="dbname" type="text" value="oms" required>
+                        <li><input id="iDbName" name="dbname" type="text" value="oms_orw" required>
                     </ul>
                 </form>
 
@@ -300,6 +281,11 @@ declare(strict_types=1);
             <div>
                 <p>The following configuration options are general WebApp settings.</p>
                 <ul>
+                    <li><label for="iInstallType">Installation Type</label>
+                    <li><select id="iInstallType" name="installtype" form="installForm" required>
+                            <option value="oem" selected>OEM
+                            <option value="dist">Distributor
+                        </select>
                     <li><label for="iOrgName">Organization Name</label>
                     <li><input id="iOrgName" name="orgname" type="text" value="Karaka" form="installForm" required>
                     <li><label for="iAdminName">Admin Login</label>

@@ -137,31 +137,21 @@ return [
     'page'     => [
         'root'  => '${subdir}',
         'https' => false,
+        'type' => '${pageType}',
     ],
     'app'      => [
         'path'    => __DIR__,
         'default' => [
-            'app'   => 'Backend',
-            'id'    => 'backend',
+            'app'   => '${defaultApp}',
+            'id'    => '${defaultAppLower}',
             'lang'  => 'en',
-            'theme' => 'Backend',
-            'org'   => ${defaultOrg},
         ],
         'domains' => [
             '${tld}' => [
-                'app'   => 'Backend',
-                'id'    => 'backend',
+                'app'   => '${defaultApp}',
+                'id'    => '${defaultAppLower}',
                 'lang'  => 'en',
-                'theme' => 'Backend',
-                'org'   => ${tldOrg},
             ],
-        ],
-    ],
-    'socket'   => [
-        'master' => [
-            'host'  => '${tld}',
-            'limit' => 300,
-            'port'  => 4310,
         ],
     ],
     'language' => [
