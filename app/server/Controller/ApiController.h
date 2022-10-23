@@ -78,7 +78,7 @@ namespace Controller {
             Hash::Meow::meow_u128 h1 = Hash::Meow::MeowHash(Hash::Meow::MeowDefaultSeed, f1.size, f1.content);
             Hash::Meow::meow_u128 h2 = Hash::Meow::MeowHash(Hash::Meow::MeowDefaultSeed, f2.size, f2.content);
 
-            return Hash::Meow::MeowHashesAreEqual(h1, h2);
+            return MeowHashesAreEqual(h1, h2);
         }
 
         Utils::FileUtils::file_body hasChanged(char *oldResource, char *newResource, time_t lastChange)
@@ -90,8 +90,8 @@ namespace Controller {
                 ++length;
             }
 
-            Utils::FileUtils::file_body f1;
-            Utils::FileUtils::file_body f2;
+            Utils::FileUtils::file_body f1 = {0};
+            Utils::FileUtils::file_body f2 = {0};
 
             bool isFileModified = false;
             if (length > 5
@@ -109,7 +109,7 @@ namespace Controller {
                 }
             }
 
-            bool hasChanged = isFileModified || hasResourceContentChanged(f1, f2);
+            bool hasChanged = f1.content && f2.content && (isFileModified || hasResourceContentChanged(f1, f2));
 
             free(f1.content);
             f1.size = -1;
