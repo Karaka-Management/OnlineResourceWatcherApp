@@ -16,32 +16,14 @@
 
 #include "cOMS/Utils/Parser/Json.h"
 #include "cOMS/Utils/ArrayUtils.h"
-#include "DataStorage/Database/Connection/ConnectionFactory.h"
-#include "DataStorage/Database/Connection/ConnectionAbstract.h"
-#include "DataStorage/Database/Connection/DbConnectionConfig.h"
+#include "../cOMS/DataStorage/Database/Connection/ConnectionFactory.h"
+#include "../cOMS/DataStorage/Database/Connection/ConnectionAbstract.h"
+#include "../cOMS/DataStorage/Database/Connection/DbConnectionConfig.h"
 
 #include "../Models/InstallType.h"
 
 namespace Controller {
     namespace InstallController {
-        void installApplication(int argc, char **argv)
-        {
-            Models::InstallType type = (Models::InstallType) atoi(Utils::ArrayUtils::get_arg("-t", argv, argc));
-
-            int status = 0;
-            if (type == Models::InstallType::WEB) {
-                status = installWeb();
-            } else {
-                status = installLocal();
-            }
-
-            if (status == 0) {
-                printf("Application successfully installed\n");
-            } else {
-                printf("Application installation failed\n");
-            }
-        }
-
         int installWeb()
         {
             // Create config by copying weg config (nothing else necessary)
@@ -112,6 +94,26 @@ namespace Controller {
             DataStorage::Database::free_DbConnectionConfig(&dbdata);
 
             return 0;
+        }
+
+        void installApplication(int argc, char** argv)
+        {
+            Models::InstallType type = (Models::InstallType)atoi(Utils::ArrayUtils::get_arg("-t", argv, argc));
+
+            int status = 0;
+            if (type == Models::InstallType::WEB) {
+                status = installWeb();
+            }
+            else {
+                status = installLocal();
+            }
+
+            if (status == 0) {
+                printf("Application successfully installed\n");
+            }
+            else {
+                printf("Application installation failed\n");
+            }
         }
 
         void parseConfigFile()

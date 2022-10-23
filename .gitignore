@@ -1,7 +1,5 @@
 .vs
 obj/
-*.cache
-.directory
 bin/Debug
 x64/Debug
 app/server/Libraries
@@ -30,3 +28,6 @@ coverage.xml
 *.cache
 *.phar
 *.xml
+app/server/bin/x64/Debug
+app/server/x64/Debug
+.vscode

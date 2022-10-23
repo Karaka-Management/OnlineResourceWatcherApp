@@ -12,11 +12,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <regex.h>
+#include <iostream>
+#include <regex>
 
 #include "Controller/ApiController.h"
 #include "Controller/InstallController.h"
-#include "Stdlib/HashTable.h"
+#include "cOMS/Stdlib/HashTable.h"
 
 typedef void (*Fptr)(int, char **);
 
@@ -41,12 +42,14 @@ Fptr match_route(Stdlib::HashTable::ht *routes, char *uri)
     Fptr ptr = NULL;
     Stdlib::HashTable::it itr = Stdlib::HashTable::table_iterator(routes);
 
-    regex_t regex;
-    while (Stdlib::HashTable::next(&itr)) {
-        regcomp(&regex, itr.key, 0);
+    std::regex regex;
+    std::cmatch match;
 
-        int status = regexec(&regex, uri, 0, NULL, 0);
-        if (status == 0) {
+    while (Stdlib::HashTable::next(&itr)) {
+        regex = std::regex(itr.key);
+
+        bool status = std::regex_search(uri, match, regex);
+        if (status) {
             ptr = (Fptr) itr.value;
         }
     }

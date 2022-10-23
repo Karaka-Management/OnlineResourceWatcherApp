@@ -12,9 +12,9 @@
 #include <stdlib.h>
 
 #include "cOMS/Utils/ApplicationUtils.h"
-#include "DataStorage/Database/Connection/ConnectionAbstract.h"
+#include "cOMS/DataStorage/Database/Connection/ConnectionAbstract.h"
 #include "cOMS/Utils/Parser/Json.h"
-#include "Stdlib/HashTable.h"
+#include "cOMS/Stdlib/HashTable.h"
 
 #include "Routes.h"
 
@@ -27,13 +27,13 @@ typedef struct {
     nlohmann::json config;
 } App;
 
-App app;
+App app = {0};
 
 int main(int argc, char **argv)
 {
     /* --------------- Basic setup --------------- */
 
-    char *arg = Utils::ApplicationUtils::compile_arg_line(argc, argv);
+    const char *arg = Utils::ApplicationUtils::compile_arg_line(argc, argv);
 
     // Set program path as cwd
     char *cwd = Utils::ApplicationUtils::cwd();
@@ -42,6 +42,9 @@ int main(int argc, char **argv)
 
         return -1;
     }
+    char *cwdT = Utils::StringUtils::search_replace(cwd, "\\", "/");
+    free(cwd);
+    cwd = cwdT;
 
     Utils::ApplicationUtils::chdir_application(cwd, argv[0]);
 
@@ -65,17 +68,17 @@ int main(int argc, char **argv)
     fclose(in);
 
     // Setup db connection
-    DataStorage::Database::DbConnectionConfig dbdata = (DataStorage::Database::DbConnectionConfig) {
-        db       = DataStorage::Database::database_type_from_str(&app.config["db"]["core"]["masters"]["admin"]["db"]),
-        database = &app.config["db"]["core"]["masters"]["admin"]["database"],
-        host     = &app.config["db"]["core"]["masters"]["admin"]["host"],
-        port     = app.config["db"]["core"]["masters"]["admin"]["port"],
-        login    = &app.config["db"]["core"]["masters"]["admin"]["login"],
-        password = &app.config["db"]["core"]["masters"]["admin"]["password"],
+    DataStorage::Database::DbConnectionConfig dbdata = {
+        DataStorage::Database::database_type_from_str(app.config["db"]["core"]["masters"]["admin"]["db"].get_ref<const std::string&>().c_str()),
+        app.config["db"]["core"]["masters"]["admin"]["database"].get_ref<const std::string&>().c_str(),
+        app.config["db"]["core"]["masters"]["admin"]["host"].get_ref<const std::string&>().c_str(),
+        app.config["db"]["core"]["masters"]["admin"]["port"].get<int>(),
+        app.config["db"]["core"]["masters"]["admin"]["login"].get_ref<const std::string&>().c_str(),
+        app.config["db"]["core"]["masters"]["admin"]["password"].get_ref<const std::string&>().c_str(),
     };
 
-    app->db = DataStorage::Database::create_connection(dbdata);
-    app->db->connect();
+    app.db = DataStorage::Database::create_connection(dbdata);
+    app.db->connect();
 
     /* --------------- Handle request --------------- */
 
@@ -85,21 +88,21 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    Fptr ptr = match_route(routes, arg);
+    Fptr ptr = match_route(routes, (char *) arg);
 
     // Dispatch found endpoint
     (*ptr)(argc, argv);
 
     /* --------------- Cleanup --------------- */
 
-    app->db->close();
-    $app->db = NULL;
+    app.db->close();
+    app.db = NULL;
 
     Stdlib::HashTable::free_table(routes);
     free(routes);
     routes = NULL;
 
-    free(arg);
+    free((char *) arg);
     arg = NULL;
 
     // Reset CWD (don't know if this is necessary)

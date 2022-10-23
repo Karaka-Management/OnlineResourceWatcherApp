@@ -73,6 +73,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\deich\git\OnlineResourceWatcherApp\app\server;$(IncludePath)</IncludePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -105,12 +108,16 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\deich\git\OnlineResourceWatcherApp\app\server\cOMS\Resources\sqlite\src;C:\Program Files\MariaDB\MariaDB Connector C 64-bit\include;C:\Program Files\PostgreSQL\15\include;C:\libs\curl\builds\libcurl-vc-x64-release-dll-ipv6-sspi-schannel\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>5208;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>C:\Users\deich\git\OnlineResourceWatcherApp\app\server\cOMS\Resources\sqlite\lib\x64\sqlite3.lib;C:\Program Files\MariaDB\MariaDB Connector C 64-bit\lib\libmariadb.lib;C:\Program Files\PostgreSQL\15\lib\libpq.lib;C:\libs\curl\builds\libcurl-vc-x64-release-dll-ipv6-sspi-schannel\lib\libcurl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\deich\git\OnlineResourceWatcherApp\app\server\cOMS\Resources\sqlite\lib\x64;C:\Program Files\MariaDB\MariaDB Connector C 64-bit\lib;C:\Program Files\PostgreSQL\15\lib;C:\libs\curl\builds\libcurl-vc-x64-release-dll-ipv6-sspi-schannel\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
