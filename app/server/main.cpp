@@ -74,7 +74,7 @@ int main(int argc, char **argv)
         DataStorage::Database::database_type_from_str(app.config["db"]["core"]["masters"]["admin"]["db"].get_ref<const std::string&>().c_str()),
         app.config["db"]["core"]["masters"]["admin"]["database"].get_ref<const std::string&>().c_str(),
         app.config["db"]["core"]["masters"]["admin"]["host"].get_ref<const std::string&>().c_str(),
-        app.config["db"]["core"]["masters"]["admin"]["port"].get<int>(),
+        atoi(app.config["db"]["core"]["masters"]["admin"]["port"].get_ref<const std::string&>().c_str()),
         app.config["db"]["core"]["masters"]["admin"]["login"].get_ref<const std::string&>().c_str(),
         app.config["db"]["core"]["masters"]["admin"]["password"].get_ref<const std::string&>().c_str(),
     };

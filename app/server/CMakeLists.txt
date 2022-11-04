@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.2)
 project( OnlineResourceWatcherServerApp )
 add_executable( OnlineResourceWatcherServerApp main.cpp )
 
@@ -6,19 +6,21 @@ set(CMAKE_CXX_FLAGS "-march=native -msse2 -mavx -maes -fpermissive")
 
 include_directories( /usr/include )
 link_directories( /usr/lib )
+link_directories( /usr/lib/x86_64-linux-gnu )
 
 # SQLite3
-target_link_libraries( OnlineResourceWatcherServerApp sqlite3 )
+target_link_libraries( OnlineResourceWatcherServerApp PRIVATE sqlite3 )
 
 # MariaDB
-target_link_libraries( OnlineResourceWatcherServerApp mysql )
+target_link_libraries( OnlineResourceWatcherServerApp PRIVATE mysqlclient )
 
 # Postgresql
 target_include_directories( OnlineResourceWatcherServerApp PRIVATE /usr/include/postgresql )
-target_link_libraries( OnlineResourceWatcherServerApp libpq )
+target_link_directories( OnlineResourceWatcherServerApp PRIVATE /usr/lib/postgresql/10/lib )
+target_link_libraries( OnlineResourceWatcherServerApp PRIVATE pq )
 
 # Libcurl
-target_link_libraries( OnlineResourceWatcherServerApp libcurl )
+target_link_libraries( OnlineResourceWatcherServerApp PRIVATE curl )
 
 # cmake -DCMAKE_BUILD_TYPE=Debug -DOMS_DEBUG=true
 # cmake -DCMAKE_BUILD_TYPE=Release -DOMS_DEMO=true
