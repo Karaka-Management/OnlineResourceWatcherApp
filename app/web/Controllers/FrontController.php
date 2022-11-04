@@ -1,137 +1,109 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controllers;
 
+use phpOMS\Contract\RenderableInterface;
+use phpOMS\Message\Http\RequestStatusCode;
+use phpOMS\Message\RequestAbstract;
+use phpOMS\Message\ResponseAbstract;
+use phpOMS\Views\View;
+use phpOMS\Utils\Parser\Markdown\Markdown;
+
 class FrontController
 {
-
-	/* Service provider */
-
-	public function viewFrontend(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+	public function frontView(RequestAbstract $request, ResponseAbstract $response, mixed $data = null): RenderableInterface
 	{
+		$view = new View($this->app->l11nManager, $request, $response);
+		$view->setTemplate('/Applications/Frontend/tpl/front');
 
+		return $view;
 	}
 
-	public function viewFrontendLogin(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+	public function featureView(RequestAbstract $request, ResponseAbstract $response, mixed $data = null): RenderableInterface
 	{
+		$view = new View($this->app->l11nManager, $request, $response);
+		$view->setTemplate('/Applications/Frontend/tpl/features');
 
+		return $view;
 	}
 
-	public function viewFrontendForgot(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+	public function pricingView(RequestAbstract $request, ResponseAbstract $response, mixed $data = null): RenderableInterface
 	{
+		$view = new View($this->app->l11nManager, $request, $response);
+		$view->setTemplate('/Applications/Frontend/tpl/pricing');
 
+		return $view;
 	}
 
-	public function viewFrontendPricing(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+	public function signupView(RequestAbstract $request, ResponseAbstract $response, mixed $data = null): RenderableInterface
 	{
+		$view = new View($this->app->l11nManager, $request, $response);
+		$view->setTemplate('/Applications/Frontend/tpl/signin');
 
+		return $view;
 	}
 
-	public function viewFrontendContact(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+	public function imprintView(RequestAbstract $request, ResponseAbstract $response, mixed $data = null): RenderableInterface
 	{
+		$view = new View($this->app->l11nManager, $request, $response);
+		$view->setTemplate('/Applications/Frontend/tpl/default');
 
+		$lang = $request->getLanguage();
+
+		$path = \is_file(__DIR__ . '/../Applications/Frontend/content/imprint.' . $lang . '.md')
+			? __DIR__ . '/../Applications/Frontend/content/imprint.' . $lang . '.md'
+			: __DIR__ . '/../Applications/Frontend/content/imprint.en.md';
+
+		$markdown = Markdown::parse(\file_get_contents($path));
+
+		$view->setData('text', $markdown);
+
+		return $view;
 	}
 
-	public function viewFrontendImprint(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+	public function termsView(RequestAbstract $request, ResponseAbstract $response, mixed $data = null): RenderableInterface
 	{
+		$view = new View($this->app->l11nManager, $request, $response);
+		$view->setTemplate('/Applications/Frontend/tpl/default');
 
+		$lang = $request->getLanguage();
+
+		$path = \is_file(__DIR__ . '/../Applications/Frontend/content/terms.' . $lang . '.md')
+			? __DIR__ . '/../Applications/Frontend/content/terms.' . $lang . '.md'
+			: __DIR__ . '/../Applications/Frontend/content/terms.en.md';
+
+		$markdown = Markdown::parse(\file_get_contents($path));
+
+		$view->setData('text', $markdown);
+
+		return $view;
 	}
 
-	public function viewFrontendTerms(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+	public function privacyView(RequestAbstract $request, ResponseAbstract $response, mixed $data = null): RenderableInterface
 	{
+		$view = new View($this->app->l11nManager, $request, $response);
+		$view->setTemplate('/Applications/Frontend/tpl/default');
 
+		$lang = $request->getLanguage();
+
+		$path = \is_file(__DIR__ . '/../Applications/Frontend/content/privacy.' . $lang . '.md')
+			? __DIR__ . '/../Applications/Frontend/content/privacy.' . $lang . '.md'
+			: __DIR__ . '/../Applications/Frontend/content/privacy.en.md';
+
+		$markdown = Markdown::parse(\file_get_contents($path));
+
+		$view->setData('text', $markdown);
+
+		return $view;
 	}
 
-	public function viewFrontendAbout(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+	public function contactView(RequestAbstract $request, ResponseAbstract $response, mixed $data = null): RenderableInterface
 	{
+		$view = new View($this->app->l11nManager, $request, $response);
+		$view->setTemplate('/Applications/Frontend/tpl/contact');
 
-	}
-
-	public function viewFrontendPrivacy(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewFrontendDemo(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewFrontendOrganizationList(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewFrontendOrganizationSetting(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewFrontendUserList(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewFrontendUserSetting(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	/* User */
-
-	public function viewBackendDashboard(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewBackendLogin(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewBackendForgot(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewBackendOrgSettings(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewBackendUserList(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewBackendUserSettings(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewBackendPosts(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewBackendImprint(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewBackendTerms(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewBackendPrivacy(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
-	}
-
-	public function viewBuildSoftware(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
-	{
-
+		return $view;
 	}
 }

@@ -17,7 +17,7 @@ declare(strict_types=1);
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="styles.css">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="Install/img/favicon.ico" type="image/x-icon">
     <script src="../jsOMS/Utils/oLib.js"></script>
 </head>
 <body>
@@ -325,6 +325,7 @@ import { EventManager } from '../jsOMS/Event/EventManager.js'
 import { Form } from '../jsOMS/UI/Component/Form.js'
 import { redirectMessage } from '../jsOMS/Model/Message/Redirect.js';
 import { Logger } from '../jsOMS/Log/Logger.js';
+import { NotificationManager } from '../jsOMS/Message/Notification/NotificationManager.js';
 
 jsOMS.ready(function ()
 {
@@ -359,15 +360,19 @@ jsOMS.ready(function ()
     /* setup App */
     const app = {
         responseManager: new ResponseManager(),
-        eventManager: new EventManager()
+        eventManager: new EventManager(),
+        logger: Logger.getInstance(true, false, false),
+        notifyManager: new NotificationManager()
     };
+
+    /** global: jsOMS */
+    window.omsApp = app;
+
+    const formManager = new Form(app);
 
     app.responseManager.add('redirect', redirectMessage);
 
-    const formManager = new Form(app),
-        logger        = Logger.getInstance();
-
-    window.logger = logger;
+    window.logger = app.logger;
     formManager.bind('installForm');
     formManager.get('installForm').injectSubmit(function(e) {
         const valid = e.isValid();

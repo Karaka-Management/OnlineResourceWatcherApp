@@ -33,7 +33,6 @@ use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\Http\RequestMethod;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Model\Html\Head;
-use phpOMS\Router\RouteVerb;
 use phpOMS\Router\WebRouter;
 use phpOMS\Uri\UriFactory;
 use phpOMS\Views\View;
@@ -62,18 +61,7 @@ final class Application
         $this->app->dispatcher     = new Dispatcher($this->app);
 
         $this->app->router = new WebRouter();
-        $this->app->router->importFromFile(__DIR__ . '/Routes.php');
-        $this->app->router->add(
-            '/backend/e403',
-            function() use ($request, $response) {
-                $view = new View($this->app->l11nManager, $request, $response);
-                $view->setTemplate('/Web/Backend/Error/403_inline');
-                $response->header->status = RequestStatusCode::R_403;
-
-                return $view;
-            },
-            RouteVerb::GET
-        );
+        $this->app->router->importFromFile(__DIR__ . '/../../Routes.php');
 
         /* CSRF token OK? */
         if ($request->getData('CSRF') !== null
@@ -117,11 +105,10 @@ final class Application
         $pageView = new FrontendView($this->app->l11nManager, $request, $response);
         $head     = new Head();
 
-        $pageView->setData('orgId', $this->app->orgId);
         $pageView->setData('head', $head);
         $response->set('Content', $pageView);
 
-        /* Backend only allows GET */
+        /* Fontend only allows GET */
         if ($request->getMethod() !== RequestMethod::GET) {
             $this->create406Response($response, $pageView);
 
@@ -161,16 +148,6 @@ final class Application
     private function createDefaultPageView(HttpRequest $request, HttpResponse $response, FrontendView $pageView) : void
     {
         $pageView->setTemplate('/Applications/Frontend/index');
-    }
-
-    private function create403Response(HttpResponse $response, View $pageView) : void
-    {
-        $response->header->status = RequestStatusCode::R_403;
-        $pageView->setTemplate('/Applications/Frontend/Error/403');
-        $this->app->loadLanguageFromPath(
-            $response->getLanguage(),
-            __DIR__ . '/Error/lang/' . $response->getLanguage() . '.lang.php'
-        );
     }
 
     private function create406Response(HttpResponse $response, View $pageView) : void
@@ -236,6 +213,6 @@ final class Application
 
         $css = \preg_replace('!\s+!', ' ', $css);
         $head->setStyle('core', $css ?? '');
-        $head->title = 'Karaka Frontend';
+        $head->title = 'Online Resource Watcher';
     }
 }
