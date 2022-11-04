@@ -6,3 +6,4 @@
 * mariadb
 * sqlite
 * libcurl
+* libpq
