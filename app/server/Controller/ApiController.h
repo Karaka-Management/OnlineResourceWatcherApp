@@ -13,11 +13,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cOMS/Utils/ArrayUtils.h"
-#include "cOMS/Utils/FileUtils.h"
-#include "cOMS/Utils/WebUtils.h"
-#include "cOMS/Hash/MeowHash.h"
-#include "cOMS/Utils/MathUtils.h"
+#include "../cOMS/Utils/ArrayUtils.h"
+#include "../cOMS/Utils/FileUtils.h"
+#include "../cOMS/Utils/WebUtils.h"
+#include "../cOMS/Hash/MeowHash.h"
+#include "../cOMS/Utils/MathUtils.h"
 
 namespace Controller {
     namespace ApiController {

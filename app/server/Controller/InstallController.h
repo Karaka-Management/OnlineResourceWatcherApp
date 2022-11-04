@@ -14,8 +14,8 @@
 #include <stdlib.h>
 #include <string>
 
-#include "cOMS/Utils/Parser/Json.h"
-#include "cOMS/Utils/ArrayUtils.h"
+#include "../cOMS/Utils/Parser/Json.h"
+#include "../cOMS/Utils/ArrayUtils.h"
 #include "../cOMS/DataStorage/Database/Connection/ConnectionFactory.h"
 #include "../cOMS/DataStorage/Database/Connection/ConnectionAbstract.h"
 #include "../cOMS/DataStorage/Database/Connection/DbConnectionConfig.h"
@@ -55,6 +55,8 @@ namespace Controller {
             }
 
             nlohmann::json config = nlohmann::json::parse(in);
+
+            // @todo: populate config values (e.g. log path)
 
             std::string strJson = config.dump(4);
 
