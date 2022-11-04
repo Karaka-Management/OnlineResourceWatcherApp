@@ -1,1 +1,119 @@
-"# BEGIN Gzip Compression\n<ifmodule mod_rewrite.c>\n     AddEncoding gzip .gz\n     <filesmatch \"\\.js\\.gz$\">\n        AddType \"text\/javascript\" .gz\n     <\/filesmatch>\n     <filesmatch \"\\.css\\.gz$\">\n        AddType \"text\/css\" .gz\n     <\/filesmatch>\n<\/ifmodule>\n\nAddType font\/ttf .ttf\nAddType font\/otf .otf\nAddType application\/font-woff .woff\nAddType application\/vnd.ms-fontobject .eot\n\n<ifmodule mod_deflate.c>\n    AddOutputFilterByType DEFLATE text\/text text\/html text\/plain text\/xml text\/css application\/x-javascript application\/javascript text\/javascript\n<\/ifmodule>\n# END Gzip Compression\n\n# Force mime for javascript files\n<Files \"*.js\">\n    ForceType text\/javascript\n<\/Files>\n\n# BEGIN Caching\n<ifModule mod_expires.c>\n    ExpiresActive On\n    ExpiresDefault A300\n\n    ExpiresByType image\/x-icon A2592000\n\n    <FilesMatch \".(php)$\">\n        ExpiresDefault A0\n        Header set Cache-Control \"no-store, no-cache, must-revalidate, max-age=0\"\n        Header set Pragma \"no-cache\"\n    <\/FilesMatch>\n<\/ifModule>\n# END Caching\n\n# BEGIN Spelling\n<IfModule mod_speling.c>\n    CheckSpelling On\n    CheckCaseOnly On\n<\/IfModule>\n# END Spelling\n\n# BEGIN URL rewrite\n<ifmodule mod_rewrite.c>\n    RewriteEngine On\n    RewriteBase \/\n    RewriteCond %{HTTP:Accept-encoding} gzip\n    RewriteCond %{REQUEST_FILENAME} \\.(js|css)$\n    RewriteCond %{REQUEST_FILENAME}.gz -f\n    RewriteRule ^(.*)$ $1.gz [QSA,L]\n    RewriteCond %{REQUEST_FILENAME} !-d\n    RewriteCond %{REQUEST_FILENAME} !-f\n    RewriteRule ^(.*)$ \/?{QUERY_STRING} [QSA]\n    RewriteCond %{HTTPS} !on\n    RewriteCond %{HTTP_HOST} !^(127\\.0\\.0)|(192\\.)|(172\\.)\n    RewriteRule (.*) https:\/\/%{HTTP_HOST}%{REQUEST_URI}\n<\/ifmodule>\n# END URL rewrite\n\n# BEGIN Access control\n<Files *.php>\n    Order Deny,Allow\n    Deny from all\n    Allow from 127.0.0.1\n<\/Files>\n<Files index.php>\n    Allow from all\n<\/Files>\n# END Access control\n\n# Disable directory view\nOptions All -Indexes\n\n# Disable unsupported scripts\nOptions -ExecCGI\nAddHandler cgi-script .pl .py .jsp .asp .shtml .sh .cgi\n\n#<ifmodule mod_headers.c>\n#    # XSS protection\n#    header always set x-xss-protection \"1; mode=block\"\n#\n#    # Nosnif\n#    header always set x-content-type-options \"nosniff\"\n#\n#    # Iframes only from self\n#    header always set x-frame-options \"SAMEORIGIN\"\n#<\/ifmodule>\n\n<ifmodule mod_headers.c>\n    <FilesMatch \"ServiceWorker.js$\">\n        Header set Service-Worker-Allowed \"\/\"\n    <\/FilesMatch>\n<\/ifmodule>\n\n# Php config\n# This should be removed from here and adjusted in the php.ini file\nphp_value upload_max_filesize 40M\nphp_value post_max_size 40M\nphp_value memory_limit 128M\nphp_value max_input_time 30\nphp_value max_execution_time 30"
+{
+    "db": {
+        "core": {
+            "masters": {
+                "admin": {
+                    "db": "mysql",
+                    "host": "127.0.0.1",
+                    "port": "3306",
+                    "login": "root",
+                    "password": "root",
+                    "database": "oms_orw",
+                    "weight": 1000
+                },
+                "insert": {
+                    "db": "mysql",
+                    "host": "127.0.0.1",
+                    "port": "3306",
+                    "login": "root",
+                    "password": "root",
+                    "database": "oms_orw",
+                    "weight": 1000
+                },
+                "select": {
+                    "db": "mysql",
+                    "host": "127.0.0.1",
+                    "port": "3306",
+                    "login": "root",
+                    "password": "root",
+                    "database": "oms_orw",
+                    "weight": 1000
+                },
+                "update": {
+                    "db": "mysql",
+                    "host": "127.0.0.1",
+                    "port": "3306",
+                    "login": "root",
+                    "password": "root",
+                    "database": "oms_orw",
+                    "weight": 1000
+                },
+                "delete": {
+                    "db": "mysql",
+                    "host": "127.0.0.1",
+                    "port": "3306",
+                    "login": "root",
+                    "password": "root",
+                    "database": "oms_orw",
+                    "weight": 1000
+                },
+                "schema": {
+                    "db": "mysql",
+                    "host": "127.0.0.1",
+                    "port": "3306",
+                    "login": "root",
+                    "password": "root",
+                    "database": "oms_orw",
+                    "weight": 1000
+                }
+            }
+        }
+    },
+    "mail": {
+        "imap": {
+            "host": "127.0.0.1",
+            "port": 143,
+            "ssl": false,
+            "user": "test",
+            "password": "123456"
+        },
+        "pop3": {
+            "host": "127.0.0.1",
+            "port": 25,
+            "ssl": false,
+            "user": "test",
+            "password": "123456"
+        }
+    },
+    "cache": {
+        "redis": {
+            "db": 1,
+            "host": "127.0.0.1",
+            "port": 6379
+        },
+        "memcached": {
+            "host": "127.0.0.1",
+            "port": 11211
+        }
+    },
+    "log": {
+        "file": {
+            "path": "\/in\/Logs"
+        }
+    },
+    "page": {
+        "root": "\/",
+        "https": false,
+        "type": "dist"
+    },
+    "app": {
+        "path": "\/in",
+        "default": {
+            "app": "Frontend",
+            "id": "frontend",
+            "lang": "en"
+        },
+        "domains": {
+            "127.0.0.1": {
+                "app": "Frontend",
+                "id": "frontend",
+                "lang": "en"
+            }
+        }
+    },
+    "language": [
+        "en",
+        "de",
+        "it"
+    ]
+}
