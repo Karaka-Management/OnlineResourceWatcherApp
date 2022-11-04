@@ -60,6 +60,8 @@ int main(int argc, char **argv)
     // Load config
     FILE *in = fopen("config.json", "r");
     if (in == NULL) {
+        printf("Couldn't open config.json\n");
+
         return -1;
     }
 

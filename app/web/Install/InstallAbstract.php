@@ -107,8 +107,12 @@ abstract class InstallAbstract extends ApplicationAbstract
         $defaultAppLower = \strtolower($defaultApp);
 
         $config = include __DIR__ . '/Templates/config.tpl.php';
-
         \file_put_contents(__DIR__ . '/../config.php', $config);
+
+        $configJson = include __DIR__ . '/Templates/config.tpl.php';
+        \file_put_contents(__DIR__ . '/../config.json', \json_decode($configJson, \JSON_PRETTY_PRINT));
+
+        \unlink(__DIR__ . '/../config.php');
     }
 
     protected static function editHtaccessFile(RequestAbstract $request): void

@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/phpOMS/Autoloader.php';
 
-$config = require_once __DIR__ . '/config.php';
+$config = \json_decode(\file_get_contents(__DIR__ . '/config.json'), true);
 
 $App = new \WebApplication($config);
 
