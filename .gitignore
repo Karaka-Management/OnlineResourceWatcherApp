@@ -1,5 +1,9 @@
 .vs
 obj/
+app/server/build/*.txt
+app/server/build/*.cmake
+CMakeFiles
+Makefile
 bin/Debug
 x64/Debug
 app/server/Libraries
