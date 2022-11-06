@@ -62,6 +62,7 @@ final class Application
 
         $this->app->router = new WebRouter();
         $this->app->router->importFromFile(__DIR__ . '/../../Routes.php');
+        $this->app->router->importFromFile(__DIR__ . '/Routes.php');
 
         /* CSRF token OK? */
         if ($request->getData('CSRF') !== null

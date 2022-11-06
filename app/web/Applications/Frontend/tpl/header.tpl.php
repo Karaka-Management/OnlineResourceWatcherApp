@@ -7,7 +7,7 @@ use phpOMS\Uri\UriFactory;
 <header>
     <div class="floater">
         <a id="toplogo" href="<?= UriFactory::build('{/lang}'); ?>">
-            <img src="Applications/Frontend/img/logo.png" width="40px">
+            <img alt="Logo" src="Applications/Frontend/img/logo.png" width="40px">
             <span>Jingga</span>
         </a>
 

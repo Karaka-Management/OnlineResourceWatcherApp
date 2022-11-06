@@ -16,7 +16,7 @@
   --text-on-background-color-2: rgba(255, 255, 255, 0.85);
   --nav-category-background: #343a40;
   --nav-category-background-highlight: #3697db;
-  --nav-category-background-hover: #434a51;
+  --nav-category-background-hover: #dcd9ec;
   --nav-sub-background: #ebeff3;
   --nav-sub-background-highlight: rgb(160,56,228);
   --nav-sub-background-hover: rgb(42, 43, 48);
@@ -75,7 +75,8 @@ body {
     align-items: center;
     flex-flow: row;
     flex-shrink: 0;
-    height: 55px; }
+    height: 55px;
+    color: #fff; }
     body > header > form {
       display: flex;
       flex: 1;
@@ -112,24 +113,25 @@ main {
 
 #nav-side-inner {
   border-top: none; }
-  #nav-side-inner > li li:first-child {
-    border-top: none;
-    border-bottom: none; }
-  #nav-side-inner > li li a:hover {
-    background: var(--nav-sub-background); }
+  #nav-side-inner > li {
+    /* Category
+    li:first-child {
+        // border-top: none;
+        // border-bottom: none;
+    }
+    */ }
+    #nav-side-inner > li li a:hover, #nav-side-inner > li li a.active, #nav-side-inner > li li a:focus {
+      background: var(--nav-category-background-hover); }
 
 #logo {
   height: 100%;
   flex: 1;
-  text-align: right;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-left: 1rem; }
-  #logo select {
-    background: var(--nav-category-background);
-    color: rgba(255, 255, 255, 0.8);
-    font-size: .8rem; }
+  flex-direction: row;
+  align-items: center; }
+
+#logo-name {
+  margin-left: 1rem; }
 
 #t-nav-container {
   margin-left: auto; }
@@ -143,13 +145,16 @@ main {
 
 #t-nav {
   font-size: .8rem;
-  color: #000;
+  color: #fff;
   font-weight: 300; }
   #t-nav a {
-    padding: 0 5px 0 5px;
+    border: 2px solid rgba(255, 255, 255, 0);
+    border-radius: 3rem;
+    padding: .5rem 1rem .5rem 1rem;
     line-height: 25px; }
-    #t-nav a:hover, #t-nav a:focus {
-      color: var(--link-hover); }
+    #t-nav a:hover, #t-nav a:focus, #t-nav a.active {
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.25); }
   #t-nav i {
     margin-right: 5px; }
   #t-nav li {

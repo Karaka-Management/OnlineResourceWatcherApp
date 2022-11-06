@@ -38,6 +38,7 @@ body {
         flex-flow: row;
         flex-shrink: 0;
         height: 55px;
+        color: #fff;
         //box-shadow: 0 0 3px 1px rgba(72, 71, 114, 0.3);
 
         > form {
@@ -87,32 +88,34 @@ main {
     border-top: none;
 
     > li {
+        /* Category
         li:first-child {
-            border-top: none;
-            border-bottom: none;
+            // border-top: none;
+            // border-bottom: none;
         }
+        */
 
-        li a:hover {
-            background: var(--nav-sub-background);
+        li {
+            a {
+                &:hover, &.active, &:focus {
+                    background: var(--nav-category-background-hover);
+                }
+            }
     }   }
 }
 
 #logo {
     height: 100%;
     flex: 1;
-    text-align: right;
 
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
 
-    padding-left: 1rem;
+}
 
-    select {
-        background: var(--nav-category-background);
-        color: rgba(255, 255, 255, 0.8);
-        font-size: .8rem;
-    }
+#logo-name {
+    margin-left: 1rem;
 }
 
 #t-nav-container {
@@ -129,15 +132,18 @@ main {
 
 #t-nav {
     font-size: .8rem;
-    color: #000;
+    color: #fff;
     font-weight: 300;
 
     a {
-        padding: 0 5px 0 5px;
+        border: 2px solid rgba(255, 255, 255, 0);
+        border-radius: 3rem;
+        padding: .5rem 1rem .5rem 1rem;
         line-height: 25px;
 
-        &:hover, &:focus {
-            color: var(--link-hover);
+        &:hover, &:focus, &.active {
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.25);
         }
     }
 

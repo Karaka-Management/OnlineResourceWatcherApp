@@ -10,9 +10,17 @@ use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Views\View;
 use phpOMS\Utils\Parser\Markdown\Markdown;
+use WebApplication;
 
 class FrontController
 {
+	private WebApplication $app;
+
+    public function __construct(WebApplication $app = null)
+    {
+        $this->app = $app;
+	}
+
 	public function frontView(RequestAbstract $request, ResponseAbstract $response, mixed $data = null): RenderableInterface
 	{
 		$view = new View($this->app->l11nManager, $request, $response);

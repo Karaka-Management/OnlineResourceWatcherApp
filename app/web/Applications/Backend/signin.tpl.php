@@ -62,9 +62,9 @@ $head = $this->getData('head');
 </main>
 <footer>
     <ul>
-        <li><a href="<?= UriFactory::build('{/prefix}privacy'); ?>"><?= $this->getHtml('PrivacyPolicy', '0', '0'); ?></a>
-        <li><a href="<?= UriFactory::build('{/prefix}terms'); ?>"><?= $this->getHtml('Terms', '0', '0'); ?></a>
-        <li><a href="<?= UriFactory::build('{/prefix}imprint'); ?>"><?= $this->getHtml('Imprint', '0', '0'); ?></a>
+        <li><a href="/privacy"><?= $this->getHtml('PrivacyPolicy', '0', '0'); ?></a>
+        <li><a href="/terms"><?= $this->getHtml('Terms', '0', '0'); ?></a>
+        <li><a href="/imprint"><?= $this->getHtml('Imprint', '0', '0'); ?></a>
     </ul>
 </footer>
 

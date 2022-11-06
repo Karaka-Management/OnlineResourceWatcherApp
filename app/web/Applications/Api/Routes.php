@@ -19,4 +19,12 @@ return [
             ],
         ],
     ],
+    '^.*?/logout(\?.*|$)' => [
+        [
+            'dest'       => '\Controllers\ApiController:apiLogout',
+            'verb'       => RouteVerb::SET,
+            'permission' => [
+            ],
+        ],
+    ],
 ];

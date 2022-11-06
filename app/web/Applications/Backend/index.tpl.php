@@ -45,81 +45,9 @@ $dispatch = $this->getData('dispatch') ?? [];
 </head>
 <body>
     <div class="vh" id="dim"></div>
-    <header>
-        <div id="t-nav-container">
-            <ul id="t-nav" role="navigation">
-                <li><a href=""><span class="link">Logout</span></a></li>
-            </ul>
-        </div>
-    </header>
+    <?php include __DIR__ . '/tpl/header.tpl.php'; ?>
     <main>
-        <nav id="nav-side">
-            <div id="nav-side-outer" class="oms-ui-state">
-                <ul id="nav-side-inner" class="nav" role="navigation">
-                    <li>
-                        <input name="category-admin" class="oms-ui-state" id="nav-admin" type="checkbox">
-                        <ul>
-                            <li>
-                                <label for="nav-admin">
-                                    <i class=""></i>
-                                    <span>Admin</span>
-                                    <i class="fa lni lni-chevron-right expand"></i>
-                                </label>
-                            </li>
-                            <li><a href="">Organizations</a>
-                            <li><a href="">Users</a>
-                            <li><a href="">Bills</a>
-                        </ul>
-                    </li>
-                    <li>
-                        <input name="category-org" class="oms-ui-state" id="nav-org" type="checkbox">
-                        <ul>
-                            <li>
-                                <label for="nav-org">
-                                    <i class=""></i>
-                                    <span>Organization</span>
-                                    <i class="fa lni lni-chevron-right expand"></i>
-                                </label>
-                            </li>
-                            <li><a href="">Settings</a>
-                            <li><a href="">Users</a>
-                            <li><a href="">Resources</a>
-                            <li><a href="">Bills</a>
-                        </ul>
-                    </li>
-                    <li>
-                        <input name="category-home" class="oms-ui-state" id="nav-home" type="checkbox">
-                        <ul>
-                            <li>
-                                <label for="nav-home">
-                                    <i class=""></i>
-                                    <span>Home</span>
-                                    <i class="fa lni lni-chevron-right expand"></i>
-                                </label>
-                            </li>
-                            <li><a href="">Settings</a>
-                            <li><a href="">Resources</a>
-                            <li><a href="">Reports</a>
-                        </ul>
-                    </li>
-                    <li>
-                        <input name="category-legal" class="oms-ui-state" id="nav-legal" type="checkbox">
-                        <ul>
-                            <li>
-                                <label for="nav-legal">
-                                    <i class=""></i>
-                                    <span>Legal</span>
-                                    <i class="fa lni lni-chevron-right expand"></i>
-                                </label>
-                            </li>
-                            <li><a href="">Terms</a>
-                            <li><a href="">Privacy</a>
-                            <li><a href="">Imprint</a>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        <?php include __DIR__ . '/tpl/nav-side.tpl.php'; ?>
         <div id="content" class="container-fluid" role="main">
             <?php
             $c = 0;

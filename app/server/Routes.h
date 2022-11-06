@@ -28,11 +28,11 @@ Stdlib::HashTable::ht *generate_routes()
         return NULL;
     }
 
-    Stdlib::HashTable::set_entry(table, "^.*?\\-h *.*$", &Controller::ApiController::printHelp);
-    Stdlib::HashTable::set_entry(table, "^.*?\\-v *.*$", &Controller::ApiController::printVersion);
-    Stdlib::HashTable::set_entry(table, "^.*?\\-r *.*$", &Controller::ApiController::checkResources);
+    Stdlib::HashTable::set_entry(table, "^.*?\\-h *.*$", (void *) &Controller::ApiController::printHelp);
+    Stdlib::HashTable::set_entry(table, "^.*?\\-v *.*$", (void *) &Controller::ApiController::printVersion);
+    Stdlib::HashTable::set_entry(table, "^.*?\\-r *.*$", (void *) &Controller::ApiController::checkResources);
 
-    Stdlib::HashTable::set_entry(table, "^.*?\\-\\-install *.*$", &Controller::InstallController::installApplication);
+    Stdlib::HashTable::set_entry(table, "^.*?\\-\\-install *.*$", (void *) &Controller::InstallController::installApplication);
 
     return table;
 }

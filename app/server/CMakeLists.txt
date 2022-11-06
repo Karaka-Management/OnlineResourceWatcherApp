@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 project( OnlineResourceWatcherServerApp )
 add_executable( OnlineResourceWatcherServerApp main.cpp )
 
-set(CMAKE_CXX_FLAGS "-march=native -msse2 -mavx -maes -fpermissive")
+set(CMAKE_CXX_FLAGS "-march=native -msse2 -mavx -maes")
 
 include_directories( /usr/include )
 link_directories( /usr/lib )
