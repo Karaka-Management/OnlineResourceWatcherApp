@@ -1,0 +1,93 @@
+[
+    {
+        "id": 1008001001,
+        "pid": "/",
+        "type": 2,
+        "subtype": 1,
+        "name": "OnlineResourceWatcher",
+        "uri": "{/prefix}orw/dashboard?u={?u}",
+        "target": "self",
+        "icon": null,
+        "order": 40,
+        "from": "OnlineResourceWatcher",
+        "permission": { "permission": 2, "category": null, "element": null },
+        "parent": 1006901001,
+        "children": [
+            {
+                "id": 1008002001,
+                "pid": "/orw",
+                "type": 3,
+                "subtype": 1,
+                "name": "OnlineResourceWatcher",
+                "uri": "{/prefix}orw/dashboard?u={?u}",
+                "target": "self",
+                "icon": null,
+                "order": 1,
+                "from": "OnlineResourceWatcher",
+                "permission": { "permission": 2, "category": null, "element": null },
+                "parent": 1008001001,
+                "children": []
+            },
+            {
+                "id": 1008003001,
+                "pid": "/orw",
+                "type": 3,
+                "subtype": 1,
+                "name": "Archive",
+                "uri": "{/prefix}orw/archive?u={?u}",
+                "target": "self",
+                "icon": null,
+                "order": 5,
+                "from": "OnlineResourceWatcher",
+                "permission": { "permission": 2, "category": null, "element": null },
+                "parent": 1008001001,
+                "children": []
+            },
+            {
+                "id": 1008004001,
+                "pid": "/orw",
+                "type": 3,
+                "subtype": 1,
+                "name": "Create",
+                "uri": "{/prefix}orw/create?{?}",
+                "target": "self",
+                "icon": null,
+                "order": 10,
+                "from": "OnlineResourceWatcher",
+                "permission": { "permission": 4, "category": null, "element": null },
+                "parent": 1008001001,
+                "children": []
+            },
+            {
+                "id": 1008005001,
+                "pid": "/orw",
+                "type": 3,
+                "subtype": 1,
+                "name": "Draft",
+                "uri": "{/prefix}orw/draft/list?u={?u}",
+                "target": "self",
+                "icon": null,
+                "order": 15,
+                "from": "OnlineResourceWatcher",
+                "permission": { "permission": 4, "category": null, "element": null },
+                "parent": 1008001001,
+                "children": []
+            },
+            {
+                "id": 1008006001,
+                "pid": "/orw",
+                "type": 3,
+                "subtype": 1,
+                "name": "Analysis",
+                "uri": "{/prefix}orw/analysis",
+                "target": "self",
+                "icon": null,
+                "order": 15,
+                "from": "OnlineResourceWatcher",
+                "permission": { "permission": 4, "category": null, "element": null },
+                "parent": 1008001001,
+                "children": []
+            }
+        ]
+    }
+]

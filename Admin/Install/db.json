@@ -1,0 +1,165 @@
+{
+    "orw_resource": {
+        "name": "orw_resource",
+        "fields": {
+            "orw_resource_id": {
+                "name": "orw_resource_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "orw_resource_status": {
+                "name": "orw_resource_status",
+                "type": "TINYINT",
+                "null": false
+            },
+            "orw_resource_uri": {
+                "name": "orw_resource_uri",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "orw_resource_xpath": {
+                "name": "orw_resource_xpath",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "orw_resource_hash": {
+                "name": "orw_resource_hash",
+                "type": "BLOB(64)",
+                "null": false
+            },
+            "orw_resource_last_version_path": {
+                "name": "orw_resource_last_version_path",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "orw_resource_last_version_date": {
+                "name": "orw_resource_last_version_date",
+                "type": "DATETIME",
+                "null": false
+            },
+            "orw_resource_checked_at": {
+                "name": "orw_resource_checked_at",
+                "type": "DATETIME",
+                "null": false
+            },
+            "orw_resource_org": {
+                "name": "orw_resource_org",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "org",
+                "foreignKey": "org_id"
+            },
+            "orw_resource_created_at": {
+                "name": "orw_resource_created_at",
+                "type": "DATETIME",
+                "null": false
+            }
+        }
+    },
+    "orw_resource_check": {
+        "name": "orw_resource_check",
+        "fields": {
+            "orw_resource_check_id": {
+                "name": "orw_resource_check_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "orw_resource_check_status": {
+                "name": "orw_resource_check_status",
+                "type": "TINYINT",
+                "null": false
+            },
+            "orw_resource_check_change": {
+                "name": "orw_resource_check_change",
+                "type": "TEXT",
+                "null": false
+            },
+            "orw_resource_check_created_at": {
+                "name": "orw_resource_check_created_at",
+                "type": "DATETIME",
+                "null": false
+            },
+            "orw_resource_check_resource": {
+                "name": "orw_resource_check_resource",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "orw_resource",
+                "foreignKey": "orw_resource_id"
+            }
+        }
+    },
+    "orw_resource_info": {
+        "name": "orw_resource_info",
+        "fields": {
+            "orw_resource_info_id": {
+                "name": "orw_resource_info_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "orw_resource_info_mail": {
+                "name": "orw_resource_info_mail",
+                "type": "VARCHAR(255)",
+                "null": true,
+                "default": null,
+                "annotations": {
+                    "gdpr": true
+                }
+            },
+            "orw_resource_info_account": {
+                "name": "orw_resource_info_account",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "account",
+                "foreignKey": "account_id"
+            },
+            "orw_resource_info_resource": {
+                "name": "orw_resource_info_resource",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "orw_resource",
+                "foreignKey": "orw_resource_id"
+            },
+            "orw_resource_info_created_at": {
+                "name": "orw_resource_info_created_at",
+                "type": "DATETIME",
+                "null": false
+            }
+        }
+    },
+    "orw_resource_blacklist": {
+        "name": "orw_resource_blacklist",
+        "fields": {
+            "orw_resource_blacklist_id": {
+                "name": "orw_resource_blacklist_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "orw_resource_blacklist_mail": {
+                "name": "orw_resource_blacklist_mail",
+                "type": "VARCHAR(255)",
+                "null": true,
+                "default": null,
+                "annotations": {
+                    "gdpr": true
+                }
+            },
+            "orw_resource_blacklist_created_at": {
+                "name": "orw_resource_blacklist_created_at",
+                "type": "DATETIME",
+                "null": false
+            }
+        }
+    }
+}

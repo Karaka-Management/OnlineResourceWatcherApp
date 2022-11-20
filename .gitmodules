@@ -1,15 +1,3 @@
-[submodule "app/server/cOMS"]
-	path = app/server/cOMS
+[submodule "server/cOMS"]
+	path = server/cOMS
 	url = https://github.com/Karaka-Management/cOMS.git
-[submodule "app/web/phpOMS"]
-	path = app/web/phpOMS
-	url = https://github.com/Karaka-Management/phpOMS.git
-[submodule "app/web/Resources"]
-	path = app/web/Resources
-	url = https://github.com/Karaka-Management/Resources.git
-[submodule "app/web/cssOMS"]
-	path = app/web/cssOMS
-	url = https://github.com/Karaka-Management/cssOMS.git
-[submodule "app/web/jsOMS"]
-	path = app/web/jsOMS
-	url = https://github.com/Karaka-Management/jsOMS.git
