@@ -14,7 +14,7 @@
 #include "cOMS/Utils/ApplicationUtils.h"
 #include "cOMS/DataStorage/Database/Connection/ConnectionAbstract.h"
 #include "cOMS/Utils/Parser/Json.h"
-#include "cOMS/Stdlib/HashTable.h"
+#include "cOMS/Router/Router.h"
 
 #include "Routes.h"
 
@@ -85,12 +85,13 @@ int main(int argc, char **argv)
     /* --------------- Handle request --------------- */
 
     // Handle routes
-    Stdlib::HashTable::ht *routes = generate_routes();
-    if (routes == NULL) {
-        return -1;
-    }
+    Router router = generate_routes();
+    Fptr ptr      = Router::match_route(&router, arg);
 
-    Fptr ptr = match_route(routes, (char *) arg);
+    // No endpoint found
+    if (ptr == NULL) {
+        ptr = &Controller::ApiController::printHelp;
+    }
 
     // Dispatch found endpoint
     (*ptr)(argc, argv);
@@ -100,9 +101,7 @@ int main(int argc, char **argv)
     app.db->close();
     app.db = NULL;
 
-    Stdlib::HashTable::free_table(routes);
-    free(routes);
-    routes = NULL;
+    Router::free_router(&router);
 
     free((char *) arg);
     arg = NULL;
