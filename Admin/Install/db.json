@@ -44,13 +44,13 @@
                 "type": "DATETIME",
                 "null": false
             },
-            "orw_resource_org": {
-                "name": "orw_resource_org",
+            "orw_resource_owner": {
+                "name": "orw_resource_owner",
                 "type": "INT",
                 "null": true,
                 "default": null,
-                "foreignTable": "org",
-                "foreignKey": "org_id"
+                "foreignTable": "account",
+                "foreignKey": "account_id"
             },
             "orw_resource_created_at": {
                 "name": "orw_resource_created_at",
