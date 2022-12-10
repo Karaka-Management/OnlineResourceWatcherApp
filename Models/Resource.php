@@ -28,7 +28,7 @@ use Modules\Admin\Models\NullAccount;
 class Resource implements \JsonSerializable
 {
     /**
-     * Article ID.
+     * ID.
      *
      * @var int
      * @since 1.0.0
@@ -36,20 +36,20 @@ class Resource implements \JsonSerializable
     protected int $id = 0;
 
     /**
-     * Owner.
+     * Status.
      *
-     * @var Account
+     * @var int
      * @since 1.0.0
      */
-    public Account $owner;
+    public int $status = ResourceStatus::ACTIVE;
 
     /**
-     * Created.
+     * Uri.
      *
-     * @var \DateTimeImmutable
+     * @var int
      * @since 1.0.0
      */
-    public \DateTimeImmutable $createdAt;
+    public string $uri = '';
 
     /**
      * Title.
@@ -68,14 +68,97 @@ class Resource implements \JsonSerializable
     public string $path = '';
 
     /**
+     * Xpath.
+     *
+     * @var int
+     * @since 1.0.0
+     */
+    public string $xpath = '';
+
+    /**
+     * Hash.
+     *
+     * @var int
+     * @since 1.0.0
+     */
+    public string $hash = '';
+
+    /**
+     * Last version path.
+     *
+     * @var int
+     * @since 1.0.0
+     */
+    public string $lastVersionPath = '';
+
+    /**
+     * Owner.
+     *
+     * @var Account
+     * @since 1.0.0
+     */
+    public Account $owner;
+
+    /**
+     * Organization.
+     *
+     * The owner/creator of the resource can be different
+     * from the group/organization this resource belongs to.
+     *
+     * @todo: consider to use groups instead of organizations?
+     * groups would be better for internal purposes (e.g. departments) but accounts are better for external purposes (different customers)
+     *
+     * @var Account
+     * @since 1.0.0
+     */
+    public Account $organization;
+
+    /**
+     * Last version date.
+     *
+     * @var null|\DateTimeImmutable
+     * @since 1.0.0
+     */
+    public ?\DateTimeImmutable $lastVersionDate = null;
+
+    /**
+     * Last checked.
+     *
+     * @var null|\DateTimeImmutable
+     * @since 1.0.0
+     */
+    public ?\DateTimeImmutable $checkedAt = null;
+
+    /**
+     * Created.
+     *
+     * @var \DateTimeImmutable
+     * @since 1.0.0
+     */
+    public \DateTimeImmutable $createdAt;
+
+    /**
      * Constructor.
      *
      * @since 1.0.0
      */
     public function __construct()
     {
-        $this->owner     = new NullAccount();
-        $this->createdAt = new \DateTimeImmutable('now');
+        $this->owner           = new NullAccount();
+        $this->organization    = new NullAccount();
+        $this->createdAt       = new \DateTimeImmutable('now');
+    }
+
+    /**
+     * Get id
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     */
+    public function getId() : int
+    {
+        return $this->id;
     }
 
     /**

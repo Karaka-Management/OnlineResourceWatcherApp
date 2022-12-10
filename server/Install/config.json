@@ -109,6 +109,14 @@
                 "id": "frontend",
                 "lang": "en"
             }
+        },
+        "threads": {
+            "count": 5
+        },
+        "resources": {
+            "online": {
+                "donwloads": 10
+            }
         }
     },
     "language": [

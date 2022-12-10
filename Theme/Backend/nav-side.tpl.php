@@ -29,23 +29,23 @@ use phpOMS\Uri\UriFactory;
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'admin'
                         && $this->request->uri->getPathElement(1) === 'organizations'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>admin/organizations"><?= $this->getHtml('Organizations', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>admin/organizations"><?= $this->getHtml('Organizations', '0', '0'); ?></a>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'admin'
                         && $this->request->uri->getPathElement(1) === 'users'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>admin/users"><?= $this->getHtml('Users', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>admin/users"><?= $this->getHtml('Users', '0', '0'); ?></a>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'admin'
                         && $this->request->uri->getPathElement(1) === 'resources'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>admin/resources"><?= $this->getHtml('Resources', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>admin/resources"><?= $this->getHtml('Resources', '0', '0'); ?></a>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'admin'
                         && $this->request->uri->getPathElement(1) === 'bills'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>admin/bills"><?= $this->getHtml('Bills', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>admin/bills"><?= $this->getHtml('Bills', '0', '0'); ?></a>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'admin'
                         && $this->request->uri->getPathElement(1) === 'logs'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>admin/logs"><?= $this->getHtml('Logs', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>admin/logs"><?= $this->getHtml('Logs', '0', '0'); ?></a>
                 </ul>
             </li>
             <li>
@@ -59,19 +59,19 @@ use phpOMS\Uri\UriFactory;
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'organization'
                         && $this->request->uri->getPathElement(1) === 'settings'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>organization/settings"><?= $this->getHtml('Settings', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>organization/settings"><?= $this->getHtml('Settings', '0', '0'); ?></a>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'organization'
                         && $this->request->uri->getPathElement(1) === 'users'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>organization/users"><?= $this->getHtml('Users', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>organization/users"><?= $this->getHtml('Users', '0', '0'); ?></a>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'organization'
                         && $this->request->uri->getPathElement(1) === 'resources'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>organization/resources"><?= $this->getHtml('Resources', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>organization/resources"><?= $this->getHtml('Resources', '0', '0'); ?></a>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'organization'
                         && $this->request->uri->getPathElement(1) === 'bills'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>organization/bills"><?= $this->getHtml('Bills', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>organization/bills"><?= $this->getHtml('Bills', '0', '0'); ?></a>
                 </ul>
             </li>
             <li>
@@ -84,20 +84,20 @@ use phpOMS\Uri\UriFactory;
                     </li>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === ''
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}');
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}');
                             ?>"><?= $this->getHtml('Dashboard', '0', '0'); ?></a>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'user'
                         && $this->request->uri->getPathElement(1) === 'settings'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>user/settings"><?= $this->getHtml('Settings', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>user/settings"><?= $this->getHtml('Settings', '0', '0'); ?></a>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'user'
                         && $this->request->uri->getPathElement(1) === 'resources'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>user/resources"><?= $this->getHtml('Resources', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>user/resources"><?= $this->getHtml('Resources', '0', '0'); ?></a>
                     <li><a class="<?= $this->request->uri->getPathElement(0) === 'user'
                         && $this->request->uri->getPathElement(1) === 'reports'
                             ? 'active' : '';
-                        ?>" href="<?= UriFactory::build('{/prefix}'); ?>user/reports"><?= $this->getHtml('Reports', '0', '0'); ?></a>
+                        ?>" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>user/reports"><?= $this->getHtml('Reports', '0', '0'); ?></a>
                 </ul>
             </li>
             <li>

@@ -19,7 +19,7 @@
 
 namespace Models {
     typedef struct {
-        int id = 0;
+        unsigned long long id = 0;
 
         ResourceStatus status = ResourceStatus::INACTIVE;
 
@@ -30,6 +30,8 @@ namespace Models {
         char *hash = NULL;
 
         char *last_version_path = NULL;
+
+        int type = 0; // ResourceType::ONLINE or ResourceType::OFFLINE
 
         time_t last_version_date = 0;
 

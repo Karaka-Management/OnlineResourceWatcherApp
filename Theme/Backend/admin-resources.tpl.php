@@ -16,14 +16,14 @@ use phpOMS\Uri\UriFactory;
 
 /**
  * @var \phpOMS\Views\View            $this
- * @var \Modules\Audit\Models\Audit[] $audits
+ * @var \Modules\Audit\Models\Audit[] $resources
  */
-$audits = $this->getData('audits') ?? [];
+$resources = $this->getData('resources') ?? [];
 
 $tableView            = $this->getData('tableView');
 $tableView->id        = 'auditList';
 $tableView->baseUri   = '{/prefix}admin/audit/list';
-$tableView->setObjects($audits);
+$tableView->setObjects($resources);
 
 $previous = $tableView->getPreviousLink(
     $this->request,
@@ -86,8 +86,8 @@ $next = $tableView->getNextLink(
                     ); ?>
                 <tbody>
                 <?php $count = 0;
-                foreach ($audits as $key => $audit) : ++$count;
-                    $url = UriFactory::build('{/prefix}admin/audit/single?id=' . $audit->getId()); ?>
+                foreach ($resources as $key => $resource) : ++$count;
+                    $url = UriFactory::build('{/lang}/{/app}/admin/audit/single?id=' . $resource->getId()); ?>
                     <tr tabindex="0" data-href="<?= $url; ?>">
                         <td>
                         <td>

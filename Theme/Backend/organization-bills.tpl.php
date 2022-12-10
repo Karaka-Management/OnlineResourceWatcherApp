@@ -22,7 +22,7 @@ $audits = $this->getData('audits') ?? [];
 
 $tableView            = $this->getData('tableView');
 $tableView->id        = 'auditList';
-$tableView->baseUri   = '{/prefix}admin/audit/list';
+$tableView->baseUri   = ''{/lang}/{/app}/admin/audit/list';
 $tableView->setObjects($audits);
 
 $previous = $tableView->getPreviousLink(
@@ -72,7 +72,7 @@ $next = $tableView->getNextLink(
                 <tbody>
                 <?php $count = 0;
                 foreach ($audits as $key => $audit) : ++$count;
-                    $url = UriFactory::build('{/prefix}admin/audit/single?id=' . $audit->getId()); ?>
+                    $url = UriFactory::build('{/lang}/{/app}/'{/lang}/{/app}/admin/audit/single?id=' . $audit->getId()); ?>
                     <tr tabindex="0" data-href="<?= $url; ?>">
                         <td>
 						<td>

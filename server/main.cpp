@@ -14,7 +14,9 @@
 #include "cOMS/Utils/ApplicationUtils.h"
 #include "cOMS/DataStorage/Database/Connection/ConnectionAbstract.h"
 #include "cOMS/Utils/Parser/Json.h"
+#include "cOMS/Utils/OSWrapper.h"
 #include "cOMS/Router/Router.h"
+#include "cOMS/Threads/Thread.h"
 
 #include "Routes.h"
 
@@ -25,6 +27,7 @@
 typedef struct {
     DataStorage::Database::ConnectionAbstract *db;
     nlohmann::json config;
+    Threads::ThreadPool *pool;
 } App;
 
 App app = {0};
@@ -42,6 +45,7 @@ int main(int argc, char **argv)
 
         return -1;
     }
+
     char *cwdT = Utils::StringUtils::search_replace(cwd, "\\", "/");
     free(cwd);
     cwd = cwdT;
@@ -79,14 +83,16 @@ int main(int argc, char **argv)
         app.config["db"]["core"]["masters"]["admin"]["password"].get_ref<const std::string&>().c_str(),
     };
 
+    app.pool = Threads::pool_create(app.config["app"]["threads"]["count"].get<int>());
+
     app.db = DataStorage::Database::create_connection(dbdata);
     app.db->connect();
 
     /* --------------- Handle request --------------- */
 
     // Handle routes
-    Router router = generate_routes();
-    Fptr ptr      = Router::match_route(&router, arg);
+    Router::Router router  = generate_routes();
+    Router::RouterFunc ptr = Router::match_route(&router, arg);
 
     // No endpoint found
     if (ptr == NULL) {
@@ -107,11 +113,7 @@ int main(int argc, char **argv)
     arg = NULL;
 
     // Reset CWD (don't know if this is necessary)
-    #ifdef _WIN32
-        _chdir(cwd);
-    #else
-        chdir(cwd);
-    #endif
+    chdir(cwd);
 
     free(cwd);
 }

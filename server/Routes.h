@@ -17,14 +17,14 @@
 #include "Controller/InstallController.h"
 #include "cOMS/Router/Router.h"
 
-Router generate_routes()
+Router::Router generate_routes()
 {
-    Router router = Router::create_router(4);
+    Router::Router router = Router::create_router(4);
 
-    router.set("^.*?\\-h *.*$", (void *) &Controller::ApiController::printHelp);
-    router.set("^.*?\\-v *.*$", (void *) &Controller::ApiController::printVersion);
-    router.set("^.*?\\-r *.*$", (void *) &Controller::ApiController::checkResources);
-    router.set("^.*?\\-\\-install *.*$", (void *) &Controller::InstallController::installApplication);
+    Router::set(&router, "^.*?\\-h *.*$", (void *) &Controller::ApiController::printHelp);
+    Router::set(&router, "^.*?\\-v *.*$", (void *) &Controller::ApiController::printVersion);
+    Router::set(&router, "^.*?\\-r *.*$", (void *) &Controller::ApiController::checkResources);
+    Router::set(&router, "^.*?\\-\\-install *.*$", (void *) &Controller::InstallController::installApplication);
 
     return router;
 }

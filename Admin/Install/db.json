@@ -9,6 +9,11 @@
                 "primary": true,
                 "autoincrement": true
             },
+            "orw_resource_title": {
+                "name": "orw_resource_title",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
             "orw_resource_status": {
                 "name": "orw_resource_status",
                 "type": "TINYINT",
@@ -16,6 +21,11 @@
             },
             "orw_resource_uri": {
                 "name": "orw_resource_uri",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "orw_resource_path": {
+                "name": "orw_resource_path",
                 "type": "VARCHAR(255)",
                 "null": false
             },
@@ -37,15 +47,25 @@
             "orw_resource_last_version_date": {
                 "name": "orw_resource_last_version_date",
                 "type": "DATETIME",
-                "null": false
+                "null": true,
+                "default": null
             },
             "orw_resource_checked_at": {
                 "name": "orw_resource_checked_at",
                 "type": "DATETIME",
-                "null": false
+                "null": true,
+                "default": null
             },
             "orw_resource_owner": {
                 "name": "orw_resource_owner",
+                "type": "INT",
+                "null": true,
+                "default": null,
+                "foreignTable": "account",
+                "foreignKey": "account_id"
+            },
+            "orw_resource_organization": {
+                "name": "orw_resource_organization",
                 "type": "INT",
                 "null": true,
                 "default": null,

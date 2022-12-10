@@ -47,7 +47,7 @@ final class ApiController extends Controller
     {
         $val = [];
         if (($val['title'] = empty($request->getData('title')))
-            || ($val['path'] = empty($request->getData('path')))
+            || ($val['uri'] = empty($request->getData('uri')))
         ) {
             return $val;
         }
@@ -97,7 +97,15 @@ final class ApiController extends Controller
         $resource        = new Resource();
         $resource->owner = new NullAccount($request->header->account);
         $resource->title = (string) ($request->getData('title') ?? '');
-        $resource->path  = $request->getData('path') ?? '';
+        $resource->uri   = $request->getData('uri') ?? '';
+        $resource->owner = new NullAccount($request->header->account);
+
+        // @todo: check if user is part of organization below AND has free resources to add!!!
+        $resource->organization = new NullAccount(
+            empty($request->getData('organization'))
+                ? $request->header->account
+                : (int) ($request->getData('organization'))
+            );
 
         return $resource;
     }
@@ -118,7 +126,7 @@ final class ApiController extends Controller
     public function apiCheckResources(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         SystemUtils::runProc(
-            __DIR__ . '/server/bin/App', ''
+            __DIR__ . '/server/bin/OnlineResourceWatcherServerApp', ''
         );
 
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Resources', 'Resources are getting checked.', null);

@@ -16,7 +16,7 @@ declare(strict_types=1);
 use phpOMS\Uri\UriFactory;
 ?>
 <header>
-    <a id="logo" href="<?= UriFactory::build('{/prefix}'); ?>">
+    <a id="logo" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>">
         <span><img alt="<?= $this->getHtml('Logo', '0', '0'); ?>" src="Applications/Backend/img/logo.png" width="40px"></span>
         <span id="logo-name">Jingga</span>
     </a>

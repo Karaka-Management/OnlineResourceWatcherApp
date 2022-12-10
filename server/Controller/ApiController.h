@@ -18,6 +18,10 @@
 #include "../cOMS/Utils/WebUtils.h"
 #include "../cOMS/Hash/MeowHash.h"
 #include "../cOMS/Utils/MathUtils.h"
+#include "../cOMS/Threads/Thread.h"
+
+#include "../Models/Resource.h"
+#include "../Models/ResourceType.h"
 
 namespace Controller {
     namespace ApiController {
@@ -49,9 +53,114 @@ namespace Controller {
             printf("installation is performed in the web installer as described in the README.\n");
         }
 
+        typedef struct {
+            Models::Resource **resources;
+            int count = 0;
+            int simultaneous = 0;
+        } ResourcekerData;
+
+        void onlineResourceThreaded(void *arg)
+        {
+            ResourcekerData *data = (ResourcekerData *) arg;
+
+            char **urls = (char **) malloc(data->count * sizeof(char *));
+            for (int i = 0; i < data->count; ++i) {
+                urls[i] = data->resources[i]->uri;
+            }
+
+            Utils::FileUtils::file_body *multi = Utils::WebUtils::multi_download(urls, data->count, data->simultaneous);
+
+            free(urls);
+
+            // @todo: save temp version
+            // @todo: if first download then also download all first level references + css references (= second level)
+                // @todo: probably ignore javascript references, they are not useful for static offline comparisons!?
+            // @todo: comparison with local version (only download other resources, if xPath is defined and it contains resources)
+            // @todo: flag as changed/not changed
+
+            free(data->resources);
+            free(arg);
+        }
+
+        void offlineResourceThreaded(void *arg)
+        {
+        }
+
         void checkResources(int argc, char **argv)
         {
-            unsigned long long resourceId = atoll(Utils::ArrayUtils::get_arg("-r", argv, argc));
+            int idLength                = 0;
+            Models::Resource *resources = NULL;
+
+            int i;
+            if (Utils::ArrayUtils::has_arg("-r", argv, argc)) {
+                char *resourceList       = Utils::ArrayUtils::get_arg("-r", argv, argc);
+                char **resourceIdStrings = NULL;
+
+                idLength  = Utils::StringUtils::str_split(resourceIdStrings, resourceList, ',');
+                resources = (Models::Resource *) malloc(idLength * sizeof(Models::Resource));
+
+                for (i = 0; i < idLength; ++i) {
+                    resources[i].id = atoll(resourceIdStrings[i]);
+                }
+            } else {
+                // find and load all relevant ids from the database
+            }
+
+            // @todo: also free points in resources, call Models::free_Resource(resources[i]) on every element.
+            free(resources);
+
+            // How many resources are handled in one thread
+            // This must be multiplied with the thread count for the over all concurrent max downloads
+            int THREAD_SIZE = app.config["app"]["resources"]["online"]["downloads"].get<int>();
+
+            Models::Resource **onlineResources  = (Models::Resource **) malloc(oms_min(idLength, THREAD_SIZE) * sizeof(Models::Resource *));
+            Models::Resource **offlineResources = (Models::Resource **) malloc(oms_min(idLength, THREAD_SIZE) * sizeof(Models::Resource *));
+
+            int j = 0;
+            int c = 0;
+            int k = 0;
+
+            for (i = 0; i < idLength; ++i) {
+                if (resources[i].type == Models::ResourceType::ONLINE) {
+                    onlineResources[j] = &resources[i];
+
+                    ++j;
+                } else {
+                    offlineResources[k] = &resources[i];
+
+                    ++k;
+                }
+
+                // Handle online resources in batches here:
+                if (j > 0 && (j == THREAD_SIZE || i + 1 >= idLength)) {
+                    ResourcekerData *data = (ResourcekerData *) malloc(sizeof(ResourcekerData));
+                    data->resources       = onlineResources;
+                    data->count           = j;
+                    data->simultaneous    = THREAD_SIZE;
+
+                    Threads::pool_add_work(app.pool, onlineResourceThreaded, data);
+
+                    if (i + 1 < idLength) {
+                        onlineResources = (Models::Resource **) malloc((oms_min(idLength - i, THREAD_SIZE)) * sizeof(Models::Resource *));
+                        j = 0;
+                    }
+                }
+
+                // Handle offline resources in batches here:
+                if (k > 0 && (k == THREAD_SIZE || i + 1 >= idLength)) {
+                    ResourcekerData *data = (ResourcekerData *) malloc(sizeof(ResourcekerData));
+                    data->resources       = offlineResources;
+                    data->count           = k;
+                    data->simultaneous    = THREAD_SIZE;
+
+                    Threads::pool_add_work(app.pool, offlineResourceThreaded, data);
+
+                    if (i + 1 < idLength) {
+                        offlineResources = (Models::Resource **) malloc((oms_min(idLength - i, THREAD_SIZE)) * sizeof(Models::Resource *));
+                        k = 0;
+                    }
+                }
+            }
 
             // @todo handle resources
             // load config
@@ -59,8 +168,9 @@ namespace Controller {
                 // active
                 // last check older than 23 h
             // check if resource changed
-                // save new version
+                // load new resource (save temp version)
                 // find differences
+                // save new version
             // inform users
 
             //Resource res[10];

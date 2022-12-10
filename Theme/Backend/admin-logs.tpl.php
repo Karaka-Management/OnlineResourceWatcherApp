@@ -22,7 +22,7 @@ $audits = $this->getData('audits') ?? [];
 
 $tableView            = $this->getData('tableView');
 $tableView->id        = 'auditList';
-$tableView->baseUri   = '{/prefix}admin/audit/list';
+$tableView->baseUri   = ''{/lang}/{/app}/admin/audit/list';
 $tableView->setObjects($audits);
 
 $previous = $tableView->getPreviousLink(
@@ -97,7 +97,7 @@ $next = $tableView->getNextLink(
                 <tbody>
                 <?php $count = 0;
                 foreach ($audits as $key => $audit) : ++$count;
-                    $url = UriFactory::build('{/prefix}admin/audit/single?id=' . $audit->getId()); ?>
+                    $url = UriFactory::build('{/lang}/{/app}/'{/lang}/{/app}/admin/audit/single?id=' . $audit->getId()); ?>
                     <tr tabindex="0" data-href="<?= $url; ?>">
                         <td><?= $audit->getId(); ?>
                         <td><?php if ($audit->getOld() === null) : echo $this->getHtml('CREATE', '0', '0'); ?>
@@ -107,7 +107,7 @@ $next = $tableView->getNextLink(
                             <?php endif; ?>
                         <td><?= $audit->getType(); ?>
                         <td><?= $audit->getTrigger(); ?>
-                        <td><a class="content" href="<?= UriFactory::build('{/prefix}admin/account/settings?id=' . $audit->createdBy->getId()); ?>"><?= $this->printHtml(
+                        <td><a class="content" href="<?= UriFactory::build('{/lang}/{/app}/'{/lang}/{/app}/admin/account/settings?id=' . $audit->createdBy->getId()); ?>"><?= $this->printHtml(
                                 $this->renderUserName('%3$s %2$s %1$s', [$audit->createdBy->name1, $audit->createdBy->name2, $audit->createdBy->name3, $audit->createdBy->login])
                             ); ?></a>
                         <td><?= $this->printHtml($audit->getRef()); ?>

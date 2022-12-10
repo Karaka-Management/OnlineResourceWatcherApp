@@ -44,7 +44,7 @@ $next = $tableView->getNextLink(
                 <?= $tableView->renderTitle(
                     $this->getHtml('Resources', '0', '0')
 				); ?>
-				<a class="button rf save" href="<?= UriFactory::build('{/prefix}'); ?>user/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
+				<a class="button rf save" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>user/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
             </div>
             <div class="slider">
             <table id="<?= $tableView->id; ?>" class="default sticky">
@@ -78,7 +78,7 @@ $next = $tableView->getNextLink(
                 <tbody>
                 <?php $count = 0;
                 foreach ($audits as $key => $audit) : ++$count;
-                    $url = UriFactory::build('{/prefix}admin/audit/single?id=' . $audit->getId()); ?>
+                    $url = UriFactory::build('{/lang}/{/app}/{/prefix}admin/audit/single?id=' . $audit->getId()); ?>
                     <tr tabindex="0" data-href="<?= $url; ?>">
                         <td>
                         <td>
