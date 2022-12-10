@@ -13,9 +13,9 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@main
       with:
-        fetch-depth: 0
+        fetch-depth: 1
         submodules: recursive
-        token: ${{ secrets.GH_TOKEN }}
+        token: ${{ secrets.GH_PAT }}
     - name: Checkout Build Repository
       uses: actions/checkout@main
       with:
@@ -23,6 +23,7 @@ jobs:
           ref: develop
           repository: Karaka-Management/Build
           path: Build
+          token: ${{ secrets.GH_PAT }}
     - name: Copy config file
       run: |
         cp ./Build/Config/.clang-format ./.clang-format
@@ -32,4 +33,4 @@ jobs:
         VALIDATE_ALL_CODEBASE: false
         VALIDATE_CLANG_FORMAT : true
         DEFAULT_BRANCH: develop
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
