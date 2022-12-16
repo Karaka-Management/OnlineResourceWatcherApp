@@ -144,9 +144,9 @@ class Resource implements \JsonSerializable
      */
     public function __construct()
     {
-        $this->owner           = new NullAccount();
-        $this->organization    = new NullAccount();
-        $this->createdAt       = new \DateTimeImmutable('now');
+        $this->owner        = new NullAccount();
+        $this->organization = new NullAccount();
+        $this->createdAt    = new \DateTimeImmutable('now');
     }
 
     /**
@@ -167,9 +167,9 @@ class Resource implements \JsonSerializable
     public function toArray() : array
     {
         return [
-            'id'          => $this->id,
-            'createdAt'   => $this->createdAt,
-            'owner'   => $this->owner,
+            'id'        => $this->id,
+            'createdAt' => $this->createdAt,
+            'owner'     => $this->owner,
         ];
     }
 
