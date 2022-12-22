@@ -57,26 +57,59 @@ namespace Controller {
             Models::Resource **resources;
             int count = 0;
             int simultaneous = 0;
-        } ResourcekerData;
+        } ResourceData;
 
         void onlineResourceThreaded(void *arg)
         {
-            ResourcekerData *data = (ResourcekerData *) arg;
+            ResourceData *data = (ResourceData *) arg;
 
             char **urls = (char **) malloc(data->count * sizeof(char *));
-            for (int i = 0; i < data->count; ++i) {
+            int i;
+
+            for (i = 0; i < data->count; ++i) {
                 urls[i] = data->resources[i]->uri;
             }
 
             Utils::FileUtils::file_body *multi = Utils::WebUtils::multi_download(urls, data->count, data->simultaneous);
+            // @todo: flag for downloading resources types (e.g. js, css, img)
+            // @todo: limit filesize to abort downloading large files
 
             free(urls);
 
-            // @todo: save temp version
-            // @todo: if first download then also download all first level references + css references (= second level)
-                // @todo: probably ignore javascript references, they are not useful for static offline comparisons!?
-            // @todo: comparison with local version (only download other resources, if xPath is defined and it contains resources)
-            // @todo: flag as changed/not changed
+            bool hasChanged = false;
+            meow_u128 tempHash;
+
+            for (i = 0; i < data->count; ++i) {
+                cachedSource = Utils::FileUtils::read_file(data->resources[i]->lastVersion);
+
+                tempHash = Hash::Meow::MeowHash(Hash::Meow::MeowDefaultSeed, multi[i].size, multi[i].content);
+                if (hasChanged = (strcmp(Hash::Meow::MeowStringify(tempHash), data->resources[i]->lastHash) == 0)) {
+                    // @todo: do stuff because of change!!!
+                        // create website image with pdf?
+                        // inform users
+                }
+
+                if (hasChanged || data->resources[i]->lastCheckedAt == NULL) {
+                    // @todo: download references + css references (= second level)
+                    // @todo: probably ignore javascript references, they are not useful for static offline comparisons!?
+
+                    data->resources[i].lastHash = Hash::Meow::MeowStringify(tempHash);
+                    data->resources[i].lastChangedAt = time();
+
+                    // @todo: store new version
+                    // @todo: check if older version can/needs to be removed
+
+                    data->resources[i].lastVersion = "PATH_TO_NEWEST_VERSION";
+                    data->resources[i].lastVersionHash = "Hash_of_new_version";
+                }
+
+                data->resources[i].lastCheckedAt = time();
+
+                Models::ResourceMapper::update()
+                    ->execute($data->resources[i]);
+
+                Models::Resource::free_Resource(data->resources[i]);
+            }
 
             free(data->resources);
             free(arg);
@@ -89,7 +122,7 @@ namespace Controller {
         void checkResources(int argc, char **argv)
         {
             int idLength                = 0;
-            Models::Resource *resources = NULL;
+            Models::Resource *resources = NULL; // Elements freed in the threads
 
             int i;
             if (Utils::ArrayUtils::has_arg("-r", argv, argc)) {
@@ -102,12 +135,14 @@ namespace Controller {
                 for (i = 0; i < idLength; ++i) {
                     resources[i].id = atoll(resourceIdStrings[i]);
                 }
+
+                free(resourceIdStrings);
             } else {
                 // find and load all relevant ids from the database
+                resources = ResourceMapper::get()
+                    ->where('status', ResourceStatus::ACTIVE)
+                    ->execute();
             }
-
-            // @todo: also free points in resources, call Models::free_Resource(resources[i]) on every element.
-            free(resources);
 
             // How many resources are handled in one thread
             // This must be multiplied with the thread count for the over all concurrent max downloads
@@ -133,7 +168,7 @@ namespace Controller {
 
                 // Handle online resources in batches here:
                 if (j > 0 && (j == THREAD_SIZE || i + 1 >= idLength)) {
-                    ResourcekerData *data = (ResourcekerData *) malloc(sizeof(ResourcekerData));
+                    ResourceData *data = (ResourceData *) malloc(sizeof(ResourceData));
                     data->resources       = onlineResources;
                     data->count           = j;
                     data->simultaneous    = THREAD_SIZE;
@@ -148,7 +183,7 @@ namespace Controller {
 
                 // Handle offline resources in batches here:
                 if (k > 0 && (k == THREAD_SIZE || i + 1 >= idLength)) {
-                    ResourcekerData *data = (ResourcekerData *) malloc(sizeof(ResourcekerData));
+                    ResourceData *data = (ResourceData *) malloc(sizeof(ResourceData));
                     data->resources       = offlineResources;
                     data->count           = k;
                     data->simultaneous    = THREAD_SIZE;
@@ -162,18 +197,8 @@ namespace Controller {
                 }
             }
 
-            // @todo handle resources
-            // load config
-            // get resources
-                // active
-                // last check older than 23 h
-            // check if resource changed
-                // load new resource (save temp version)
-                // find differences
-                // save new version
-            // inform users
-
-            //Resource res[10];
+            Threads::pool_wait();
+            free(resources);
         }
 
         inline

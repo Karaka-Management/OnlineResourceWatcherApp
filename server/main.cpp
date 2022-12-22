@@ -104,6 +104,8 @@ int main(int argc, char **argv)
 
     /* --------------- Cleanup --------------- */
 
+    Threads::pool_destroy(app.pool);
+
     app.db->close();
     app.db = NULL;
 
