@@ -46,7 +46,7 @@ class Resource implements \JsonSerializable
     /**
      * Uri.
      *
-     * @var int
+     * @var string
      * @since 1.0.0
      */
     public string $uri = '';
@@ -70,7 +70,7 @@ class Resource implements \JsonSerializable
     /**
      * Xpath.
      *
-     * @var int
+     * @var string
      * @since 1.0.0
      */
     public string $xpath = '';
@@ -78,7 +78,7 @@ class Resource implements \JsonSerializable
     /**
      * Hash.
      *
-     * @var int
+     * @var string
      * @since 1.0.0
      */
     public string $hash = '';
@@ -86,7 +86,7 @@ class Resource implements \JsonSerializable
     /**
      * Last version path.
      *
-     * @var int
+     * @var string
      * @since 1.0.0
      */
     public string $lastVersionPath = '';
