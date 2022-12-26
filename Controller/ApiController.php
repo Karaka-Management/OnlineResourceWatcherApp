@@ -131,4 +131,55 @@ final class ApiController extends Controller
 
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Resources', 'Resources are getting checked.', null);
     }
+
+    /**
+     * Api method to create resource
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiResourceUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+    }
+
+    /**
+     * Api method to create resource
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiResourceGet(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+    }
+
+    /**
+     * Api method to create resource
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiResourceDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+    }
 }

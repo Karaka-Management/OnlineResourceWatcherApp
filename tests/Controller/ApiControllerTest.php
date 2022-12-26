@@ -22,20 +22,28 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Dispatcher\Dispatcher;
 use phpOMS\Event\EventManager;
+use phpOMS\Module\ModuleAbstract;
 use phpOMS\Module\ModuleManager;
 use phpOMS\Router\WebRouter;
 use phpOMS\Utils\TestUtils;
+use phpOMS\Message\Http\HttpRequest;
+use phpOMS\Message\Http\HttpResponse;
+use phpOMS\Message\Http\RequestStatusCode;
+use phpOMS\Uri\HttpUri;
 
 /**
  * @testdox Modules\OnlineResourceWatcher\tests\Controller\ApiControllerTest: OnlineResourceWatcher api controller
  *
  * @internal
  */
-final class ControllerTest extends \PHPUnit\Framework\TestCase
+final class ApiControllerTest extends \PHPUnit\Framework\TestCase
 {
-    protected $app    = null;
+    protected ApplicationAbstract $app;
 
-    protected $module = null;
+    /**
+     * @var \Modules\OnlineResourceWatcher\Controller\ApiController
+     */
+    protected ModuleAbstract $module;
 
     /**
      * {@inheritdoc}
@@ -78,5 +86,23 @@ final class ControllerTest extends \PHPUnit\Framework\TestCase
         $this->module = $this->app->moduleManager->get('OnlineResourceWatcher');
 
         TestUtils::setMember($this->module, 'app', $this->app);
+    }
+
+    /**
+     * @covers Modules\OnlineResourceWatcher\Controller\ApiController
+     * @group module
+     */
+    public function testApiAccountCreate() : void
+    {
+        $response = new HttpResponse();
+        $request  = new HttpRequest(new HttpUri(''));
+
+        $request->header->account = 1;
+        $request->setData('title', 'Test Title');
+        $request->setData('uri', 'https://jingga.app');
+
+        $this->module->apiResourceCreate($request, $response);
+
+        self::assertGreaterThan(0, $response->get('')['response']->getId());
     }
 }

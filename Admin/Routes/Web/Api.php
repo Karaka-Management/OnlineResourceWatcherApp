@@ -18,9 +18,9 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
 return [
-    '^.*/news.*$' => [
+    '^.*/orw/resource.*$' => [
         [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiOnlineResourceWatcherCreate',
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceCreate',
             'verb'       => RouteVerb::PUT,
             'permission' => [
                 'module' => ApiController::NAME,
@@ -29,7 +29,7 @@ return [
             ],
         ],
         [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiOnlineResourceWatcherUpdate',
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceUpdate',
             'verb'       => RouteVerb::SET,
             'permission' => [
                 'module' => ApiController::NAME,
@@ -38,7 +38,7 @@ return [
             ],
         ],
         [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiOnlineResourceWatcherGet',
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceGet',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => ApiController::NAME,
@@ -47,7 +47,7 @@ return [
             ],
         ],
         [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiOnlineResourceWatcherDelete',
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceDelete',
             'verb'       => RouteVerb::DELETE,
             'permission' => [
                 'module' => ApiController::NAME,
