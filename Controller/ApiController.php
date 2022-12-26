@@ -97,7 +97,7 @@ final class ApiController extends Controller
         $resource        = new Resource();
         $resource->owner = new NullAccount($request->header->account);
         $resource->title = (string) ($request->getData('title') ?? '');
-        $resource->uri   = $request->getData('uri') ?? '';
+        $resource->uri   = (string) ($request->getData('uri') ?? '');
         $resource->owner = new NullAccount($request->header->account);
 
         // @todo: check if user is part of organization below AND has free resources to add!!!
