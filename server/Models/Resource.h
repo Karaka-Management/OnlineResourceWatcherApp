@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ReosurceStatus.h"
+#include "ResourceStatus.h"
 #include "Organization.h"
 #include "ResourceInfo.h"
 
@@ -21,7 +21,7 @@ namespace Models {
     typedef struct {
         unsigned long long id = 0;
 
-        ResourceStatus status = ResourceStatus::INACTIVE;
+        ResourceStatus status = ResourceStatus::RESOURCE_INACTIVE;
 
         char *uri = NULL;
 

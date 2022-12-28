@@ -16,9 +16,12 @@
 #include "Controller/ApiController.h"
 #include "Controller/InstallController.h"
 #include "cOMS/Router/Router.h"
+#include "cOMS/Application/ApplicationAbstract.h"
 
-Router::Router generate_routes()
+Router::Router generate_routes(Application::ApplicationAbstract *app)
 {
+    Controller::ApiController::app = app;
+
     Router::Router router = Router::create_router(4);
 
     Router::set(&router, "^.*?\\-h *.*$", (void *) &Controller::ApiController::printHelp);

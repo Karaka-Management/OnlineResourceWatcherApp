@@ -12,8 +12,8 @@
 
 namespace Models {
     typedef enum {
-        ONLINE = 1,
-        OFFLINE = 2
+        RESOURCE_ONLINE = 1,
+        RESOURCE_OFFLINE = 2
     } ResourceType;
 }
 

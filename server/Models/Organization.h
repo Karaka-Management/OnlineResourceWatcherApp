@@ -13,8 +13,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ReosurceStatus.h"
-
 namespace Models {
     typedef struct {
         int id = 0;

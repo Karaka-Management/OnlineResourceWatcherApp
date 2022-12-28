@@ -12,8 +12,8 @@
 
 namespace Models {
     typedef enum {
-        ACTIVE = 1,
-        INACTIVE = 2
+        RESOURCE_ACTIVE = 1,
+        RESOURCE_INACTIVE = 2
     } ResourceStatus;
 }
 

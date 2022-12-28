@@ -20,7 +20,7 @@ namespace Models {
     typedef struct {
         int id = 0;
 
-        AccountStatus status = AccountStatus::ACTIVE;
+        AccountStatus status = AccountStatus::ACCOUNT_ACTIVE;
 
         char *email = NULL;
 

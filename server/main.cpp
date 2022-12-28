@@ -17,6 +17,7 @@
 #include "cOMS/Utils/OSWrapper.h"
 #include "cOMS/Router/Router.h"
 #include "cOMS/Threads/Thread.h"
+#include "cOMS/Application/ApplicationAbstract.h"
 
 #include "Routes.h"
 
@@ -24,13 +25,7 @@
     #define OMS_DEMO false
 #endif
 
-typedef struct {
-    DataStorage::Database::ConnectionAbstract *db;
-    nlohmann::json config;
-    Threads::ThreadPool *pool;
-} App;
-
-App app = {0};
+Application::ApplicationAbstract app = {0};
 
 int main(int argc, char **argv)
 {
@@ -91,7 +86,7 @@ int main(int argc, char **argv)
     /* --------------- Handle request --------------- */
 
     // Handle routes
-    Router::Router router  = generate_routes();
+    Router::Router router  = generate_routes(&app);
     Router::RouterFunc ptr = Router::match_route(&router, arg);
 
     // No endpoint found

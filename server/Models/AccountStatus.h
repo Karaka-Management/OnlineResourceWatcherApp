@@ -12,8 +12,8 @@
 
 namespace Models {
     typedef enum {
-        ACTIVE = 1,
-        INACTIVE = 2
+        ACCOUNT_ACTIVE = 1,
+        ACCOUNT_INACTIVE = 2
     } AccountStatus;
 }
 

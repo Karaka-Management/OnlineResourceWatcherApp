@@ -19,12 +19,17 @@
 #include "../cOMS/Hash/MeowHash.h"
 #include "../cOMS/Utils/MathUtils.h"
 #include "../cOMS/Threads/Thread.h"
+#include "../cOMS/DataStorage/Database/Mapper/DataMapperFactory.h"
 
 #include "../Models/Resource.h"
+#include "../Models/ResourceMapper.h"
 #include "../Models/ResourceType.h"
+#include "../Models/ResourceStatus.h"
 
 namespace Controller {
     namespace ApiController {
+        static Application::ApplicationAbstract *app = NULL;
+
         void printHelp(int argc, char **argv)
         {
             printf("    The Online Resource Watcher app developed by jingga checks online or local resources\n");
@@ -80,35 +85,36 @@ namespace Controller {
             meow_u128 tempHash;
 
             for (i = 0; i < data->count; ++i) {
-                cachedSource = Utils::FileUtils::read_file(data->resources[i]->lastVersion);
+                // cachedSource = Utils::FileUtils::read_file(data->resources[i]->last_version_path);
 
                 tempHash = Hash::Meow::MeowHash(Hash::Meow::MeowDefaultSeed, multi[i].size, multi[i].content);
-                if (hasChanged = (strcmp(Hash::Meow::MeowStringify(tempHash), data->resources[i]->lastHash) == 0)) {
+                if (hasChanged = (strcmp((char *) Hash::Meow::MeowStringify(tempHash), data->resources[i]->hash) == 0)) {
                     // @todo: do stuff because of change!!!
                         // create website image with pdf?
                         // inform users
                 }
 
-                if (hasChanged || data->resources[i]->lastCheckedAt == NULL) {
+                if (hasChanged || data->resources[i]->checked_at == 0) {
                     // @todo: download references + css references (= second level)
                     // @todo: probably ignore javascript references, they are not useful for static offline comparisons!?
 
-                    data->resources[i].lastHash = Hash::Meow::MeowStringify(tempHash);
-                    data->resources[i].lastChangedAt = time();
+                    data->resources[i]->hash = (char *) Hash::Meow::MeowStringify(tempHash);
+                    data->resources[i]->last_version_date = time(0);
 
                     // @todo: store new version
                     // @todo: check if older version can/needs to be removed
 
-                    data->resources[i].lastVersion = "PATH_TO_NEWEST_VERSION";
-                    data->resources[i].lastVersionHash = "Hash_of_new_version";
+                    data->resources[i]->last_version_path = (char *) "PATH_TO_NEWEST_VERSION\0";
+                    data->resources[i]->hash = (char *) "Hash_of_new_version\0";
                 }
 
-                data->resources[i].lastCheckedAt = time();
+                data->resources[i]->checked_at = time(0);
 
-                Models::ResourceMapper::update()
-                    ->execute($data->resources[i]);
+                // @todo: update data
+                //DataStorage::Database::DataMapperFactory::update(&Models::ResourceMapper)
+                //    ->execute(data->resources[i]);
 
-                Models::Resource::free_Resource(data->resources[i]);
+                Models::free_Resource(data->resources[i]);
             }
 
             free(data->resources);
@@ -139,14 +145,14 @@ namespace Controller {
                 free(resourceIdStrings);
             } else {
                 // find and load all relevant ids from the database
-                resources = ResourceMapper::get()
-                    ->where('status', ResourceStatus::ACTIVE)
+                resources = (Models::Resource *) DataStorage::Database::DataMapperFactory::get(&Models::ResourceMapper)
+                    ->where((char *) "status", (void *) Models::ResourceStatus::RESOURCE_ACTIVE)
                     ->execute();
             }
 
             // How many resources are handled in one thread
             // This must be multiplied with the thread count for the over all concurrent max downloads
-            int THREAD_SIZE = app.config["app"]["resources"]["online"]["downloads"].get<int>();
+            int THREAD_SIZE = app->config["app"]["resources"]["online"]["downloads"].get<int>();
 
             Models::Resource **onlineResources  = (Models::Resource **) malloc(oms_min(idLength, THREAD_SIZE) * sizeof(Models::Resource *));
             Models::Resource **offlineResources = (Models::Resource **) malloc(oms_min(idLength, THREAD_SIZE) * sizeof(Models::Resource *));
@@ -156,7 +162,7 @@ namespace Controller {
             int k = 0;
 
             for (i = 0; i < idLength; ++i) {
-                if (resources[i].type == Models::ResourceType::ONLINE) {
+                if (resources[i].type == Models::ResourceType::RESOURCE_ONLINE) {
                     onlineResources[j] = &resources[i];
 
                     ++j;
@@ -173,7 +179,7 @@ namespace Controller {
                     data->count           = j;
                     data->simultaneous    = THREAD_SIZE;
 
-                    Threads::pool_add_work(app.pool, onlineResourceThreaded, data);
+                    Threads::pool_add_work(app->pool, onlineResourceThreaded, data);
 
                     if (i + 1 < idLength) {
                         onlineResources = (Models::Resource **) malloc((oms_min(idLength - i, THREAD_SIZE)) * sizeof(Models::Resource *));
@@ -188,7 +194,7 @@ namespace Controller {
                     data->count           = k;
                     data->simultaneous    = THREAD_SIZE;
 
-                    Threads::pool_add_work(app.pool, offlineResourceThreaded, data);
+                    Threads::pool_add_work(app->pool, offlineResourceThreaded, data);
 
                     if (i + 1 < idLength) {
                         offlineResources = (Models::Resource **) malloc((oms_min(idLength - i, THREAD_SIZE)) * sizeof(Models::Resource *));
@@ -197,7 +203,7 @@ namespace Controller {
                 }
             }
 
-            Threads::pool_wait();
+            Threads::pool_wait(app->pool);
             free(resources);
         }
 
