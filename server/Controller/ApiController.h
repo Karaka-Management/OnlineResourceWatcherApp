@@ -33,7 +33,7 @@ namespace Controller {
         void printHelp(int argc, char **argv)
         {
             printf("    The Online Resource Watcher app developed by jingga checks online or local resources\n");
-            printf("    for changes and and informs the user about them.\n\n");
+            printf("    for changes and informs the user about them.\n\n");
             printf("    Run: ./App ....\n\n");
             printf("    -h: Prints the help output\n");
             printf("    -v: Prints the version\n");
@@ -61,12 +61,11 @@ namespace Controller {
         typedef struct {
             Models::Resource **resources;
             int count = 0;
-            int simultaneous = 0;
-        } ResourceData;
+        } ThreadData;
 
         void onlineResourceThreaded(void *arg)
         {
-            ResourceData *data = (ResourceData *) arg;
+            ThreadData *data = (ThreadData *) arg;
 
             char **urls = (char **) malloc(data->count * sizeof(char *));
             int i;
@@ -75,11 +74,19 @@ namespace Controller {
                 urls[i] = data->resources[i]->uri;
             }
 
-            Utils::FileUtils::file_body *multi = Utils::WebUtils::multi_download(urls, data->count, data->simultaneous);
+            Utils::FileUtils::file_body *multi = Utils::WebUtils::multi_download(
+                urls,
+                data->count,
+                5,
+                0,
+                (ResourceTypes *) {.size = 4, .resources = {"jpg", "png", "gif", "css"}}
+            );
             // @todo: flag for downloading resources types (e.g. js, css, img)
             // @todo: limit filesize to abort downloading large files
 
-            free(urls);
+            if (urls != NULL) {
+                free(urls);
+            }
 
             bool hasChanged = false;
             meow_u128 tempHash;
@@ -117,8 +124,13 @@ namespace Controller {
                 Models::free_Resource(data->resources[i]);
             }
 
-            free(data->resources);
-            free(arg);
+            if (data->resources != NULL) {
+                free(data->resources);
+            }
+
+            if (arg != NULL) {
+                free(arg);
+            }
         }
 
         void offlineResourceThreaded(void *arg)
@@ -142,12 +154,29 @@ namespace Controller {
                     resources[i].id = atoll(resourceIdStrings[i]);
                 }
 
-                free(resourceIdStrings);
+                if (resourceIdStrings != NULL) {
+                    free(resourceIdStrings);
+                }
             } else {
-                // find and load all relevant ids from the database
-                resources = (Models::Resource *) DataStorage::Database::DataMapperFactory::get(&Models::ResourceMapper)
-                    ->where((char *) "status", (void *) Models::ResourceStatus::RESOURCE_ACTIVE)
-                    ->execute();
+                // @todo: limit memory usage by doing this multiple times in a loop with limits;
+                DataStorage::Database::QueryResult results = app->db->query_execute(
+                    (char *) "SELECT * from oms.orw_resource WHERE oms.orw_resource_status = 1"
+                );
+
+                resources = (Models::Resource *) malloc(results.rows * sizeof(Models::Resource));
+                for (size_t row = 0; row < results.rows; ++row) {
+                    resources[row] = {};
+
+                    for (i = 0; i < results.columns; ++i) {
+                        if (results.results[row * results.columns + i] != NULL) {
+                            free(results.results[row * results.columns + i]);
+                        }
+                    }
+                }
+
+                if (results.results != NULL) {
+                    free(results.results);
+                }
             }
 
             // How many resources are handled in one thread
@@ -174,10 +203,9 @@ namespace Controller {
 
                 // Handle online resources in batches here:
                 if (j > 0 && (j == THREAD_SIZE || i + 1 >= idLength)) {
-                    ResourceData *data = (ResourceData *) malloc(sizeof(ResourceData));
+                    ThreadData *data = (ThreadData *) malloc(sizeof(ThreadData));
                     data->resources       = onlineResources;
                     data->count           = j;
-                    data->simultaneous    = THREAD_SIZE;
 
                     Threads::pool_add_work(app->pool, onlineResourceThreaded, data);
 
@@ -189,10 +217,9 @@ namespace Controller {
 
                 // Handle offline resources in batches here:
                 if (k > 0 && (k == THREAD_SIZE || i + 1 >= idLength)) {
-                    ResourceData *data = (ResourceData *) malloc(sizeof(ResourceData));
+                    ThreadData *data = (ThreadData *) malloc(sizeof(ThreadData));
                     data->resources       = offlineResources;
                     data->count           = k;
-                    data->simultaneous    = THREAD_SIZE;
 
                     Threads::pool_add_work(app->pool, offlineResourceThreaded, data);
 

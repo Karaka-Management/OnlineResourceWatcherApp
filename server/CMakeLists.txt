@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 project(OnlineResourceWatcherServerApp VERSION 1.0.0 LANGUAGES CXX)
 add_executable(OnlineResourceWatcherServerApp main.cpp)
 
+set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_CXX_FLAGS "-march=native -msse2 -mavx -maes")
 
 set(CMAKE_CXX_STANDARD 17)

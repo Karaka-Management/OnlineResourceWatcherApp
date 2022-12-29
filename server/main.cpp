@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 
 #include "cOMS/Utils/ApplicationUtils.h"
 #include "cOMS/DataStorage/Database/Connection/ConnectionAbstract.h"
@@ -18,6 +19,7 @@
 #include "cOMS/Router/Router.h"
 #include "cOMS/Threads/Thread.h"
 #include "cOMS/Application/ApplicationAbstract.h"
+#include "Models/ResourceMapper.h"
 
 #include "Routes.h"
 
@@ -100,6 +102,8 @@ int main(int argc, char **argv)
     /* --------------- Cleanup --------------- */
 
     Threads::pool_destroy(app.pool);
+
+    DataStorage::Database::free_MapperData((DataStorage::Database::MapperData *) &Models::ResourceMapper);
 
     app.db->close();
     app.db = NULL;
