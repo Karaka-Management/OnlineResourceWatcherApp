@@ -4,7 +4,7 @@
  *
  * PHP Version 8.1
  *
- * @package   Modules\Auditor
+ * @package   Modules\OnlineResourceWatcher
  * @copyright Dennis Eichhorn
  * @license   OMS License 1.0
  * @version   1.0.0
@@ -15,15 +15,15 @@ declare(strict_types=1);
 use phpOMS\Uri\UriFactory;
 
 /**
- * @var \phpOMS\Views\View            $this
- * @var \Modules\Audit\Models\Audit[] $audits
+ * @var \phpOMS\Views\View                               $this
+ * @var \Modules\OnlineResourceWatcher\Models\Resource[] $resources
  */
-$audits = $this->getData('audits') ?? [];
+$resources = $this->getData('resources') ?? [];
 
 $tableView            = $this->getData('tableView');
-$tableView->id        = 'auditList';
-$tableView->baseUri   = '{/prefix}admin/audit/list';
-$tableView->setObjects($audits);
+$tableView->id        = 'resourceList';
+$tableView->baseUri   = '{/prefix}orw/resource/list';
+$tableView->setObjects($resources);
 
 $previous = $tableView->getPreviousLink(
     $this->request,
@@ -42,9 +42,9 @@ $next = $tableView->getNextLink(
         <div class="portlet">
             <div class="portlet-head">
                 <?= $tableView->renderTitle(
-                    $this->getHtml('Resources', '0', '0')
+                    $this->getHtml('Resources')
 				); ?>
-				<a class="button rf save" href="<?= UriFactory::build('{/lang}/{/app}/{/prefix}'); ?>user/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
+				<a class="button rf save" href="<?= UriFactory::build('{/lang}/{/app}/'); ?>orw/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
             </div>
             <div class="slider">
             <table id="<?= $tableView->id; ?>" class="default sticky">
@@ -57,33 +57,34 @@ $next = $tableView->getNextLink(
 					); ?>
 					<td class="wf-100"><?= $tableView->renderHeaderElement(
                         'resource',
-                        $this->getHtml('Resource', '0', '0'),
+                        $this->getHtml('Resource'),
                         'text'
                     ); ?>
 					<td><?= $tableView->renderHeaderElement(
                         'status',
-                        $this->getHtml('Status', '0', '0'),
+                        $this->getHtml('Status'),
                         'text'
 					); ?>
 					<td><?= $tableView->renderHeaderElement(
                         'lastChecked',
-                        $this->getHtml('Checked', '0', '0'),
+                        $this->getHtml('Checked'),
                         'date'
                     ); ?>
                     <td><?= $tableView->renderHeaderElement(
                         'createdAt',
-                        $this->getHtml('Date', '0', '0'),
+                        $this->getHtml('Date'),
                         'date'
                     ); ?>
                 <tbody>
                 <?php $count = 0;
-                foreach ($audits as $key => $audit) : ++$count;
-                    $url = UriFactory::build('{/lang}/{/app}/{/prefix}admin/audit/single?id=' . $audit->getId()); ?>
+                foreach ($resources as $key => $resource) : ++$count;
+                    $url = UriFactory::build('{/lang}/{/app}/{/prefix}orw/resource?id=' . $resource->getId()); ?>
                     <tr tabindex="0" data-href="<?= $url; ?>">
+                        <td><?= $resource->getId(); ?>
+                        <td><?= $this->printHtml($resource->title); ?>
+                        <td><?= $this->printHtml((string) $resource->getStatus()); ?>
                         <td>
-                        <td>
-                        <td>
-                        <td>
+                        <td><?= $this->printHtml($resource->createdAt->format('Y-m-d')); ?>
                 <?php endforeach; ?>
                 <?php if ($count === 0) : ?>
                     <tr><td colspan="8" class="empty"><?= $this->getHtml('Empty', '0', '0'); ?>

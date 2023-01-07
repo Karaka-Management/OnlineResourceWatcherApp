@@ -17,9 +17,11 @@
     "description": "OnlineResourceWatcher module.",
     "directory": "OnlineResourceWatcher",
     "dependencies": {
+        "Admin": "1.0.0",
         "Media": "*"
     },
     "providing": {
+        "Navigation": "*"
     },
     "load": [
         {

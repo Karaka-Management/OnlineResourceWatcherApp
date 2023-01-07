@@ -1,5 +1,6 @@
 .vs
 obj/
+/Files/
 app/server/build/*.txt
 app/server/build/*.cmake
 CMakeFiles

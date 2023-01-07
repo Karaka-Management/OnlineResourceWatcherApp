@@ -79,33 +79,43 @@
             }
         }
     },
-    "orw_resource_check": {
-        "name": "orw_resource_check",
+    "orw_resource_report": {
+        "name": "orw_resource_report",
         "fields": {
-            "orw_resource_check_id": {
-                "name": "orw_resource_check_id",
+            "orw_resource_report_id": {
+                "name": "orw_resource_report_id",
                 "type": "INT",
                 "null": false,
                 "primary": true,
                 "autoincrement": true
             },
-            "orw_resource_check_status": {
-                "name": "orw_resource_check_status",
+            "orw_resource_report_status": {
+                "name": "orw_resource_report_status",
                 "type": "TINYINT",
                 "null": false
             },
-            "orw_resource_check_change": {
-                "name": "orw_resource_check_change",
+            "orw_resource_report_metric": {
+                "name": "orw_resource_report_metric",
+                "type": "INT",
+                "null": false
+            },
+            "orw_resource_report_path": {
+                "name": "orw_resource_report_path",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "orw_resource_report_change": {
+                "name": "orw_resource_report_change",
                 "type": "TEXT",
                 "null": false
             },
-            "orw_resource_check_created_at": {
-                "name": "orw_resource_check_created_at",
+            "orw_resource_report_created_at": {
+                "name": "orw_resource_report_created_at",
                 "type": "DATETIME",
                 "null": false
             },
-            "orw_resource_check_resource": {
-                "name": "orw_resource_check_resource",
+            "orw_resource_report_resource": {
+                "name": "orw_resource_report_resource",
                 "type": "INT",
                 "null": true,
                 "default": null,

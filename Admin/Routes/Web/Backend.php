@@ -18,9 +18,9 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
 return [
-    '^.*/news/dashboard.*$' => [
+    '^.*/orw/resource/list.*$' => [
         [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewOnlineResourceWatcherDashboard',
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewResourceList',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::NAME,
@@ -29,9 +29,9 @@ return [
             ],
         ],
     ],
-    '^.*/news/article.*$' => [
+    '^.*/orw/resource\?.*$' => [
         [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewOnlineResourceWatcherArticle',
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewResource',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::NAME,
@@ -40,31 +40,9 @@ return [
             ],
         ],
     ],
-    '^.*/news/archive.*$' => [
+    '^.*/orw/resource/create.*$' => [
         [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewOnlineResourceWatcherArchive',
-            'verb'       => RouteVerb::GET,
-            'permission' => [
-                'module' => BackendController::NAME,
-                'type'   => PermissionType::READ,
-                'state'  => PermissionCategory::RESOURCE,
-            ],
-        ],
-    ],
-    '^.*/news/draft/list.*$' => [
-        [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewOnlineResourceWatcherDraftList',
-            'verb'       => RouteVerb::GET,
-            'permission' => [
-                'module' => BackendController::NAME,
-                'type'   => PermissionType::MODIFY,
-                'state'  => PermissionCategory::RESOURCE,
-            ],
-        ],
-    ],
-    '^.*/news/create.*$' => [
-        [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewOnlineResourceWatcherCreate',
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewResourceCreate',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::NAME,
@@ -73,9 +51,9 @@ return [
             ],
         ],
     ],
-    '^.*/news/edit.*$' => [
+    '^.*/orw/resource/report/list.*$' => [
         [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewOnlineResourceWatcherEdit',
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewReportList',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::NAME,
@@ -84,9 +62,9 @@ return [
             ],
         ],
     ],
-    '^.*/news/analysis.*$' => [
+    '^.*/orw/resource/report\?.*$' => [
         [
-            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewOnlineResourceWatcherAnalysis',
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewReport',
             'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => BackendController::NAME,
