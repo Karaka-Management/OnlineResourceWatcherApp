@@ -30,5 +30,5 @@ abstract class PermissionCategory extends Enum
 
     public const REPORT = 2;
 
-    public const ORGANIZATION = 3;
+    public const UNIT = 3;
 }
