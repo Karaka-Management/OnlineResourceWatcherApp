@@ -15,21 +15,21 @@ declare(strict_types=1);
 namespace Modules\OnlineResourceWatcher\Controller;
 
 use Modules\Admin\Models\NullAccount;
+use Modules\OnlineResourceWatcher\Models\Report;
+use Modules\OnlineResourceWatcher\Models\ReportMapper;
+use Modules\OnlineResourceWatcher\Models\ReportStatus;
 use Modules\OnlineResourceWatcher\Models\Resource;
 use Modules\OnlineResourceWatcher\Models\ResourceMapper;
-use Modules\OnlineResourceWatcher\Models\Report;
-use Modules\OnlineResourceWatcher\Models\ReportStatus;
-use Modules\OnlineResourceWatcher\Models\ReportMapper;
 use Modules\OnlineResourceWatcher\Models\ResourceStatus;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
-use phpOMS\System\SystemUtils;
 use phpOMS\System\File\Local\Directory;
-use phpOMS\Utils\StringUtils;
+use phpOMS\System\SystemUtils;
 use phpOMS\Utils\ImageUtils;
+use phpOMS\Utils\StringUtils;
 
 /**
  * OnlineResourceWatcher controller class.
@@ -132,6 +132,7 @@ final class ApiController extends Controller
      */
     public function apiCheckResources(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
+        /** @var Resource[] $resources */
         $resources = ResourceMapper::getAll()
             ->where('status', ResourceStatus::ACTIVE)
             ->execute();
@@ -182,7 +183,7 @@ final class ApiController extends Controller
                     $report              = new Report();
                     $report->resource    = $resource->getId();
                     $report->versionPath = (string) $check['timestamp'];
-                    $report->status = ReportStatus::DOWNLOAD_ERROR;
+                    $report->status      = ReportStatus::DOWNLOAD_ERROR;
 
                     ReportMapper::create()->execute($report);
 
@@ -206,9 +207,12 @@ final class ApiController extends Controller
                 // new resource
                 if ($check['loop'] === 60 * 10 && !\is_dir($basePath . '/' . $id)) {
                     $filesNew = \scandir($path);
+                    if ($filesNew === false) {
+                        $filesNew = [];
+                    }
 
                     $fileName = '';
-                    if (in_array('index.htm', $filesNew) || \in_array('index.html', $filesNew)) {
+                    if (\in_array('index.htm', $filesNew) || \in_array('index.html', $filesNew)) {
                         $fileName = \in_array('index.htm', $filesNew) ? 'index.htm' : 'index.html';
                     } else {
                         foreach ($filesNew as $file) {
@@ -248,7 +252,7 @@ final class ApiController extends Controller
                     $resource->lastVersionPath = (string) $check['timestamp'];
                     $resource->lastVersionDate = $report->createdAt;
                     $resource->hash            = $hash;
-                    $resource->checkedAt = $report->createdAt;
+                    $resource->checkedAt       = $report->createdAt;
                     ResourceMapper::update()->execute($resource);
 
                     Directory::copy($path, $basePath . '/' . $id . '/' . $check['timestamp']);
@@ -263,13 +267,17 @@ final class ApiController extends Controller
 
                 // existing resource
                 $resourcePaths = \scandir($basePath . '/' . $id);
+                if ($resourcePaths === false) {
+                    $resourcePaths = [];
+                }
+
                 \natsort($resourcePaths);
 
                 $lastVersionTimestamp = \end($resourcePaths);
-                if ($lastVersionTimestamp === '.' && $lastVersionTimestamp === '..') {
+                if ($lastVersionTimestamp === '.' || $lastVersionTimestamp === '..') {
                     $lastVersionTimestamp = \reset($resourcePaths);
 
-                    if ($lastVersionTimestamp === '.' && $lastVersionTimestamp === '..') {
+                    if ($lastVersionTimestamp === '.' || $lastVersionTimestamp === '..') {
                         Directory::delete($basePath . '/' . $id);
                     }
                 }
@@ -277,9 +285,15 @@ final class ApiController extends Controller
                 $lastVersionPath = $basePath . '/' . $id . '/' . $lastVersionTimestamp;
 
                 $filesNew = \scandir($path);
+                if ($filesNew === false) {
+                    $filesNew = [];
+                }
 
                 // Using this because the index.htm gets created last and at the time of the check below it may not yet exist.
                 $filesOld = \scandir($lastVersionPath);
+                if ($filesOld === false) {
+                    $filesOld = [];
+                }
 
                 $oldPath   = '';
                 $newPath   = '';
@@ -322,8 +336,13 @@ final class ApiController extends Controller
                     continue;
                 }
 
-                $md5Old           = $resource->hash;
-                $md5New           = \md5_file($newPath);
+                $md5Old = $resource->hash;
+                $md5New = \md5_file($newPath);
+
+                if ($md5New === false) {
+                    $md5New = '';
+                }
+
                 $hasDifferentHash = $md5Old !== $md5New;
 
                 // @todo: check if old path exists and if not, don't calculate a diff
@@ -331,12 +350,12 @@ final class ApiController extends Controller
                 $difference = 0;
                 if ($hasDifferentHash) {
                     if (\in_array($extension, ['md', 'txt', 'doc', 'docx', 'pdf', 'xls', 'xlsx'])) {
-                        $contentOld = \Modules\Media\Controller\ApiController::loadFileContent($oldPath);
-                        $contentNew = \Modules\Media\Controller\ApiController::loadFileContent($newPath);
+                        $contentOld = \Modules\Media\Controller\ApiController::loadFileContent($oldPath, $extension);
+                        $contentNew = \Modules\Media\Controller\ApiController::loadFileContent($newPath, $extension);
 
                         $difference = \levenshtein($contentOld, $contentNew);
                     } elseif (\in_array($extension, ['png', 'jpg', 'jpeg', 'gif'])) {
-                        $difference = ImageUtils::difference($oldPath, $newPath, $path . '/_' . $file, 0);
+                        $difference = ImageUtils::difference($oldPath, $newPath, $path . '/_' . \basename($newPath), 0);
                     }
                 }
 
