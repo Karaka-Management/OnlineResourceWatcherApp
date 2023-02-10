@@ -78,12 +78,12 @@ $next = $tableView->getNextLink(
                 <tbody>
                 <?php $count = 0;
                 foreach ($resources as $key => $resource) : ++$count;
-                    $url = UriFactory::build('{/lang}/{/app}/{/prefix}orw/resource?id=' . $resource->getId()); ?>
+                    $url = UriFactory::build('{/lang}/{/app}/orw/resource?id=' . $resource->getId()); ?>
                     <tr tabindex="0" data-href="<?= $url; ?>">
                         <td><?= $resource->getId(); ?>
                         <td><?= $this->printHtml($resource->title); ?>
                         <td><?= $this->printHtml((string) $resource->getStatus()); ?>
-                        <td>
+                        <td><?= $this->printHtml($resource->checkedAt->format('Y-m-d H:i')); ?>
                         <td><?= $this->printHtml($resource->createdAt->format('Y-m-d')); ?>
                 <?php endforeach; ?>
                 <?php if ($count === 0) : ?>

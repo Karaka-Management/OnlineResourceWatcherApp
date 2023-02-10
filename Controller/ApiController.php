@@ -21,6 +21,7 @@ use Modules\OnlineResourceWatcher\Models\ReportStatus;
 use Modules\OnlineResourceWatcher\Models\Resource;
 use Modules\OnlineResourceWatcher\Models\ResourceMapper;
 use Modules\OnlineResourceWatcher\Models\ResourceStatus;
+use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
@@ -41,6 +42,50 @@ use phpOMS\Utils\StringUtils;
  */
 final class ApiController extends Controller
 {
+    /**
+     * Api method to create resource
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiResourceRender(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        /** @var \Modules\OnlineResourceWatcher\Models\Resource $resource */
+        $resource = ResourceMapper::get()
+            ->where('id', (int) $request->getData('id'))
+            ->execute();
+
+        $path = '';
+        if (\is_dir($basePath = __DIR__ . '/' . $resource->path . '/' . $resource->lastVersionPath)) {
+            if (\is_file($basePath . '/index.htm')) {
+                $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/index.htm';
+            } elseif (\is_file($basePath . '/index.html')) {
+                $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/index.html';
+            } else {
+                $files = \scandir($basePath);
+                foreach ($files as $file) {
+                    if ($file === '.' || $files === '..') {
+                        continue;
+                    }
+
+                    $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/' . $file;
+                }
+            }
+        }
+
+        $internalRequest = new HttpRequest();
+        $internalRequest->header->account = $request->header->account;
+        $internalRequest->setData('path', $path);
+        $this->app->moduleManager->get('Media')->apiMediaExport($internalRequest, $response, ['guard' => __DIR__ . '/../Files']);
+    }
+
     /**
      * Validate resource create request
      *
@@ -170,6 +215,7 @@ final class ApiController extends Controller
         // Check downloaded resources
         // @todo: this may not work correctly because the download runs async.
         $totalCount = \count($toCheck);
+        $maxLoops   = (int) \min(60 * 10, $totalCount * 10 / 4);
 
         // @todo: the following code is INSANE, simplify!!!
         $baseLen = \strlen($basePath . '/temp');
@@ -179,7 +225,7 @@ final class ApiController extends Controller
                 $resource = $check['resource'];
 
                 // too many tries
-                if ($check['loop'] > 60 * 10) {
+                if ($check['loop'] > $maxLoops) {
                     $report              = new Report();
                     $report->resource    = $resource->getId();
                     $report->versionPath = (string) $check['timestamp'];
@@ -205,7 +251,7 @@ final class ApiController extends Controller
                 $id  = (int) \substr($path, $baseLen + 1, $end - $baseLen - 1);
 
                 // new resource
-                if ($check['loop'] === 60 * 10 && !\is_dir($basePath . '/' . $id)) {
+                if ($check['loop'] === $maxLoops && !\is_dir($basePath . '/' . $id)) {
                     $filesNew = \scandir($path);
                     if ($filesNew === false) {
                         $filesNew = [];

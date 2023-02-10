@@ -76,7 +76,7 @@ use phpOMS\Uri\UriFactory;
                         <td><?= $this->getHtml('User', '0', '0'); ?><i class="sort-asc fa fa-chevron-up"></i><i class="sort-desc fa fa-chevron-down"></i>
                         <td><?= $this->getHtml('Email', '0', '0'); ?><i class="sort-asc fa fa-chevron-up"></i><i class="sort-desc fa fa-chevron-down"></i>
                 <tbody>
-                    <?php $c = 0; foreach ([] as $key => $value) : ++$c; $url = UriFactory::build('{/lang}/{/app}/{/prefix}admin/account/settings?{?}&id=' . $value->getId()); ?>
+                    <?php $c = 0; foreach ([] as $key => $value) : ++$c; $url = UriFactory::build('{/lang}/{/app}/admin/account/settings?{?}&id=' . $value->getId()); ?>
                     <tr data-href="<?= $url; ?>">
                         <td>
                         <td>

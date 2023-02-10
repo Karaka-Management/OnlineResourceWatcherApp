@@ -14,7 +14,8 @@ declare(strict_types=1);
 
 use phpOMS\Uri\UriFactory;
 
-$resource = $this->getData('resource');
+/** @var \Modules\OnlineResourceWatcher\Models\Resource */
+$resource = $this->getData('resource') ?? new \Modules\OnlineResourceWatcher\Models\NullResource();
 ?>
 <div class="row">
 	<div class="col-xs-8">
@@ -37,12 +38,12 @@ $resource = $this->getData('resource');
 
 	                <div class="form-group">
 	                    <label for="iUrl"><?= $this->getHtml('Url'); ?></label>
-	                    <input id="iUrl" name="uri" type="text" required>
+	                    <input id="iUrl" name="uri" type="text" value="<?= $this->printHtml($resource->uri); ?>" required>
 	                </div>
 
 	                <div class="form-group">
 	                    <label for="iXPath"><?= $this->getHtml('XPath'); ?></label>
-	                    <input id="iXPath" name="xpath" type="text">
+	                    <input id="iXPath" name="xpath" type="text" value="<?= $this->printHtml($resource->xpath); ?>">
 	                </div>
 				</div>
 				<div class="portlet-foot">
@@ -61,19 +62,27 @@ $resource = $this->getData('resource');
 	</div>
 </div>
 
-<div class="row">
-	<div class="col-xs-12">
-		<div class="portlet">
-			<div class="portlet-body">
-				<div id="resource" class="tabview tab-2 m-editor wf-100">
+<div class="row col-simple">
+	<div class="col-xs-12 col-simple">
+		<div class="portlet col-simple">
+			<div class="portlet-body col-simple">
+				<div id="resource" class="tabview tab-2 m-editor col-simple">
                     <ul class="tab-links">
                         <li><label tabindex="0" for="resource-c-tab-1"><?= $this->getHtml('Preview'); ?></label>
                         <li><label tabindex="1" for="resource-c-tab-2"><?= $this->getHtml('Comparison'); ?></label>
                     </ul>
-                    <div class="tab-content">
+                    <div class="tab-content col-simple">
                         <input type="radio" id="resource-c-tab-1" name="tabular-1" checked>
-                        <div class="tab">
-
+                        <div class="tab col-simple">
+							<div class="col-simple">
+								<div class="col-xs-12 col-simple">
+									<section id="mediaFile" class="portlet col-simple">
+										<div class="portlet-body col-simple">
+											<iframe class="col-simple" id="iRenderFrame" src="<?= UriFactory::build('{/api}/orw/resource/render?id=' . $resource->getId()); ?>" loading="lazy" allowfullscreen></iframe>
+										</div>
+									</section>
+								</div>
+							</div>
                         </div>
 
                         <input type="radio" id="resource-c-tab-2" name="tabular-1">

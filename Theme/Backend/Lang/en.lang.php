@@ -12,7 +12,7 @@
  */
 declare(strict_types=1);
 
-return [[
+return ['OnlineResourceWatcher' => [
     'Action'         => 'Action',
     'Add'          => 'Add',
     'Admin'          => 'Admin',
@@ -83,4 +83,8 @@ return [[
     'Element'          => 'Element',
     'Exit'          => 'Exit',
     'Url'          => 'Url',
+    'Preview'          => 'Preview',
+    'XPath'          => 'XPath',
+    'Comparison'          => 'Comparison',
+    'History'          => 'History',
 ]];

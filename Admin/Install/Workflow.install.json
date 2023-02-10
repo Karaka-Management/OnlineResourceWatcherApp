@@ -1,0 +1,34 @@
+{
+    "triggers": [
+    ],
+    "actions": {
+        "1008000001": {
+            "name": "Check resources",
+            "description": {
+                "en": "Check resources",
+                "de": "Ueberpruefe Ressourcen"
+            },
+            "function_type": "API",
+            "function": "apiResourceCheck",
+            "inputs": [
+                "unit",
+                "{*}"
+            ],
+            "outputs": [
+                "resources[]",
+                "{*}"
+            ],
+            "settings": {
+                "unit": {
+                    "type": "input",
+                    "subtype": "number",
+                    "default": null,
+                    "title": {
+                        "en": "Unit",
+                        "de": "Unit"
+                    }
+                }
+            }
+        }
+    }
+}

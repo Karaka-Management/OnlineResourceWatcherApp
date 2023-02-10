@@ -132,6 +132,7 @@ final class BackendController extends Controller
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Modules/OnlineResourceWatcher/Theme/Backend/resource-single');
 
+        /** @var \Modules\OnlineResourceWatcher\Models\Resource $resource */
         $resource = ResourceMapper::get()
             ->where('id', (int) $request->getData('id'))
             ->execute();
