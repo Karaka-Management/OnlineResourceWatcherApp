@@ -6,7 +6,7 @@
  *
  * @package   Modules\OnlineResourceWatcher
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -36,7 +36,7 @@ use phpOMS\Utils\StringUtils;
  * OnlineResourceWatcher controller class.
  *
  * @package Modules\OnlineResourceWatcher
- * @license OMS License 1.0
+ * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
@@ -70,17 +70,21 @@ final class ApiController extends Controller
                 $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/index.html';
             } else {
                 $files = \scandir($basePath);
-                foreach ($files as $file) {
-                    if ($file === '.' || $files === '..') {
-                        continue;
-                    }
+                $path  = '';
 
-                    $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/' . $file;
+                if ($files !== false) {
+                    foreach ($files as $file) {
+                        if ($file === '.' || $files === '..') {
+                            continue;
+                        }
+
+                        $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/' . $file;
+                    }
                 }
             }
         }
 
-        $internalRequest = new HttpRequest();
+        $internalRequest                  = new HttpRequest();
         $internalRequest->header->account = $request->header->account;
         $internalRequest->setData('path', $path);
         $this->app->moduleManager->get('Media')->apiMediaExport($internalRequest, $response, ['guard' => __DIR__ . '/../Files']);
@@ -148,8 +152,8 @@ final class ApiController extends Controller
     {
         $resource        = new Resource();
         $resource->owner = new NullAccount($request->header->account);
-        $resource->title = (string) ($request->getData('title') ?? '');
-        $resource->uri   = (string) ($request->getData('uri') ?? '');
+        $resource->title = $request->getDataString('title') ?? '';
+        $resource->uri   = $request->getDataString('uri') ?? '';
         $resource->owner = new NullAccount($request->header->account);
 
         // @todo: check if user is part of organization below AND has free resources to add!!!
@@ -297,7 +301,7 @@ final class ApiController extends Controller
                     $resource->path            = (string) $resource->getId();
                     $resource->lastVersionPath = (string) $check['timestamp'];
                     $resource->lastVersionDate = $report->createdAt;
-                    $resource->hash            = $hash;
+                    $resource->hash            = $hash == false ? '' : $hash;
                     $resource->checkedAt       = $report->createdAt;
                     ResourceMapper::update()->execute($resource);
 

@@ -6,7 +6,7 @@
  *
  * @package   Modules\OnlineResourceWatcher
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -44,7 +44,7 @@ $next = $tableView->getNextLink(
                 <?= $tableView->renderTitle(
                     $this->getHtml('Resources')
 				); ?>
-				<a class="button rf save" href="<?= UriFactory::build('{/lang}/{/app}/'); ?>orw/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
+				<a class="button rf save" href="<?= UriFactory::build('{/base}/'); ?>orw/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
             </div>
             <div class="slider">
             <table id="<?= $tableView->id; ?>" class="default sticky">
@@ -78,7 +78,7 @@ $next = $tableView->getNextLink(
                 <tbody>
                 <?php $count = 0;
                 foreach ($resources as $key => $resource) : ++$count;
-                    $url = UriFactory::build('{/lang}/{/app}/orw/resource?id=' . $resource->getId()); ?>
+                    $url = UriFactory::build('{/base}/orw/resource?id=' . $resource->getId()); ?>
                     <tr tabindex="0" data-href="<?= $url; ?>">
                         <td><?= $resource->getId(); ?>
                         <td><?= $this->printHtml($resource->title); ?>
