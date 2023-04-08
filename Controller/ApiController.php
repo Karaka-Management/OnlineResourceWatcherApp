@@ -102,8 +102,8 @@ final class ApiController extends Controller
     private function validateResourceCreate(RequestAbstract $request) : array
     {
         $val = [];
-        if (($val['title'] = empty($request->getData('title')))
-            || ($val['uri'] = empty($request->getData('uri')))
+        if (($val['title'] = !$request->hasData('title'))
+            || ($val['uri'] = !$request->hasData('uri'))
         ) {
             return $val;
         }
@@ -158,7 +158,7 @@ final class ApiController extends Controller
 
         // @todo: check if user is part of organization below AND has free resources to add!!!
         $resource->organization = new NullAccount(
-            empty($request->getData('organization'))
+            !$request->hasData('organization')
                 ? 1
                 : (int) ($request->getData('organization'))
             );
