@@ -26,11 +26,11 @@ use phpOMS\Stdlib\Base\Enum;
  */
 abstract class ReportStatus extends Enum
 {
-    public const ADDED = 0;
+    public const ADDED = 1;
 
-    public const NO_CHANGE = 1;
+    public const NO_CHANGE = 2;
 
-    public const CHANGE = 2;
+    public const CHANGE = 3;
 
     public const DOWNLOAD_ERROR = -1;
 }
