@@ -8,8 +8,9 @@
                 "en": "Check resources",
                 "de": "Ueberpruefe Ressourcen"
             },
-            "function_type": "API",
-            "function": "apiResourceCheck",
+            "function_type": "Api",
+            "function": "checkResources",
+            "module": "OnlineResourceWatcher",
             "inputs": [
                 "unit",
                 "{*}"

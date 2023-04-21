@@ -181,6 +181,15 @@ final class ApiController extends Controller
      */
     public function apiCheckResources(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
+        $this->checkResources();
+
+        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Resources', 'Resources were checked.', null);
+    }
+
+    public function checkResources(mixed $var = null) : array
+    {
+        $changed = [];
+
         /** @var Resource[] $resources */
         $resources = ResourceMapper::getAll()
             ->where('status', ResourceStatus::ACTIVE)
@@ -422,6 +431,8 @@ final class ApiController extends Controller
                     $resource->lastVersionDate = $report->createdAt;
                     $resource->hash            = $md5New;
 
+                    $changed[] = $report;
+
                     Directory::copy($path, $basePath . '/' . $id . '/' . $check['timestamp']);
                 }
 
@@ -443,7 +454,7 @@ final class ApiController extends Controller
 
         Directory::delete($basePath . '/temp');
 
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Resources', 'Resources were checked.', null);
+        return $changed;
     }
 
     /**
