@@ -186,6 +186,41 @@ final class ApiController extends Controller
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Resources', 'Resources were checked.', null);
     }
 
+    /**
+     * Inform users about changed resources
+     *
+     * @param mixed $var Generic variable
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function informUsers(mixed $var = null) : void
+    {
+        $dateTime = new \DateTime('now');
+        $dateTime = $dateTime->modify('-1 hour');
+
+        $reports = ReportMapper::getAll()
+            ->where('status', ReportStatus::CHANGE)
+            ->where('createdAt', $dateTime, '>=')
+            ->execute();
+
+        foreach ($reports as $report) {
+            // @todo: get templates
+            // @todo: get users to inform
+            // @todo: inform users
+        }
+    }
+
+    /**
+     * Checks resources for changes
+     *
+     * @param mixed $var Generic variable
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
     public function checkResources(mixed $var = null) : array
     {
         $changed = [];

@@ -30,6 +30,35 @@
                     }
                 }
             }
+        },
+        "1008000002": {
+            "name": "Inform users",
+            "description": {
+                "en": "Inform users about changes",
+                "de": "Informiere Nutzer über Änderungen"
+            },
+            "function_type": "Api",
+            "function": "informUsers",
+            "module": "OnlineResourceWatcher",
+            "inputs": [
+                "unit",
+                "{*}"
+            ],
+            "outputs": [
+                "resources[]",
+                "{*}"
+            ],
+            "settings": {
+                "unit": {
+                    "type": "input",
+                    "subtype": "number",
+                    "default": null,
+                    "title": {
+                        "en": "Unit",
+                        "de": "Unit"
+                    }
+                }
+            }
         }
     }
 }
