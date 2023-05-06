@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\OnlineResourceWatcher\Models;
 
-use Modules\Admin\Models\AccountMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**

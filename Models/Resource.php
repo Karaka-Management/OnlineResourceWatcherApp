@@ -33,7 +33,7 @@ class Resource implements \JsonSerializable
      * @var int
      * @since 1.0.0
      */
-    protected int $id = 0;
+    public int $id = 0;
 
     /**
      * Status.
@@ -98,6 +98,14 @@ class Resource implements \JsonSerializable
      * @since 1.0.0
      */
     public Account $owner;
+
+    /**
+     * Inform.
+     *
+     * @var Inform[]
+     * @since 1.0.0
+     */
+    public array $inform = [];
 
     /**
      * Organization.

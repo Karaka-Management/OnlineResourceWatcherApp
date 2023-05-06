@@ -18,10 +18,13 @@
     "directory": "OnlineResourceWatcher",
     "dependencies": {
         "Admin": "1.0.0",
-        "Media": "*"
+        "Media": "*",
+        "Messages": "*"
     },
     "providing": {
-        "Navigation": "*"
+        "Navigation": "*",
+        "Messages": "*",
+        "Workflow": "*"
     },
     "load": [
         {

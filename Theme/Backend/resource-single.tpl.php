@@ -78,7 +78,7 @@ $resource = $this->getData('resource') ?? new \Modules\OnlineResourceWatcher\Mod
 								<div class="col-xs-12 col-simple">
 									<section id="mediaFile" class="portlet col-simple">
 										<div class="portlet-body col-simple">
-											<iframe class="col-simple" id="iRenderFrame" src="<?= UriFactory::build('{/api}/orw/resource/render?id=' . $resource->getId()); ?>" loading="lazy" allowfullscreen></iframe>
+											<iframe class="col-simple" id="iRenderFrame" src="<?= UriFactory::build('{/api}orw/resource/render?id=' . $resource->id); ?>" loading="lazy" allowfullscreen></iframe>
 										</div>
 									</section>
 								</div>

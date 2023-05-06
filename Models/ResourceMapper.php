@@ -70,6 +70,21 @@ final class ResourceMapper extends DataMapperFactory
     ];
 
     /**
+     * Has many relation.
+     *
+     * @var array<string, array{mapper:class-string, table:string, self?:?string, external?:?string, column?:string}>
+     * @since 1.0.0
+     */
+    public const HAS_MANY = [
+        'inform' => [
+            'mapper'   => InformMapper::class,
+            'table'    => 'orw_resource_info',
+            'self'     => 'orw_resource_info_resource',
+            'external' => null,
+        ],
+    ];
+
+    /**
      * Primary table.
      *
      * @var string

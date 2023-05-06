@@ -78,9 +78,9 @@ $next = $tableView->getNextLink(
                 <tbody>
                 <?php $count = 0;
                 foreach ($resources as $key => $resource) : ++$count;
-                    $url = UriFactory::build('{/base}/orw/resource?id=' . $resource->getId()); ?>
+                    $url = UriFactory::build('{/base}/orw/resource?id=' . $resource->id); ?>
                     <tr tabindex="0" data-href="<?= $url; ?>">
-                        <td><?= $resource->getId(); ?>
+                        <td><?= $resource->id; ?>
                         <td><?= $this->printHtml($resource->title); ?>
                         <td><?= $this->printHtml((string) $resource->getStatus()); ?>
                         <td><?= $this->printHtml($resource->checkedAt->format('Y-m-d H:i')); ?>

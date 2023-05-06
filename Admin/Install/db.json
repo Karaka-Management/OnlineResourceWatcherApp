@@ -158,11 +158,6 @@
                 "default": null,
                 "foreignTable": "orw_resource",
                 "foreignKey": "orw_resource_id"
-            },
-            "orw_resource_info_created_at": {
-                "name": "orw_resource_info_created_at",
-                "type": "DATETIME",
-                "null": false
             }
         }
     },
@@ -184,11 +179,6 @@
                 "annotations": {
                     "gdpr": true
                 }
-            },
-            "orw_resource_blacklist_created_at": {
-                "name": "orw_resource_blacklist_created_at",
-                "type": "DATETIME",
-                "null": false
             }
         }
     }

@@ -1,0 +1,23 @@
+[
+    {
+        "type": "email_template",
+        "from": "",
+        "to": "",
+        "cc": "",
+        "bcc": "",
+        "ishtml": true,
+        "l11n": {
+            "en": {
+                "subject": "ORW Resource Change",
+                "body": "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Resource Change</title></head><body style=\"font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5;\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\"><tr><td><table align=\"center\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"600\" style=\"margin: 0 auto; background-color: #ffffff;\"><tr><td style=\"padding: 40px 0; text-align: center;\"><h1 style=\"margin-top: 0; color: #000000; font-size: 24px;\">Resource Change</h1><p style=\"margin-bottom: 20px;\">The resource {resource.url} changed.</p><p style=\"margin-top: 40px;\">This email is sent to you from {owner_email}, if you don't wan't to receive these emails click <a href=\"https://orw.jingga.app/unsubscribe?email={email}&resource={resource.id}\">here</a></p><p style=\"margin-top: 40px;\">Jingga e.K. - www.jingga.app - CEO Dennis Eichhorn</p></td></tr></table></td></tr></table></body></html>",
+                "bodyalt": "Resource Change\n\nThe resource {resource.url} changed.\n\n\nThis email is sent to you from {owner_email}, if you don't wan't to receive these emails visit https://orw.jingga.app/unsubscribe?email={email}&resource={resource.id}\n\n\nJingga e.K. - www.jingga.app - CEO Dennis Eichhorn"
+            },
+            "de": {
+                "subject": "Ressourcenänderung",
+                "body": "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Ressourcenänderung</title></head><body style=\"font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5;\"><table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\"><tr><td><table align=\"center\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"600\" style=\"margin: 0 auto; background-color: #ffffff;\"><tr><td style=\"padding: 40px 0; text-align: center;\"><h1 style=\"margin-top: 0; color: #000000; font-size: 24px;\">Ressourcenänderung</h1><p style=\"margin-bottom: 20px;\">Die Ressource {resource.url} hat sich geändert.</p><p style=\"margin-top: 40px;\">Diese E-Mail wird Ihnen von {owner_email} gesendet. Wenn Sie diese E-Mails nicht mehr erhalten möchten, klicken Sie <a href=\"https://orw.jingga.app/unsubscribe?email={email}&resource={resource.id}\">hier</a>.</p><p style=\"margin-top: 40px;\">Jingga e.K. - www.jingga.app - CEO Dennis Eichhorn</p></td></tr></table></td></tr></table></body></html>",
+                "bodyalt": "Ressourcenänderung\n\nDie Ressource {resource.url} hat sich geändert.\n\nDiese E-Mail wird Ihnen von {owner_email} gesendet. Wenn Sie diese E-Mails nicht mehr erhalten möchten, besuchen Sie https://orw.jingga.app/unsubscribe?email={email}&resource={resource.id}\n\n\nJingga e.K. - www.jingga.app - CEO Dennis Eichhorn"
+            }
+        },
+        "send": false
+    }
+]
