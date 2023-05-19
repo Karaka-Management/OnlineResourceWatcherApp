@@ -37,6 +37,7 @@ use Modules\Admin\Models\SettingsEnum;
 use Modules\OnlineResourceWatcher\Models\SettingsEnum as OrwSettingsEnum;
 use Modules\Messages\Models\EmailMapper;
 use Modules\OnlineResourceWatcher\Models\InformBlacklistMapper;
+use phpOMS\Security\Guard;
 use phpOMS\Uri\UriFactory;
 
 /**
@@ -89,6 +90,13 @@ final class ApiController extends Controller
                     }
                 }
             }
+        }
+
+        if ($path === '') {
+            $response->header->status = RequestStatusCode::R_404;
+            $response->set('', '');
+
+            return;
         }
 
         $internalRequest                  = new HttpRequest();
@@ -518,8 +526,8 @@ final class ApiController extends Controller
 
                             $difference = \levenshtein($subcontentOld, $subcontentNew);
                         }
-                    } elseif (\in_array($extension, ['png', 'jpg', 'jpeg', 'gif'])) {
-                        $difference = ImageUtils::difference($oldPath, $newPath, $path . '/_' . \basename($newPath), 0);
+                    } elseif (\in_array($extension, ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'svg'])) {
+                        $difference = 1; //ImageUtils::difference($oldPath, $newPath, $path . '/_' . \basename($newPath), 0); // too slow
                     }
                 }
 
@@ -609,7 +617,7 @@ final class ApiController extends Controller
                 $resource->checkedAt = $report->createdAt;
                 ResourceMapper::update()->execute($resource);
 
-                Directory::delete($basePath . '/temp/' . $id);
+                // Directory::delete($basePath . '/temp/' . $id);
 
                 // @todo: delete older history depending on plan
 
