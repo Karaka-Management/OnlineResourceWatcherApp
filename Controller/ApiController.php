@@ -31,14 +31,11 @@ use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
 use phpOMS\System\File\Local\Directory;
 use phpOMS\System\SystemUtils;
-use phpOMS\Utils\ImageUtils;
 use phpOMS\Utils\StringUtils;
 use Modules\Admin\Models\SettingsEnum;
 use Modules\OnlineResourceWatcher\Models\SettingsEnum as OrwSettingsEnum;
 use Modules\Messages\Models\EmailMapper;
 use Modules\OnlineResourceWatcher\Models\InformBlacklistMapper;
-use phpOMS\Security\Guard;
-use phpOMS\Uri\UriFactory;
 
 /**
  * OnlineResourceWatcher controller class.
@@ -150,8 +147,7 @@ final class ApiController extends Controller
 
         $resource = $this->createResourceFromRequest($request);
         $this->createModel($request->header->account, $resource, ResourceMapper::class, 'resource', $request->getOrigin());
-
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Resource', 'Resource successfully created', $resource);
+        $this->createStandardCreateResponse($request, $response, $resource);
     }
 
     /**
@@ -661,27 +657,14 @@ final class ApiController extends Controller
 
         if ($old->owner->id !== $request->header->account) {
             $response->header->status = RequestStatusCode::R_403;
-            $response->set($request->uri->__toString(), [
-                'status'   => NotificationLevel::WARNING,
-                'title'    => 'Update',
-                'message'  => 'Insufficient permissions to update resource.',
-                'response' => null,
-            ]);
+            $this->createInvalidPermissionResponse($request, $response, null);
 
             return;
         }
 
         $new = $this->updateResourceFromRequest($request, clone $old);
         $this->updateModel($request->header->account, $old, $new, ResourceMapper::class, 'resource', $request->getOrigin());
-
-        $this->fillJsonResponse(
-            $request,
-            $response,
-            NotificationLevel::OK,
-            '',
-            $this->app->l11nManager->getText($response->getLanguage(), '0', '0', 'SuccessfulUpdate'),
-            $new
-        );
+        $this->createStandardUpdateResponse($request, $response, $new);
     }
 
     /**
@@ -767,26 +750,13 @@ final class ApiController extends Controller
 
         if ($resource->owner->id !== $request->header->account) {
             $response->header->status = RequestStatusCode::R_403;
-            $response->set($request->uri->__toString(), [
-                'status'   => NotificationLevel::WARNING,
-                'title'    => 'Delete',
-                'message'  => 'Insufficient permissions to delete resource.',
-                'response' => null,
-            ]);
+            $this->createInvalidPermissionResponse($request, $response, null);
 
             return;
         }
 
         $this->deleteModel($request->header->account, $resource, ResourceMapper::class, 'resource', $request->getOrigin());
-
-        $this->fillJsonResponse(
-            $request,
-            $response,
-            NotificationLevel::OK,
-            '',
-            $this->app->l11nManager->getText($response->getLanguage(), '0', '0', 'SuccessfulDelete'),
-            $resource
-        );
+        $this->createStandardDeleteResponse($request, $response, $resource);
     }
 
     /**
@@ -837,20 +807,14 @@ final class ApiController extends Controller
 
         if ($resource->owner->id !== $request->header->account) {
             $response->header->status = RequestStatusCode::R_403;
-            $response->set($request->uri->__toString(), [
-                'status'   => NotificationLevel::WARNING,
-                'title'    => 'Create',
-                'message'  => 'Insufficient permissions',
-                'response' => null,
-            ]);
+            $this->createInvalidPermissionResponse($request, $response, null);
 
             return;
         }
 
         $resource = $this->createInformFromRequest($request);
         $this->createModel($request->header->account, $resource, InformMapper::class, 'resource', $request->getOrigin());
-
-        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Inform', 'Successfully created', $resource);
+        $this->createStandardCreateResponse($request, $response, $resource);
     }
 
     /**
@@ -927,26 +891,13 @@ final class ApiController extends Controller
 
         if ($resource->owner->id !== $request->header->account) {
             $response->header->status = RequestStatusCode::R_403;
-            $response->set($request->uri->__toString(), [
-                'status'   => NotificationLevel::WARNING,
-                'title'    => 'Delete',
-                'message'  => 'Insufficient permissions.',
-                'response' => null,
-            ]);
+            $this->createInvalidPermissionResponse($request, $response, null);
 
             return;
         }
 
         $this->deleteModel($request->header->account, $inform, InformMapper::class, 'inform', $request->getOrigin());
-
-        $this->fillJsonResponse(
-            $request,
-            $response,
-            NotificationLevel::OK,
-            '',
-            $this->app->l11nManager->getText($response->getLanguage(), '0', '0', 'SuccessfulDelete'),
-            $inform
-        );
+        $this->createStandardDeleteResponse($request, $response, $inform);
     }
 
     /**
