@@ -107,6 +107,8 @@ class Resource implements \JsonSerializable
      */
     public array $inform = [];
 
+    public array $reports = [];
+
     /**
      * Organization.
      *

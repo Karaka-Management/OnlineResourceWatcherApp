@@ -60,5 +60,31 @@
                 }
             }
         }
+    },
+    "workflows": {
+        "OnlineResourceWatcher": [
+            {
+                "id": "1005500005",
+                "settings": {
+                    "interval": "* 3 * * *"
+                },
+                "children": [
+                    {
+                        "id": "1008000001",
+                        "comment": "Check resources",
+                        "settings": {},
+                        "children": [
+                            {
+                                "id": "1008000002",
+                                "comment": "Inform changed ",
+                                "settings": {},
+                                "children": [
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     }
 }

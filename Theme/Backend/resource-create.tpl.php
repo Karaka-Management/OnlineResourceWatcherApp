@@ -15,34 +15,34 @@ declare(strict_types=1);
 use phpOMS\Uri\UriFactory;
 ?>
 <div class="row">
-	<div class="col-xs-12 col-md-6">
-		<div class="portlet">
-			<form id="iUserSettings" action="<?= UriFactory::build('{/api}user/settings'); ?>" method="post">
-				<div class="portlet-head"><?= $this->getHtml('CreateResource', '0', '0'); ?></div>
-				<div class="portlet-body">
-					<div class="form-group">
-	                    <label for="iLogin"><?= $this->getHtml('Url', '0', '0'); ?></label>
-	                    <input id="iLogin" name="rul" type="text" required>
-	                </div>
+    <div class="col-xs-12 col-md-6">
+        <div class="portlet">
+            <form id="iUserSettings" action="<?= UriFactory::build('{/api}user/settings'); ?>" method="post">
+                <div class="portlet-head"><?= $this->getHtml('CreateResource', '0', '0'); ?></div>
+                <div class="portlet-body">
+                    <div class="form-group">
+                        <label for="iLogin"><?= $this->getHtml('Url', '0', '0'); ?></label>
+                        <input id="iLogin" name="rul" type="text" required>
+                    </div>
 
-	                <div class="form-group">
-	                    <label for="iElement"><?= $this->getHtml('Element', '0', '0'); ?></label>
-	                    <input id="iElement" name="element" type="text">
-	                </div>
+                    <div class="form-group">
+                        <label for="iElement"><?= $this->getHtml('Element', '0', '0'); ?></label>
+                        <input id="iElement" name="element" type="text">
+                    </div>
 
-	                <div class="form-group">
-	                    <label for="iHeader"><?= $this->getHtml('Header', '0', '0'); ?></label>
-	                    <textarea id="iHeader" name="header"></textarea>
-	                </div>
-				</div>
-				<div class="portlet-foot">
-					<input id="iSubmitUser" name="submitUser" type="submit" value="<?= $this->getHtml('Create', '0', '0'); ?>">
-				</div>
-			</form>
-		</div>
-	</div>
+                    <div class="form-group">
+                        <label for="iHeader"><?= $this->getHtml('Header', '0', '0'); ?></label>
+                        <textarea id="iHeader" name="header"></textarea>
+                    </div>
+                </div>
+                <div class="portlet-foot">
+                    <input id="iSubmitUser" name="submitUser" type="submit" value="<?= $this->getHtml('Create', '0', '0'); ?>">
+                </div>
+            </form>
+        </div>
+    </div>
 
-	<div class="col-xs-12 col-md-6">
+    <div class="col-xs-12 col-md-6">
         <div class="portlet">
             <form id="iAddAccountToGroup" action="<?= UriFactory::build('{/api}admin/group/account'); ?>" method="put">
                 <div class="portlet-head"><?= $this->getHtml('Inform', '0', '0'); ?></div>

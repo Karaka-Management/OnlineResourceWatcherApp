@@ -36,6 +36,8 @@ use Modules\Admin\Models\SettingsEnum;
 use Modules\OnlineResourceWatcher\Models\SettingsEnum as OrwSettingsEnum;
 use Modules\Messages\Models\EmailMapper;
 use Modules\OnlineResourceWatcher\Models\InformBlacklistMapper;
+use phpOMS\System\OperatingSystem;
+use phpOMS\System\SystemType;
 
 /**
  * OnlineResourceWatcher controller class.
@@ -68,11 +70,9 @@ final class ApiController extends Controller
             ->execute();
 
         $path = '';
-        if (\is_dir($basePath = __DIR__ . '/' . $resource->path . '/' . $resource->lastVersionPath)) {
+        if (\is_dir($basePath = __DIR__ . '/../Files/' . $resource->path . '/' . $resource->lastVersionPath)) {
             if (\is_file($basePath . '/index.htm')) {
-                $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/index.htm';
-            } elseif (\is_file($basePath . '/index.html')) {
-                $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/index.html';
+                $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/index.jpg';
             } else {
                 $files = \scandir($basePath);
                 $path  = '';
@@ -269,11 +269,15 @@ final class ApiController extends Controller
                 'loop' => 0,
             ];
 
-            SystemUtils::runProc(
-                'wget',
-                '--retry-connrefused --waitretry=1 --read-timeout=10 --timeout=10 --dns-timeout=10 -t 2 --quota=25m --adjust-extension --span-hosts --convert-links --page-requisites --no-directories --restrict-file-names=windows --no-parent ‐‐execute robots=off --limit-rate=5m --accept css,png,jpg,jpeg,gif,htm,html,txt,md,pdf,xls,xlsx,doc,docx --directory-prefix=' . $path . ' ‐‐output-document=index.html ' . $resource->uri,
-                true
-            );
+            try {
+                SystemUtils::runProc(
+                    OperatingSystem::getSystem() === SystemType::WIN ? 'wget.exe' : 'wget',
+                    '--retry-connrefused --waitretry=1 --read-timeout=10 --timeout=10 --dns-timeout=10 -t 2 --quota=25m --adjust-extension --span-hosts --convert-links --no-directories --restrict-file-names=windows --no-parent ‐‐execute robots=off --limit-rate=5m -U mozilla --accept css,png,jpg,jpeg,gif,htm,html,txt,md,pdf,xls,xlsx,doc,docx --directory-prefix=' . $path . ' ‐‐output-document=index.htm ' . $resource->uri,
+                    true
+                );
+            } catch (\Throwable $t) {
+                $this->app->logger->error($t->getMessage());
+            }
         }
 
         $handler = $this->app->moduleManager->get('Admin', 'Api')->setUpServerMailHandler();
@@ -319,10 +323,10 @@ final class ApiController extends Controller
                     $report->versionPath = (string) $check['timestamp'];
                     $report->status      = ReportStatus::DOWNLOAD_ERROR;
 
-                    ReportMapper::create()->execute($report);
-
+                    $this->createModel($request->header->account, $report, ReportMapper::class, 'report', $request->getOrigin());
+                    $old = clone $resource;
                     $resource->checkedAt = $report->createdAt;
-                    ResourceMapper::update()->execute($resource);
+                    $this->updateModel($request->header->account, $old, $resource, ResourceMapper::class, 'resource', $request->getOrigin());
 
                     unset($toCheck[$index]);
 
@@ -332,6 +336,7 @@ final class ApiController extends Controller
                 $path = $check['path'];
                 if (!\is_dir($path)) {
                     // Either the download takes too long or the download failed!
+                    // Let's go to the next element and re-check later on.
                     continue;
                 }
 
@@ -339,35 +344,51 @@ final class ApiController extends Controller
                 $id  = (int) \substr($path, $baseLen + 1, $end - $baseLen - 1);
 
                 // new resource
-                if ($check['loop'] === $maxLoops && !\is_dir($basePath . '/' . $id)) {
-                    $filesNew = \scandir($path);
-                    if ($filesNew === false) {
-                        $filesNew = [];
+                $filesNew = \scandir($path);
+                if ($filesNew === false) {
+                    $filesNew = [];
+                }
+
+                $oldPath   = '';
+                $newPath   = '';
+                $extension = '';
+
+                $fileName = '';
+                if (\in_array('index.htm', $filesNew)
+                    || ($hasHtml = \in_array('index.html', $filesNew))
+                ) {
+                    if ($hasHtml) {
+                        \rename($path . '/index.html', $path . '/index.htm');
                     }
 
-                    $fileName = '';
-                    if (\in_array('index.htm', $filesNew) || \in_array('index.html', $filesNew)) {
-                        $fileName = \in_array('index.htm', $filesNew) ? 'index.htm' : 'index.html';
-                    } else {
-                        foreach ($filesNew as $file) {
-                            if (StringUtils::endsWith($file, '.png')
-                                || StringUtils::endsWith($file, '.jpg')
-                                || StringUtils::endsWith($file, '.jpeg')
-                                || StringUtils::endsWith($file, '.gif')
-                                || StringUtils::endsWith($file, '.pdf')
-                                || StringUtils::endsWith($file, '.doc')
-                                || StringUtils::endsWith($file, '.docx')
-                                || StringUtils::endsWith($file, '.xls')
-                                || StringUtils::endsWith($file, '.xlsx')
-                                || StringUtils::endsWith($file, '.md')
-                                || StringUtils::endsWith($file, '.txt')
-                            ) {
-                                $fileName = $file;
-                                break;
-                            }
+                    $extension = 'htm';
+                    $fileName = 'index.htm';
+                    $toCheck[$index]['handled'] = true;
+                } else {
+                    foreach ($filesNew as $file) {
+                        if (StringUtils::endsWith($file, '.png')
+                            || StringUtils::endsWith($file, '.jpg')
+                            || StringUtils::endsWith($file, '.jpeg')
+                            || StringUtils::endsWith($file, '.gif')
+                            || StringUtils::endsWith($file, '.pdf')
+                            || StringUtils::endsWith($file, '.doc')
+                            || StringUtils::endsWith($file, '.docx')
+                            || StringUtils::endsWith($file, '.xls')
+                            || StringUtils::endsWith($file, '.xlsx')
+                            || StringUtils::endsWith($file, '.md')
+                            || StringUtils::endsWith($file, '.txt')
+                        ) {
+                            $fileName = $file;
+                            $extension = \substr($file, \strripos($file, '.') + 1);
+                            $toCheck[$index]['handled'] = true;
+
+                            break;
                         }
                     }
+                }
 
+                // Is new resource
+                if (!\is_dir($basePath . '/' . $id)) {
                     $report              = new Report();
                     $report->resource    = $resource->id;
                     $report->versionPath = (string) $check['timestamp'];
@@ -380,22 +401,38 @@ final class ApiController extends Controller
                         $report->status = ReportStatus::DOWNLOAD_ERROR;
                     }
 
-                    ReportMapper::create()->execute($report);
-
+                    $this->createModel($request->header->account, $report, ReportMapper::class, 'report', $request->getOrigin());
+                    $old = clone $resource;
                     $resource->path            = (string) $resource->id;
                     $resource->lastVersionPath = (string) $check['timestamp'];
                     $resource->lastVersionDate = $report->createdAt;
                     $resource->hash            = $hash == false ? '' : $hash;
                     $resource->checkedAt       = $report->createdAt;
-                    ResourceMapper::update()->execute($resource);
+                    $this->updateModel($request->header->account, $old, $resource, ResourceMapper::class, 'resource', $request->getOrigin());
 
                     Directory::copy($path, $basePath . '/' . $id . '/' . $check['timestamp']);
                     unset($toCheck[$index]);
 
-                    continue;
-                }
+                    if ($extension === 'htm') {
+                        try {
+                            if (OperatingSystem::getSystem() === SystemType::WIN) {
+                                SystemUtils::runProc(
+                                    'firefox.exe',
+                                    '---headless --screenshot "' . $basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg" ' . $resource->uri,
+                                    true
+                                );
+                            } else {
+                                SystemUtils::runProc(
+                                    'xvfb-run',
+                                    '--server-args="-screen 0, 1920x1080x24" cutycapt --min-width=1024 --url="' . $resource->uri . '" --out="' . $basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg"',
+                                    true
+                                );
+                            }
+                        } catch (\Throwable $t) {
+                            $this->app->logger->error($t->getMessage());
+                        }
+                    }
 
-                if (!\is_dir($basePath . '/' . $id)) {
                     continue;
                 }
 
@@ -417,54 +454,8 @@ final class ApiController extends Controller
                 }
 
                 $lastVersionPath = $basePath . '/' . $id . '/' . $lastVersionTimestamp;
-
-                $filesNew = \scandir($path);
-                if ($filesNew === false) {
-                    $filesNew = [];
-                }
-
-                // Using this because the index.htm gets created last and at the time of the check below it may not yet exist.
-                $filesOld = \scandir($lastVersionPath);
-                if ($filesOld === false) {
-                    $filesOld = [];
-                }
-
-                $oldPath   = '';
-                $newPath   = '';
-                $extension = '';
-
-                if (\in_array('index.htm', $filesOld) || \in_array('index.html', $filesOld)
-                    || \in_array('index.htm', $filesNew) || \in_array('index.html', $filesNew)
-                ) {
-                    $extension = \in_array('index.htm', $filesOld) ? 'htm' : 'html';
-                    $oldPath   = $lastVersionPath . '/index.' . $extension;
-                    $newPath   = $path . '/index.' . $extension;
-
-                    $toCheck[$index]['handled'] = true;
-                } else {
-                    foreach ($filesNew as $file) {
-                        if (StringUtils::endsWith($file, '.png')
-                            || StringUtils::endsWith($file, '.jpg')
-                            || StringUtils::endsWith($file, '.jpeg')
-                            || StringUtils::endsWith($file, '.gif')
-                            || StringUtils::endsWith($file, '.pdf')
-                            || StringUtils::endsWith($file, '.doc')
-                            || StringUtils::endsWith($file, '.docx')
-                            || StringUtils::endsWith($file, '.xls')
-                            || StringUtils::endsWith($file, '.xlsx')
-                            || StringUtils::endsWith($file, '.md')
-                            || StringUtils::endsWith($file, '.txt')
-                        ) {
-                            $oldPath   = $lastVersionPath . '/' . $file;
-                            $newPath   = $path . '/' . $file;
-                            $extension = \substr($file, \strripos($file, '.') + 1);
-
-                            $toCheck[$index]['handled'] = true;
-
-                            break;
-                        }
-                    }
-                }
+                $oldPath         = $lastVersionPath . '/' . $fileName;
+                $newPath          = $path . '/' . $fileName;
 
                 if (!\is_file($newPath) || !$toCheck[$index]['handled']) {
                     continue;
@@ -491,7 +482,7 @@ final class ApiController extends Controller
 
                         // Handle xpath
                         if ($difference > 0
-                            && ($extension === 'htm' || $extension === 'html')
+                            && $extension === 'htm'
                             && $resource->path !== ''
                         ) {
                             $xmlOld = new \DOMDocument();
@@ -532,6 +523,8 @@ final class ApiController extends Controller
                 $report->versionPath  = (string) $check['timestamp'];
                 $report->changeMetric = $difference;
 
+                $old = clone $resource;
+
                 if ($difference !== 0) {
                     $report->status = ReportStatus::CHANGE;
 
@@ -543,6 +536,27 @@ final class ApiController extends Controller
                     $changed[] = $report;
 
                     Directory::copy($path, $basePath . '/' . $id . '/' . $check['timestamp']);
+
+                    // If is htm/html create image
+                    if ($extension === 'htm') {
+                        try {
+                            if (OperatingSystem::getSystem() === SystemType::WIN) {
+                                SystemUtils::runProc(
+                                    'firefox.exe',
+                                    '---headless --screenshot "' . $basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg" ' . $resource->uri,
+                                    true
+                                );
+                            } else {
+                                SystemUtils::runProc(
+                                    'xvfb-run',
+                                    '--server-args="-screen 0, 1920x1080x24" cutycapt --min-width=1024 --url="' . $resource->uri . '" --out="' . $basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg"',
+                                    true
+                                );
+                            }
+                        } catch (\Throwable $t) {
+                            $this->app->logger->error($t->getMessage());
+                        }
+                    }
 
                     // @todo: move to informUsers function
                     $owner = new Inform();
@@ -608,10 +622,9 @@ final class ApiController extends Controller
                     }
                 }
 
-                ReportMapper::create()->execute($report);
-
+                $this->createModel($request->header->account, $report, ReportMapper::class, 'report', $request->getOrigin());
                 $resource->checkedAt = $report->createdAt;
-                ResourceMapper::update()->execute($resource);
+                $this->updateModel($request->header->account, $old, $resource, ResourceMapper::class, 'resource', $request->getOrigin());
 
                 // Directory::delete($basePath . '/temp/' . $id);
 

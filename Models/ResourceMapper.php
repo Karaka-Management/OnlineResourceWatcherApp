@@ -82,6 +82,12 @@ final class ResourceMapper extends DataMapperFactory
             'self'     => 'orw_resource_info_resource',
             'external' => null,
         ],
+        'reports' => [
+            'mapper'   => ReportMapper::class,
+            'table'    => 'orw_resource_report',
+            'self'     => 'orw_resource_report_resource',
+            'external' => null,
+        ],
     ];
 
     /**

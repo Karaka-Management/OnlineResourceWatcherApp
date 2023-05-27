@@ -43,8 +43,8 @@ $next = $tableView->getNextLink(
             <div class="portlet-head">
                 <?= $tableView->renderTitle(
                     $this->getHtml('Resources')
-				); ?>
-				<a class="button rf save" href="<?= UriFactory::build('{/base}/'); ?>orw/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
+                ); ?>
+                <a class="button button end-xs save" href="<?= UriFactory::build('{/base}/'); ?>orw/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
             </div>
             <div class="slider">
             <table id="<?= $tableView->id; ?>" class="default sticky">
@@ -54,18 +54,18 @@ $next = $tableView->getNextLink(
                         'id',
                         $this->getHtml('ID', '0', '0'),
                         'number'
-					); ?>
-					<td class="wf-100"><?= $tableView->renderHeaderElement(
+                    ); ?>
+                    <td class="wf-100"><?= $tableView->renderHeaderElement(
                         'resource',
                         $this->getHtml('Resource'),
                         'text'
                     ); ?>
-					<td><?= $tableView->renderHeaderElement(
+                    <td><?= $tableView->renderHeaderElement(
                         'status',
                         $this->getHtml('Status'),
                         'text'
-					); ?>
-					<td><?= $tableView->renderHeaderElement(
+                    ); ?>
+                    <td><?= $tableView->renderHeaderElement(
                         'lastChecked',
                         $this->getHtml('Checked'),
                         'date'

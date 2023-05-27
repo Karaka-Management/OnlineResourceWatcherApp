@@ -134,7 +134,9 @@ final class BackendController extends Controller
 
         /** @var \Modules\OnlineResourceWatcher\Models\Resource $resource */
         $resource = ResourceMapper::get()
+            ->with('reports')
             ->where('id', (int) $request->getData('id'))
+            ->limit(25, 'reports')
             ->execute();
 
         $view->setData('resource', $resource);
