@@ -454,9 +454,9 @@ final class ApiController extends Controller
                     }
                 }
 
-                $lastVersionPath  = $basePath . '/' . $id . '/' . $lastVersionTimestamp;
-                $oldPath          = $lastVersionPath . '/' . $fileName;
-                $newPath          = $path . '/' . $fileName;
+                $lastVersionPath = $basePath . '/' . $id . '/' . $lastVersionTimestamp;
+                $oldPath         = $lastVersionPath . '/' . $fileName;
+                $newPath         = $path . '/' . $fileName;
 
                 if (!\is_file($newPath) || !$toCheck[$index]['handled']) {
                     continue;

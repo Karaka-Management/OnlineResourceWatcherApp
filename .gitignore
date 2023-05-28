@@ -15,6 +15,7 @@ cache
 .sass-cache
 .idea
 vendor
+Build
 bower_components
 node_modules
 Libraries
