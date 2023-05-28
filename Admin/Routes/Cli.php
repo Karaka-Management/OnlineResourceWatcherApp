@@ -15,7 +15,6 @@ declare(strict_types=1);
 use Modules\OnlineResourceWatcher\Controller\ApiController;
 use Modules\OnlineResourceWatcher\Models\PermissionCategory;
 use phpOMS\Account\PermissionType;
-use phpOMS\Router\RouteVerb;
 
 return [
     '^.*/orw/check -i all*$' => [
@@ -27,5 +26,5 @@ return [
                 'state'  => PermissionCategory::RESOURCE,
             ],
         ],
-    ]
+    ],
 ];

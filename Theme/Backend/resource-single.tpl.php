@@ -16,7 +16,7 @@ use phpOMS\Uri\UriFactory;
 
 /** @var \Modules\OnlineResourceWatcher\Models\Resource */
 $resource = $this->getData('resource') ?? new \Modules\OnlineResourceWatcher\Models\NullResource();
-$reports = $resource->reports;
+$reports  = $resource->reports;
 ?>
 <div class="row">
     <div class="col-xs-8">
@@ -82,10 +82,10 @@ $reports = $resource->reports;
             <div class="portlet-body col-simple">
                 <?php
 
-                    $type = '';
+                    $type     = '';
                     $basePath = __DIR__ . '/../../Files/' . $resource->path . '/' . $resource->lastVersionPath;
-                    $path = '';
-                    $webPath = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath;
+                    $path     = '';
+                    $webPath  = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath;
 
                     if (\is_file($basePath . '/index.jpg')) {
                         $type = 'img';

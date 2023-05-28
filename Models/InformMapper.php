@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\OnlineResourceWatcher\Models;
 
-use Modules\Admin\Models\AccountMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
@@ -37,9 +36,9 @@ final class InformMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'orw_resource_info_id'                => ['name' => 'orw_resource_info_id',                'type' => 'int',               'internal' => 'id'],
-        'orw_resource_info_mail'             => ['name' => 'orw_resource_info_mail',             'type' => 'string',            'internal' => 'email',],
-        'orw_resource_info_account'           => ['name' => 'orw_resource_info_account',              'type' => 'int',            'internal' => 'account',],
+        'orw_resource_info_id'                 => ['name' => 'orw_resource_info_id',                'type' => 'int',               'internal' => 'id'],
+        'orw_resource_info_mail'               => ['name' => 'orw_resource_info_mail',             'type' => 'string',            'internal' => 'email',],
+        'orw_resource_info_account'            => ['name' => 'orw_resource_info_account',              'type' => 'int',            'internal' => 'account',],
         'orw_resource_info_resource'           => ['name' => 'orw_resource_info_resource',              'type' => 'int',            'internal' => 'resource',],
     ];
 

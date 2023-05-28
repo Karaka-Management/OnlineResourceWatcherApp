@@ -14,9 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\OnlineResourceWatcher\Models;
 
-use Modules\Admin\Models\Account;
-use Modules\Admin\Models\NullAccount;
-
 /**
  * Report class.
  *
@@ -69,10 +66,10 @@ class Report implements \JsonSerializable
     public function toArray() : array
     {
         return [
-            'id'        => $this->id,
-            'createdAt' => $this->createdAt,
-            'resource'     => $this->resource,
-            'status'     => $this->status,
+            'id'               => $this->id,
+            'createdAt'        => $this->createdAt,
+            'resource'         => $this->resource,
+            'status'           => $this->status,
             'changemetric'     => $this->changeMetric,
         ];
     }

@@ -49,7 +49,7 @@ final class Installer extends InstallerAbstract
                 'Directory /var/www is not writable. Please allow the apache user (www-data) to write to this directory.'
             );
 
-            var_dump('NOT WRITABLE');
+            \var_dump('NOT WRITABLE');
 
             return;
         }
@@ -57,7 +57,7 @@ final class Installer extends InstallerAbstract
         parent::install($app, $info, $cfgHandler);
 
         if (!\is_dir(__DIR__ . '/../Files')) {
-            mkdir(__DIR__ . '/../Files');
+            \mkdir(__DIR__ . '/../Files');
         }
     }
 }

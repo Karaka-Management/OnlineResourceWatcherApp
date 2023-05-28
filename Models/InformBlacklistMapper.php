@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\OnlineResourceWatcher\Models;
 
-use Modules\Admin\Models\AccountMapper;
 use phpOMS\DataStorage\Database\Mapper\DataMapperFactory;
 
 /**
@@ -38,7 +37,7 @@ final class InformBlacklistMapper extends DataMapperFactory
      */
     public const COLUMNS = [
         'orw_resource_blacklist_id'                => ['name' => 'orw_resource_blacklist_id',                'type' => 'int',               'internal' => 'id'],
-        'orw_resource_blacklist_mail'             => ['name' => 'orw_resource_blacklist_mail',             'type' => 'string',            'internal' => 'email',],
+        'orw_resource_blacklist_mail'              => ['name' => 'orw_resource_blacklist_mail',             'type' => 'string',            'internal' => 'email',],
     ];
 
     /**

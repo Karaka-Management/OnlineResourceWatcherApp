@@ -15,7 +15,10 @@ declare(strict_types=1);
 namespace Modules\OnlineResourceWatcher\Controller;
 
 use Modules\Admin\Models\NullAccount;
+use Modules\Admin\Models\SettingsEnum;
+use Modules\Messages\Models\EmailMapper;
 use Modules\OnlineResourceWatcher\Models\Inform;
+use Modules\OnlineResourceWatcher\Models\InformBlacklistMapper;
 use Modules\OnlineResourceWatcher\Models\InformMapper;
 use Modules\OnlineResourceWatcher\Models\Report;
 use Modules\OnlineResourceWatcher\Models\ReportMapper;
@@ -23,6 +26,7 @@ use Modules\OnlineResourceWatcher\Models\ReportStatus;
 use Modules\OnlineResourceWatcher\Models\Resource;
 use Modules\OnlineResourceWatcher\Models\ResourceMapper;
 use Modules\OnlineResourceWatcher\Models\ResourceStatus;
+use Modules\OnlineResourceWatcher\Models\SettingsEnum as OrwSettingsEnum;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
@@ -30,14 +34,10 @@ use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
 use phpOMS\System\File\Local\Directory;
-use phpOMS\System\SystemUtils;
-use phpOMS\Utils\StringUtils;
-use Modules\Admin\Models\SettingsEnum;
-use Modules\OnlineResourceWatcher\Models\SettingsEnum as OrwSettingsEnum;
-use Modules\Messages\Models\EmailMapper;
-use Modules\OnlineResourceWatcher\Models\InformBlacklistMapper;
 use phpOMS\System\OperatingSystem;
 use phpOMS\System\SystemType;
+use phpOMS\System\SystemUtils;
+use phpOMS\Utils\StringUtils;
 
 /**
  * OnlineResourceWatcher controller class.
@@ -69,7 +69,7 @@ final class ApiController extends Controller
             ->where('id', (int) $request->getData('id'))
             ->execute();
 
-        $path = '';
+        $path     = '';
         $basePath = __DIR__ . '/../Files/' . $resource->path . '/' . $resource->lastVersionPath;
 
         if (\is_file($basePath . '/index.htm')) {
@@ -268,11 +268,11 @@ final class ApiController extends Controller
 
             $path     .= 'temp/' . $resource->id . '/' . $timestamp;
             $toCheck[] = [
-                'resource' => $resource,
+                'resource'  => $resource,
                 'timestamp' => $timestamp,
-                'path' => $path,
-                'handled' => false,
-                'loop' => 0,
+                'path'      => $path,
+                'handled'   => false,
+                'loop'      => 0,
             ];
 
             try {
@@ -333,7 +333,7 @@ final class ApiController extends Controller
                     $report->status      = ReportStatus::DOWNLOAD_ERROR;
 
                     $this->createModel($request->header->account, $report, ReportMapper::class, 'report', $request->getOrigin());
-                    $old = clone $resource;
+                    $old                 = clone $resource;
                     $resource->checkedAt = $report->createdAt;
                     $this->updateModel($request->header->account, $old, $resource, ResourceMapper::class, 'resource', $request->getOrigin());
 
@@ -370,8 +370,8 @@ final class ApiController extends Controller
                         \rename($path . '/index.html', $path . '/index.htm');
                     }
 
-                    $extension = 'htm';
-                    $fileName = 'index.htm';
+                    $extension                  = 'htm';
+                    $fileName                   = 'index.htm';
                     $toCheck[$index]['handled'] = true;
                 } else {
                     foreach ($filesNew as $file) {
@@ -387,8 +387,8 @@ final class ApiController extends Controller
                             || StringUtils::endsWith($file, '.md')
                             || StringUtils::endsWith($file, '.txt')
                         ) {
-                            $fileName = $file;
-                            $extension = \substr($file, \strripos($file, '.') + 1);
+                            $fileName                   = $file;
+                            $extension                  = \substr($file, \strripos($file, '.') + 1);
                             $toCheck[$index]['handled'] = true;
 
                             break;
@@ -411,7 +411,7 @@ final class ApiController extends Controller
                     }
 
                     $this->createModel($request->header->account, $report, ReportMapper::class, 'report', $request->getOrigin());
-                    $old = clone $resource;
+                    $old                       = clone $resource;
                     $resource->path            = (string) $resource->id;
                     $resource->lastVersionPath = (string) $check['timestamp'];
                     $resource->lastVersionDate = $report->createdAt;
@@ -454,8 +454,8 @@ final class ApiController extends Controller
                     }
                 }
 
-                $lastVersionPath = $basePath . '/' . $id . '/' . $lastVersionTimestamp;
-                $oldPath         = $lastVersionPath . '/' . $fileName;
+                $lastVersionPath  = $basePath . '/' . $id . '/' . $lastVersionTimestamp;
+                $oldPath          = $lastVersionPath . '/' . $fileName;
                 $newPath          = $path . '/' . $fileName;
 
                 if (!\is_file($newPath) || !$toCheck[$index]['handled']) {
@@ -552,8 +552,8 @@ final class ApiController extends Controller
                     }
 
                     // @todo: move to informUsers function
-                    $owner = new Inform();
-                    $owner->email = $resource->owner->getEmail();
+                    $owner              = new Inform();
+                    $owner->email       = $resource->owner->getEmail();
                     $resource->inform[] = $owner;
 
                     foreach ($resource->inform as $inform) {
@@ -588,7 +588,7 @@ final class ApiController extends Controller
                                 $resource->id,
                                 $inform->email,
                                 $resource->uri,
-                                $resource->owner->getEmail()
+                                $resource->owner->getEmail(),
                             ],
                             $mailL11n->body
                         );
@@ -605,7 +605,7 @@ final class ApiController extends Controller
                                 $resource->id,
                                 $inform->email,
                                 $resource->uri,
-                                $resource->owner->getEmail()
+                                $resource->owner->getEmail(),
                             ],
                             $mailL11n->bodyAlt
                         );
@@ -862,9 +862,9 @@ final class ApiController extends Controller
      */
     private function createInformFromRequest(RequestAbstract $request) : Inform
     {
-        $inform = new Inform();
-        $inform->account = $request->getDataInt('account');
-        $inform->email   = $request->getDataString('email');
+        $inform           = new Inform();
+        $inform->account  = $request->getDataInt('account');
+        $inform->email    = $request->getDataString('email');
         $inform->resource = $request->getDataInt('resource');
 
         return $inform;

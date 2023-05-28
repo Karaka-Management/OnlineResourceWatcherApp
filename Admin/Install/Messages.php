@@ -49,10 +49,10 @@ class Messages
 
         $settings = [
             [
-                'id' => null,
-                'name' => SettingsEnum::LOGIN_MAIL_REGISTRATION_TEMPLATE,
+                'id'      => null,
+                'name'    => SettingsEnum::LOGIN_MAIL_REGISTRATION_TEMPLATE,
                 'content' => (string) $messages['email_template'][0]['id'],
-                'module' => 'OnlineResourceWatcher',
+                'module'  => 'OnlineResourceWatcher',
             ],
         ];
 
