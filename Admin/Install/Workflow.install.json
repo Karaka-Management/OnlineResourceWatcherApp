@@ -9,7 +9,7 @@
                 "de": "Ueberpruefe Ressourcen"
             },
             "function_type": "Api",
-            "function": "checkResources",
+            "function": "apiCheckResources",
             "module": "OnlineResourceWatcher",
             "inputs": [
                 "unit",

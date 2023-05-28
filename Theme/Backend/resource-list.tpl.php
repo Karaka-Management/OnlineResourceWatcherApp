@@ -83,7 +83,7 @@ $next = $tableView->getNextLink(
                         <td><?= $resource->id; ?>
                         <td><?= $this->printHtml($resource->title); ?>
                         <td><?= $this->printHtml((string) $resource->getStatus()); ?>
-                        <td><?= $this->printHtml($resource->checkedAt->format('Y-m-d H:i')); ?>
+                        <td><?= $this->printHtml($resource->checkedAt?->format('Y-m-d H:i')); ?>
                         <td><?= $this->printHtml($resource->createdAt->format('Y-m-d')); ?>
                 <?php endforeach; ?>
                 <?php if ($count === 0) : ?>

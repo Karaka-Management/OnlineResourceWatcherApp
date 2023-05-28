@@ -70,21 +70,25 @@ final class ApiController extends Controller
             ->execute();
 
         $path = '';
-        if (\is_dir($basePath = __DIR__ . '/../Files/' . $resource->path . '/' . $resource->lastVersionPath)) {
-            if (\is_file($basePath . '/index.htm')) {
-                $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/index.jpg';
-            } else {
-                $files = \scandir($basePath);
-                $path  = '';
+        $basePath = __DIR__ . '/../Files/' . $resource->path . '/' . $resource->lastVersionPath;
 
-                if ($files !== false) {
-                    foreach ($files as $file) {
-                        if ($file === '.' || $files === '..') {
-                            continue;
-                        }
+        if (\is_file($basePath . '/index.htm')) {
+            $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/index.jpg';
 
-                        $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/' . $file;
+            if (!\is_file(__DIR__ . '/../../../' . $path)) {
+                $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/index.htm';
+            }
+        } else {
+            $files = \scandir($basePath);
+            $path  = '';
+
+            if ($files !== false) {
+                foreach ($files as $file) {
+                    if ($file === '.' || $files === '..') {
+                        continue;
                     }
+
+                    $path = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath . '/' . $file;
                 }
             }
         }
@@ -99,7 +103,7 @@ final class ApiController extends Controller
         $internalRequest                  = new HttpRequest();
         $internalRequest->header->account = $request->header->account;
         $internalRequest->setData('path', $path);
-        $this->app->moduleManager->get('Media')->apiMediaExport($internalRequest, $response, ['guard' => __DIR__ . '/../Files']);
+        $this->app->moduleManager->get('Media', 'Api')->apiMediaExport($internalRequest, $response, ['guard' => __DIR__ . '/../Files']);
     }
 
     /**
@@ -115,7 +119,7 @@ final class ApiController extends Controller
     {
         $val = [];
         if (($val['title'] = !$request->hasData('title'))
-            || ($val['uri'] = !$request->hasData('uri'))
+            || ($val['uri'] = (!$request->hasData('uri') || \filter_var($request->getDataString('uri'), \FILTER_VALIDATE_URL) === false))
         ) {
             return $val;
         }
@@ -147,6 +151,9 @@ final class ApiController extends Controller
 
         $resource = $this->createResourceFromRequest($request);
         $this->createModel($request->header->account, $resource, ResourceMapper::class, 'resource', $request->getOrigin());
+
+        $this->checkResources($request, [$resource]);
+
         $this->createStandardCreateResponse($request, $response, $resource);
     }
 
@@ -193,8 +200,16 @@ final class ApiController extends Controller
      */
     public function apiCheckResources(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
-        $this->checkResources($request, $response);
+        /** @var Resource[] $resources */
+        $resources = ResourceMapper::getAll()
+            ->with('owner')
+            ->with('owner/l11n')
+            ->with('inform')
+            ->where('status', ResourceStatus::ACTIVE)
+            ->where('checkedAt', (new \DateTime('now'))->sub(new \DateInterval('PT12H')), '<')
+            ->execute();
 
+        $this->checkResources($request, $resources);
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Resources', 'Resources were checked.', null);
     }
 
@@ -234,18 +249,9 @@ final class ApiController extends Controller
      * @since 1.0.0
      * @todo: implement iterative approach where you can define a "offset" and "limit" to check only a few resources at a time
      */
-    public function checkResources(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : array
+    public function checkResources(RequestAbstract $request, array $resources, mixed $data = null) : array
     {
         $changed = [];
-
-        /** @var Resource[] $resources */
-        $resources = ResourceMapper::getAll()
-            ->with('owner')
-            ->with('owner/l11n')
-            ->with('inform')
-            ->where('status', ResourceStatus::ACTIVE)
-            ->execute();
-
         $toCheck = [];
 
         $basePath = __DIR__ . '/../Files';
@@ -272,7 +278,7 @@ final class ApiController extends Controller
             try {
                 SystemUtils::runProc(
                     OperatingSystem::getSystem() === SystemType::WIN ? 'wget.exe' : 'wget',
-                    '--retry-connrefused --waitretry=1 --read-timeout=10 --timeout=10 --dns-timeout=10 -t 2 --quota=25m --adjust-extension --span-hosts --convert-links --no-directories --restrict-file-names=windows --no-parent ‐‐execute robots=off --limit-rate=5m -U mozilla --accept css,png,jpg,jpeg,gif,htm,html,txt,md,pdf,xls,xlsx,doc,docx --directory-prefix=' . $path . ' ‐‐output-document=index.htm ' . $resource->uri,
+                    '--retry-connrefused --waitretry=1 --read-timeout=10 --timeout=10 --dns-timeout=10 -t 2 --quota=25m --adjust-extension --span-hosts --convert-links --no-directories --restrict-file-names=windows --no-parent ‐‐execute robots=off --limit-rate=5m -U mozilla --accept css,png,jpg,jpeg,gif,htm,html,txt,md,pdf,xls,xlsx,doc,docx --directory-prefix=' . \escapeshellarg($path) . ' ‐‐output-document=index.htm ' . \escapeshellarg($resource->uri),
                     true
                 );
             } catch (\Throwable $t) {
@@ -303,13 +309,16 @@ final class ApiController extends Controller
             ->execute();
 
         // Check downloaded resources
-        // @todo: this may not work correctly because the download runs async.
         $totalCount = \count($toCheck);
         $maxLoops   = (int) \min(60 * 10, $totalCount * 10 / 4);
+        $startTime  = \time();
+        $minTime    = $startTime + \min(10 * $totalCount, 60 * 5); // At least run 10 seconds per element
+        $maxTime    = $startTime + \min(60 * $totalCount, 60 * 60 * 3); // At most run 60 seconds per element
 
-        // @todo: the following code is INSANE, simplify!!!
         $baseLen = \strlen($basePath . '/temp');
         while (!empty($toCheck)) {
+            $time = \time();
+
             foreach ($toCheck as $index => $check) {
                 ++$toCheck[$index]['loop'];
 
@@ -317,7 +326,7 @@ final class ApiController extends Controller
                 $resource = $check['resource'];
 
                 // too many tries
-                if ($check['loop'] > $maxLoops) {
+                if (($check['loop'] > $maxLoops && $time > $minTime) || $time > $maxTime) {
                     $report              = new Report();
                     $report->resource    = $resource->id;
                     $report->versionPath = (string) $check['timestamp'];
@@ -415,19 +424,11 @@ final class ApiController extends Controller
 
                     if ($extension === 'htm') {
                         try {
-                            if (OperatingSystem::getSystem() === SystemType::WIN) {
-                                SystemUtils::runProc(
-                                    'firefox.exe',
-                                    '---headless --screenshot "' . $basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg" ' . $resource->uri,
-                                    true
-                                );
-                            } else {
-                                SystemUtils::runProc(
-                                    'xvfb-run',
-                                    '--server-args="-screen 0, 1920x1080x24" cutycapt --min-width=1024 --url="' . $resource->uri . '" --out="' . $basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg"',
-                                    true
-                                );
-                            }
+                            SystemUtils::runProc(
+                                OperatingSystem::getSystem() === SystemType::WIN ? 'wkhtmltoimage.exe' : 'wkhtmltoimage',
+                                \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg'),
+                                true
+                            );
                         } catch (\Throwable $t) {
                             $this->app->logger->error($t->getMessage());
                         }
@@ -540,19 +541,11 @@ final class ApiController extends Controller
                     // If is htm/html create image
                     if ($extension === 'htm') {
                         try {
-                            if (OperatingSystem::getSystem() === SystemType::WIN) {
-                                SystemUtils::runProc(
-                                    'firefox.exe',
-                                    '---headless --screenshot "' . $basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg" ' . $resource->uri,
-                                    true
-                                );
-                            } else {
-                                SystemUtils::runProc(
-                                    'xvfb-run',
-                                    '--server-args="-screen 0, 1920x1080x24" cutycapt --min-width=1024 --url="' . $resource->uri . '" --out="' . $basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg"',
-                                    true
-                                );
-                            }
+                            SystemUtils::runProc(
+                                OperatingSystem::getSystem() === SystemType::WIN ? 'wkhtmltoimage.exe' : 'wkhtmltoimage',
+                                \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg'),
+                                true
+                            );
                         } catch (\Throwable $t) {
                             $this->app->logger->error($t->getMessage());
                         }
@@ -633,7 +626,14 @@ final class ApiController extends Controller
                 unset($toCheck[$index]);
             }
 
-            \sleep(1);
+            \usleep(100000); // 100ms
+        }
+
+        // make sure that no wkhtmltoimage processes are running
+        if (OperatingSystem::getSystem() === SystemType::LINUX) {
+            SystemUtils::runProc('pkill', '-f wkhtmltoimage', true);
+        } else {
+            SystemUtils::runProc('taskkill', '/F /IM wkhtmltoimage.exe', true);
         }
 
         Directory::delete($basePath . '/temp');

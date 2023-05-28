@@ -42,10 +42,12 @@ $reports = $resource->reports;
                         <input id="iUrl" name="uri" type="text" value="<?= $this->printHtml($resource->uri); ?>" required>
                     </div>
 
+                    <!--
                     <div class="form-group">
                         <label for="iXPath"><?= $this->getHtml('XPath'); ?></label>
                         <input id="iXPath" name="xpath" type="text" value="<?= $this->printHtml($resource->xpath); ?>">
                     </div>
+                    -->
                 </div>
                 <div class="portlet-foot">
                     <input id="iSubmitUser" name="submitUser" type="submit" value="<?= $this->getHtml('Save', '0', '0'); ?>">
@@ -75,34 +77,57 @@ $reports = $resource->reports;
 
 <div class="row col-simple">
     <div class="col-xs-12 col-simple">
+        <?php if ($resource->checkedAt !== null) : ?>
         <div class="portlet col-simple">
             <div class="portlet-body col-simple">
-                <div id="resource" class="tabview tab-2 m-editor col-simple">
-                    <ul class="tab-links">
-                        <li><label tabindex="0" for="resource-c-tab-1"><?= $this->getHtml('Preview'); ?></label>
-                        <li><label tabindex="1" for="resource-c-tab-2"><?= $this->getHtml('Comparison'); ?></label>
-                    </ul>
-                    <div class="tab-content col-simple">
-                        <input type="radio" id="resource-c-tab-1" name="tabular-1" checked>
-                        <div class="tab col-simple">
-                            <div class="col-simple">
-                                <div class="col-xs-12 col-simple">
-                                    <section id="mediaFile" class="portlet col-simple">
-                                        <div class="portlet-body col-simple">
-                                            <iframe class="col-simple" id="iRenderFrame" src="<?= UriFactory::build('{/api}orw/resource/render?id=' . $resource->id); ?>" loading="lazy" allowfullscreen></iframe>
-                                        </div>
-                                    </section>
-                                </div>
-                            </div>
-                        </div>
+                <?php
 
-                        <input type="radio" id="resource-c-tab-2" name="tabular-1">
-                        <div class="tab">
+                    $type = '';
+                    $basePath = __DIR__ . '/../../Files/' . $resource->path . '/' . $resource->lastVersionPath;
+                    $path = '';
+                    $webPath = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $resource->lastVersionPath;
 
-                        </div>
-                    </div>
-                </div>
+                    if (\is_file($basePath . '/index.jpg')) {
+                        $type = 'img';
+                        $path = $basePath . '/index.jpg';
+                        $webPath .= '/index.jpg';
+                    } else {
+                        $files = \scandir($basePath);
+
+                        if ($files !== false) {
+                            foreach ($files as $file) {
+                                if ($file === '.' || $files === '..') {
+                                    continue;
+                                }
+
+                                $path    = $basePath . '/' . $file;
+                                $webPath .= '/' . $file;
+
+                                if (\stripos($file, '.jpg') !== false
+                                    || \stripos($file, '.jpeg') !== false
+                                    || \stripos($file, '.png') !== false
+                                    || \stripos($file, '.gif') !== false
+                                ) {
+                                    $type = 'img';
+                                    break;
+                                } elseif (\stripos($file, '.pdf') !== false) {
+                                    $type = 'pdf';
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                ?>
+
+                <?php if ($type === 'img') : ?>
+                    <img src="<?= UriFactory::build($webPath); ?>" alt="<?= $this->printHtml($resource->title); ?>">
+                <?php elseif ($type === 'pdf') : ?>
+                    <iframe class="col-simple" id="iRenderFrame" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode($webPath); ?>" loading="lazy" allowfullscreen></iframe>
+                <?php else : ?>
+                    <iframe class="col-simple" id="iRenderFrame" src="<?= UriFactory::build('{/api}orw/resource/render?id=' . $resource->id); ?>" loading="lazy" allowfullscreen></iframe>
+                <?php endif; ?>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 </div>
