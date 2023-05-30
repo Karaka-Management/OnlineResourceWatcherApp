@@ -18,9 +18,9 @@ use phpOMS\Uri\UriFactory;
  * @var \phpOMS\Views\View                               $this
  * @var \Modules\OnlineResourceWatcher\Models\Resource[] $resources
  */
-$resources = $this->getData('resources') ?? [];
+$resources = $this->data['resources'] ?? [];
 
-$tableView            = $this->getData('tableView');
+$tableView            = $this->data['tableView'];
 $tableView->id        = 'resourceList';
 $tableView->baseUri   = '{/prefix}orw/resource/list';
 $tableView->setObjects($resources);

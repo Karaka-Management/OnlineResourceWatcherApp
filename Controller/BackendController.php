@@ -82,7 +82,7 @@ final class BackendController extends Controller
         }
 
         $pageLimit = 25;
-        $view->addData('pageLimit', $pageLimit);
+        $view->data['pageLimit'] = $pageLimit;
 
         $mapper = ResourceMapper::getAll()->with('createdBy');
         $list   = ResourceMapper::find(
@@ -98,7 +98,7 @@ final class BackendController extends Controller
             filters: $filterField
         );
 
-        $view->setData('resources', $list['data']);
+        $view->data['resources'] = $list['data'];
 
         $tableView         = new TableView($this->app->l11nManager, $request, $response);
         $tableView->module = 'OnlineResourceWatcher';
@@ -110,7 +110,7 @@ final class BackendController extends Controller
         $tableView->setData('hasPrevious', $list['hasPrevious']);
         $tableView->setData('hasNext', $list['hasNext']);
 
-        $view->addData('tableView', $tableView);
+        $view->data['tableView'] = $tableView;
 
         return $view;
     }
@@ -139,7 +139,7 @@ final class BackendController extends Controller
             ->limit(25, 'reports')
             ->execute();
 
-        $view->setData('resource', $resource);
+        $view->data['resource'] = $resource;
 
         return $view;
     }
