@@ -566,7 +566,7 @@ final class ApiController extends Controller
                         $mail = clone $baseEmail;
                         $mail->setFrom($emailSettings->content);
 
-                        $mailL11n = $baseEmail->getL11nByLanguage($resource->owner->l11n->getLanguage());
+                        $mailL11n = $baseEmail->getL11nByLanguage($resource->owner->l11n->language);
                         if ($mailL11n->id === 0) {
                             $mailL11n = $baseEmail->getL11nByLanguage($this->app->l11nServer->getLanguage());
                         }
