@@ -143,7 +143,7 @@ final class ApiController extends Controller
     public function apiResourceCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateResourceCreate($request))) {
-            $response->set('resource_create', new FormValidation($val));
+            $response->data['resource_create'] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
@@ -566,7 +566,7 @@ final class ApiController extends Controller
                         $mail = clone $baseEmail;
                         $mail->setFrom($emailSettings->content);
 
-                        $mailL11n = $baseEmail->getL11nByLanguage($resource->owner->l11n->getLanguage());
+                        $mailL11n = $baseEmail->getL11nByLanguage($resource->owner->l11n->language);
                         if ($mailL11n->id === 0) {
                             $mailL11n = $baseEmail->getL11nByLanguage($this->app->l11nServer->getLanguage());
                         }
@@ -657,7 +657,7 @@ final class ApiController extends Controller
     public function apiResourceUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateResourceUpdate($request))) {
-            $response->set('resource_create', new FormValidation($val));
+            $response->data['resource_create'] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
@@ -750,7 +750,7 @@ final class ApiController extends Controller
     public function apiResourceDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateResourceDelete($request))) {
-            $response->set('resource_create', new FormValidation($val));
+            $response->data['resource_create'] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
@@ -808,7 +808,7 @@ final class ApiController extends Controller
     public function apiInformCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateInformCreate($request))) {
-            $response->set('resource_inform_create', new FormValidation($val));
+            $response->data['resource_inform_create'] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
@@ -886,7 +886,7 @@ final class ApiController extends Controller
     public function apiInformDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
         if (!empty($val = $this->validateInformDelete($request))) {
-            $response->set('resource_create', new FormValidation($val));
+            $response->data['resource_create'] = new FormValidation($val);
             $response->header->status = RequestStatusCode::R_400;
 
             return;
