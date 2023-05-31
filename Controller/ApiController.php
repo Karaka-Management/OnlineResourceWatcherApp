@@ -144,7 +144,7 @@ final class ApiController extends Controller
     {
         if (!empty($val = $this->validateResourceCreate($request))) {
             $response->data['resource_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status          = RequestStatusCode::R_400;
 
             return;
         }
@@ -658,7 +658,7 @@ final class ApiController extends Controller
     {
         if (!empty($val = $this->validateResourceUpdate($request))) {
             $response->data['resource_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status          = RequestStatusCode::R_400;
 
             return;
         }
@@ -751,7 +751,7 @@ final class ApiController extends Controller
     {
         if (!empty($val = $this->validateResourceDelete($request))) {
             $response->data['resource_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status          = RequestStatusCode::R_400;
 
             return;
         }
@@ -809,7 +809,7 @@ final class ApiController extends Controller
     {
         if (!empty($val = $this->validateInformCreate($request))) {
             $response->data['resource_inform_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status                 = RequestStatusCode::R_400;
 
             return;
         }
@@ -887,7 +887,7 @@ final class ApiController extends Controller
     {
         if (!empty($val = $this->validateInformDelete($request))) {
             $response->data['resource_create'] = new FormValidation($val);
-            $response->header->status = RequestStatusCode::R_400;
+            $response->header->status          = RequestStatusCode::R_400;
 
             return;
         }

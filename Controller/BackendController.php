@@ -81,7 +81,7 @@ final class BackendController extends Controller
             }
         }
 
-        $pageLimit = 25;
+        $pageLimit               = 25;
         $view->data['pageLimit'] = $pageLimit;
 
         $mapper = ResourceMapper::getAll()->with('createdBy');
