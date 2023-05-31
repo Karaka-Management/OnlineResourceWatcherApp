@@ -568,7 +568,7 @@ final class ApiController extends Controller
 
                         $mailL11n = $baseEmail->getL11nByLanguage($resource->owner->l11n->language);
                         if ($mailL11n->id === 0) {
-                            $mailL11n = $baseEmail->getL11nByLanguage($this->app->l11nServer->getLanguage());
+                            $mailL11n = $baseEmail->getL11nByLanguage($this->app->l11nServer->language);
                         }
 
                         if ($mailL11n->id === 0) {
