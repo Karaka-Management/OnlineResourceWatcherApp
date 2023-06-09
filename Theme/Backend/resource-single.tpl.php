@@ -12,6 +12,7 @@
  */
 declare(strict_types=1);
 
+use Modules\OnlineResourceWatcher\Models\ReportStatus;
 use phpOMS\Uri\UriFactory;
 
 /** @var \Modules\OnlineResourceWatcher\Models\Resource */
@@ -19,7 +20,7 @@ $resource = $this->getData('resource') ?? new \Modules\OnlineResourceWatcher\Mod
 $reports  = $resource->reports;
 ?>
 <div class="row">
-    <div class="col-xs-8">
+    <div class="col-xs-12 col-sm-8">
         <div class="portlet">
             <form id="iResource" action="<?= UriFactory::build('{/api}resource'); ?>" method="post">
                 <div class="portlet-head"><?= $this->getHtml('Resource'); ?></div>
@@ -56,14 +57,15 @@ $reports  = $resource->reports;
         </div>
     </div>
 
-    <div class="col-xs-4">
+    <div class="col-xs-12 col-sm-4">
         <div class="portlet">
             <div class="portlet-head"><?= $this->getHtml('History'); ?></div>
+            <div class="slider">
             <table class="default">
 				<thead>
 					<tr>
 						<td><?= $this->getHtml('Date'); ?>
-						<td><?= $this->getHtml('Status'); ?>
+						<td class="wf-100"><?= $this->getHtml('Status'); ?>
 				<tbody>
 					<?php foreach ($reports as $report) : ?>
 					<tr>
@@ -71,6 +73,7 @@ $reports  = $resource->reports;
 						<td><?= $this->getHtml('rstatus-' . $report->status); ?>
 					<?php endforeach; ?>
 			</table>
+            </div>
         </div>
     </div>
 </div>
@@ -119,12 +122,14 @@ $reports  = $resource->reports;
                     }
                 ?>
 
-                <?php if ($type === 'img') : ?>
-                    <img src="<?= UriFactory::build($webPath); ?>" alt="<?= $this->printHtml($resource->title); ?>">
-                <?php elseif ($type === 'pdf') : ?>
-                    <iframe class="col-simple" id="iRenderFrame" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode($webPath); ?>" loading="lazy" allowfullscreen></iframe>
-                <?php else : ?>
-                    <iframe class="col-simple" id="iRenderFrame" src="<?= UriFactory::build('{/api}orw/resource/render?id=' . $resource->id); ?>" loading="lazy" allowfullscreen></iframe>
+                <?php if ($report->status !== ReportStatus::DOWNLOAD_ERROR) : ?>
+                    <?php if ($type === 'img') : ?>
+                        <img src="<?= UriFactory::build($webPath); ?>" alt="<?= $this->printHtml($resource->title); ?>">
+                    <?php elseif ($type === 'pdf') : ?>
+                        <iframe class="col-simple" id="iRenderFrame" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode($webPath); ?>" loading="lazy" allowfullscreen></iframe>
+                    <?php else : ?>
+                        <iframe class="col-simple" id="iRenderFrame" src="<?= UriFactory::build('{/api}orw/resource/render?id=' . $resource->id); ?>" loading="lazy" sandbox="allow-forms allow-scripts" allowfullscreen></iframe>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div>

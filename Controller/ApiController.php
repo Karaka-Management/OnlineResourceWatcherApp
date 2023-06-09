@@ -49,6 +49,10 @@ use phpOMS\Utils\StringUtils;
  */
 final class ApiController extends Controller
 {
+    public const TEXT_RENDERABLE = ['md', 'txt', 'doc', 'docx', 'pdf', 'xls', 'xlsx'];
+
+    public const IMG_RENDERABLE = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'svg'];
+
     /**
      * Api method to create resource
      *
@@ -310,12 +314,11 @@ final class ApiController extends Controller
 
         // Check downloaded resources
         $totalCount = \count($toCheck);
-        $maxLoops   = (int) \min(60 * 10, $totalCount * 10 / 4);
+        $maxLoops   = (int) \min(60 * 10, $totalCount * 10 / 4); // At most run 600 times or 2.5 times the resource count
         $startTime  = \time();
-        $minTime    = $startTime + \min(10 * $totalCount, 60 * 5); // At least run 10 seconds per element
-        $maxTime    = $startTime + \min(60 * $totalCount, 60 * 60 * 3); // At most run 60 seconds per element
+        $minTime    = $startTime + ((int) \min(10 * $totalCount, 60 * 5)); // At least run 10 seconds per element or 5 minutes
+        $maxTime    = $startTime + ((int) \min(60 * $totalCount, 60 * 60 * 3)); // At most run 60 seconds per element or 3 hours
 
-        $baseLen = \strlen($basePath . '/temp');
         while (!empty($toCheck)) {
             $time = \time();
 
@@ -325,7 +328,9 @@ final class ApiController extends Controller
                 /** @var Resource $resource */
                 $resource = $check['resource'];
 
-                // too many tries
+                // Too many tries
+                // 1. Too many iterations and at least the min execution time is reached
+                // 2. Execution takes longer than max time
                 if (($check['loop'] > $maxLoops && $time > $minTime) || $time > $maxTime) {
                     $report              = new Report();
                     $report->resource    = $resource->id;
@@ -339,6 +344,8 @@ final class ApiController extends Controller
 
                     unset($toCheck[$index]);
 
+                    $this->app->logger->warning('Resource "' . $resource->id . ': ' . $resource->uri . '" took too long to download.');
+
                     continue;
                 }
 
@@ -348,9 +355,6 @@ final class ApiController extends Controller
                     // Let's go to the next element and re-check later on.
                     continue;
                 }
-
-                $end = \stripos($path, '/', $baseLen + 1);
-                $id  = (int) \substr($path, $baseLen + 1, $end - $baseLen - 1);
 
                 // new resource
                 $filesNew = \scandir($path);
@@ -375,20 +379,13 @@ final class ApiController extends Controller
                     $toCheck[$index]['handled'] = true;
                 } else {
                     foreach ($filesNew as $file) {
-                        if (StringUtils::endsWith($file, '.png')
-                            || StringUtils::endsWith($file, '.jpg')
-                            || StringUtils::endsWith($file, '.jpeg')
-                            || StringUtils::endsWith($file, '.gif')
-                            || StringUtils::endsWith($file, '.pdf')
-                            || StringUtils::endsWith($file, '.doc')
-                            || StringUtils::endsWith($file, '.docx')
-                            || StringUtils::endsWith($file, '.xls')
-                            || StringUtils::endsWith($file, '.xlsx')
-                            || StringUtils::endsWith($file, '.md')
-                            || StringUtils::endsWith($file, '.txt')
-                        ) {
+                        if ($file === '..' || $file = '.') {
+                            continue;
+                        }
+
+                        $extension = ($pos = \strrpos($file, '.')) !== false ? \substr($file, $pos + 1) : '';
+                        if (StringUtils::endsWith($file, '.' . $extension)) {
                             $fileName                   = $file;
-                            $extension                  = \substr($file, \strripos($file, '.') + 1);
                             $toCheck[$index]['handled'] = true;
 
                             break;
@@ -397,38 +394,40 @@ final class ApiController extends Controller
                 }
 
                 // Is new resource
-                if (!\is_dir($basePath . '/' . $id)) {
+                if (!\is_dir($basePath . '/' . $resource->id)) {
                     $report              = new Report();
                     $report->resource    = $resource->id;
                     $report->versionPath = (string) $check['timestamp'];
 
                     $hash = '';
-                    if (!empty($fileName)) {
+                    if (empty($fileName)) {
+                        $report->status = ReportStatus::DOWNLOAD_ERROR;
+                    } else {
                         $report->status = ReportStatus::ADDED;
                         $hash           = \md5_file($path . '/' . $fileName);
-                    } else {
-                        $report->status = ReportStatus::DOWNLOAD_ERROR;
                     }
 
                     $this->createModel($request->header->account, $report, ReportMapper::class, 'report', $request->getOrigin());
                     $old                       = clone $resource;
-                    $resource->path            = (string) $resource->id;
+                    $resource->path            = $resource->id === 0 ? '' : (string) $resource->id;
                     $resource->lastVersionPath = (string) $check['timestamp'];
                     $resource->lastVersionDate = $report->createdAt;
                     $resource->hash            = $hash == false ? '' : $hash;
                     $resource->checkedAt       = $report->createdAt;
                     $this->updateModel($request->header->account, $old, $resource, ResourceMapper::class, 'resource', $request->getOrigin());
 
-                    Directory::copy($path, $basePath . '/' . $id . '/' . $check['timestamp']);
+                    Directory::copy($path, $basePath . '/' . $resource->id . '/' . $check['timestamp']);
                     unset($toCheck[$index]);
 
                     if ($extension === 'htm') {
                         try {
                             SystemUtils::runProc(
                                 OperatingSystem::getSystem() === SystemType::WIN ? 'wkhtmltoimage.exe' : 'wkhtmltoimage',
-                                \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg'),
+                                \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg'),
                                 true
                             );
+
+                            \var_dump('wkhtmltoimage ' . \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg'));
                         } catch (\Throwable $t) {
                             $this->app->logger->error($t->getMessage());
                         }
@@ -438,7 +437,7 @@ final class ApiController extends Controller
                 }
 
                 // existing resource
-                $resourcePaths = \scandir($basePath . '/' . $id);
+                $resourcePaths = \scandir($basePath . '/' . $resource->id);
                 if ($resourcePaths === false) {
                     $resourcePaths = [];
                 }
@@ -448,13 +447,9 @@ final class ApiController extends Controller
                 $lastVersionTimestamp = \end($resourcePaths);
                 if ($lastVersionTimestamp === '.' || $lastVersionTimestamp === '..') {
                     $lastVersionTimestamp = \reset($resourcePaths);
-
-                    if ($lastVersionTimestamp === '.' || $lastVersionTimestamp === '..') {
-                        Directory::delete($basePath . '/' . $id);
-                    }
                 }
 
-                $lastVersionPath = $basePath . '/' . $id . '/' . $lastVersionTimestamp;
+                $lastVersionPath = $basePath . '/' . $resource->id . '/' . $lastVersionTimestamp;
                 $oldPath         = $lastVersionPath . '/' . $fileName;
                 $newPath         = $path . '/' . $fileName;
 
@@ -475,10 +470,11 @@ final class ApiController extends Controller
 
                 $difference = 0;
                 if ($hasDifferentHash) {
-                    if (\in_array($extension, ['md', 'txt', 'doc', 'docx', 'pdf', 'xls', 'xlsx'])) {
+                    if (\in_array($extension, self::TEXT_RENDERABLE)) {
                         $contentOld = \Modules\Media\Controller\ApiController::loadFileContent($oldPath, $extension);
                         $contentNew = \Modules\Media\Controller\ApiController::loadFileContent($newPath, $extension);
 
+                        // Calculate difference index
                         $difference = \levenshtein($contentOld, $contentNew);
 
                         // Handle xpath
@@ -512,10 +508,15 @@ final class ApiController extends Controller
                                 }
                             }
 
+                            // Calculate difference index
                             $difference = \levenshtein($subcontentOld, $subcontentNew);
                         }
-                    } elseif (\in_array($extension, ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'svg'])) {
+                    } elseif (\in_array($extension, self::IMG_RENDERABLE)) {
+                        // Difference index is always 0/1. Comparing pixels is too slow and doesn't add much value
                         $difference = 1; //ImageUtils::difference($oldPath, $newPath, $path . '/_' . \basename($newPath), 0); // too slow
+                    } else {
+                        // All other files always have a difference index of 0/1
+                        $difference = 1;
                     }
                 }
 
@@ -536,14 +537,14 @@ final class ApiController extends Controller
 
                     $changed[] = $report;
 
-                    Directory::copy($path, $basePath . '/' . $id . '/' . $check['timestamp']);
+                    Directory::copy($path, $basePath . '/' . $resource->id . '/' . $check['timestamp']);
 
                     // If is htm/html create image
                     if ($extension === 'htm') {
                         try {
                             SystemUtils::runProc(
                                 OperatingSystem::getSystem() === SystemType::WIN ? 'wkhtmltoimage.exe' : 'wkhtmltoimage',
-                                \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $id . '/' . $check['timestamp'] . '/index.jpg'),
+                                \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg'),
                                 true
                             );
                         } catch (\Throwable $t) {
@@ -619,17 +620,17 @@ final class ApiController extends Controller
                 $resource->checkedAt = $report->createdAt;
                 $this->updateModel($request->header->account, $old, $resource, ResourceMapper::class, 'resource', $request->getOrigin());
 
-                // Directory::delete($basePath . '/temp/' . $id);
+                // Directory::delete($basePath . '/temp/' . $resource->id);
 
                 // @todo: delete older history depending on plan
 
                 unset($toCheck[$index]);
             }
 
-            \usleep(100000); // 100ms
+            \usleep(100000); // 100ms delay to give the tools time to download between steps
         }
 
-        // make sure that no wkhtmltoimage processes are running
+        // Make sure that no wkhtmltoimage processes are running
         if (OperatingSystem::getSystem() === SystemType::LINUX) {
             SystemUtils::runProc('pkill', '-f wkhtmltoimage', true);
         } else {
