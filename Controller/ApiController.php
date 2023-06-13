@@ -220,7 +220,9 @@ final class ApiController extends Controller
     /**
      * Inform users about changed resources
      *
-     * @param mixed $var Generic variable
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
      *
      * @return void
      *
@@ -231,6 +233,7 @@ final class ApiController extends Controller
         $dateTime = new \DateTime('now');
         $dateTime = $dateTime->modify('-1 hour');
 
+        /** @var \Modules\OnlineResourceWatcher\Models\Report[] $reports */
         $reports = ReportMapper::getAll()
             ->where('status', ReportStatus::CHANGE)
             ->where('createdAt', $dateTime, '>=')
@@ -246,7 +249,9 @@ final class ApiController extends Controller
     /**
      * Checks resources for changes
      *
-     * @param mixed $var Generic variable
+     * @param RequestAbstract $request   Request
+     * @param array           $resources Resources to check
+     * @param mixed           $data      Generic data
      *
      * @return array
      *
@@ -292,11 +297,13 @@ final class ApiController extends Controller
 
         $handler = $this->app->moduleManager->get('Admin', 'Api')->setUpServerMailHandler();
 
+        /** @var \Model\Setting $emailSettings */
         $emailSettings = $this->app->appSettings->get(
             names: SettingsEnum::MAIL_SERVER_ADDR,
             module: 'OnlineResourceWatcher'
         );
 
+        /** @var \Model\Setting $templateSettings */
         $templateSettings = $this->app->appSettings->get(
             names: OrwSettingsEnum::ORW_CHANGE_MAIL_TEMPLATE,
             module: 'OnlineResourceWatcher'
@@ -367,6 +374,7 @@ final class ApiController extends Controller
                 $extension = '';
 
                 $fileName = '';
+                $hasHtml  = false;
                 if (\in_array('index.htm', $filesNew)
                     || ($hasHtml = \in_array('index.html', $filesNew))
                 ) {
@@ -379,7 +387,7 @@ final class ApiController extends Controller
                     $toCheck[$index]['handled'] = true;
                 } else {
                     foreach ($filesNew as $file) {
-                        if ($file === '..' || $file = '.') {
+                        if ($file === '..' || $file === '.') {
                             continue;
                         }
 
@@ -426,8 +434,6 @@ final class ApiController extends Controller
                                 \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg'),
                                 true
                             );
-
-                            \var_dump('wkhtmltoimage ' . \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg'));
                         } catch (\Throwable $t) {
                             $this->app->logger->error($t->getMessage());
                         }
@@ -495,16 +501,20 @@ final class ApiController extends Controller
                             $elementsNew = $xpathNew->query($resource->path);
 
                             $subcontentOld = '';
-                            foreach ($elementsOld as $node) {
-                                foreach ($node->childNodes as $child) {
-                                    $subcontentOld .= $xmlOld->saveXML($child);
+                            if ($elementsOld !== false) {
+                                foreach ($elementsOld as $node) {
+                                    foreach ($node->childNodes as $child) {
+                                        $subcontentOld .= $xmlOld->saveXML($child);
+                                    }
                                 }
                             }
 
                             $subcontentNew = '';
-                            foreach ($elementsNew as $node) {
-                                foreach ($node->childNodes as $child) {
-                                    $subcontentNew .= $xmlNew->saveXML($child);
+                            if ($elementsNew !== false) {
+                                foreach ($elementsNew as $node) {
+                                    foreach ($node->childNodes as $child) {
+                                        $subcontentNew .= $xmlNew->saveXML($child);
+                                    }
                                 }
                             }
 
