@@ -27,6 +27,7 @@ use Modules\OnlineResourceWatcher\Models\Resource;
 use Modules\OnlineResourceWatcher\Models\ResourceMapper;
 use Modules\OnlineResourceWatcher\Models\ResourceStatus;
 use Modules\OnlineResourceWatcher\Models\SettingsEnum as OrwSettingsEnum;
+use phpOMS\Log\FileLogger;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
@@ -291,7 +292,13 @@ final class ApiController extends Controller
                     true
                 );
             } catch (\Throwable $t) {
-                $this->app->logger->error($t->getMessage());
+                $this->app->logger->error(
+                    FileLogger::MSG_FULL, [
+                        'message' => $t->getMessage(),
+                        'line'    => __LINE__,
+                        'file'    => self::class,
+                    ]
+                );
             }
         }
 
@@ -323,7 +330,7 @@ final class ApiController extends Controller
         $totalCount = \count($toCheck);
         $maxLoops   = (int) \min(60 * 10, $totalCount * 10 / 4); // At most run 600 times or 2.5 times the resource count
         $startTime  = \time();
-        $minTime    = $startTime + ((int) \min(10 * $totalCount, 60 * 5)); // At least run 10 seconds per element or 5 minutes
+        $minTime    = $startTime + ((int) \max(10 * $totalCount, 60 * 5)); // At least run 10 seconds per element or 5 minutes
         $maxTime    = $startTime + ((int) \min(60 * $totalCount, 60 * 60 * 3)); // At most run 60 seconds per element or 3 hours
 
         while (!empty($toCheck)) {
@@ -351,7 +358,13 @@ final class ApiController extends Controller
 
                     unset($toCheck[$index]);
 
-                    $this->app->logger->warning('Resource "' . $resource->id . ': ' . $resource->uri . '" took too long to download.');
+                    $this->app->logger->warning(
+                        FileLogger::MSG_FULL, [
+                            'message' => 'Resource "' . $resource->id . ': ' . $resource->uri . '" took too long to download.',
+                            'line'    => __LINE__,
+                            'file'    => self::class,
+                        ]
+                    );
 
                     continue;
                 }
@@ -435,7 +448,13 @@ final class ApiController extends Controller
                                 true
                             );
                         } catch (\Throwable $t) {
-                            $this->app->logger->error($t->getMessage());
+                            $this->app->logger->error(
+                                FileLogger::MSG_FULL, [
+                                    'message' => $t->getMessage(),
+                                    'line'    => __LINE__,
+                                    'file'    => self::class,
+                                ]
+                            );
                         }
                     }
 
@@ -558,7 +577,13 @@ final class ApiController extends Controller
                                 true
                             );
                         } catch (\Throwable $t) {
-                            $this->app->logger->error($t->getMessage());
+                            $this->app->logger->error(
+                                FileLogger::MSG_FULL, [
+                                    'message' => $t->getMessage(),
+                                    'line'    => __LINE__,
+                                    'file'    => self::class,
+                                ]
+                            );
                         }
                     }
 
