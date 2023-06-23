@@ -360,7 +360,7 @@ final class ApiController extends Controller
 
                     $this->app->logger->warning(
                         FileLogger::MSG_FULL, [
-                            'message' => 'Resource "' . $resource->id . ': ' . $resource->uri . '" took too long to download.',
+                            'message' => 'Resource "' . $resource->id . ': ' . $resource->uri . '" took too long to download (' . $time . ' s).',
                             'line'    => __LINE__,
                             'file'    => self::class,
                         ]
