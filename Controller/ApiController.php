@@ -34,7 +34,9 @@ use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\Model\Message\FormValidation;
+use phpOMS\System\File\FileUtils;
 use phpOMS\System\File\Local\Directory;
+use phpOMS\System\MimeType;
 use phpOMS\System\OperatingSystem;
 use phpOMS\System\SystemType;
 use phpOMS\System\SystemUtils;
@@ -73,6 +75,12 @@ final class ApiController extends Controller
         $resource = ResourceMapper::get()
             ->where('id', (int) $request->getData('id'))
             ->execute();
+
+        if ($request->hasData('path')) {
+            // @todo: check if user has permission?
+            $this->app->moduleManager->get('Media', 'Api')->apiMediaExport($request, $response, ['guard' => __DIR__ . '/../Files']);
+            return;
+        }
 
         $path     = '';
         $basePath = __DIR__ . '/../Files/' . $resource->path . '/' . $resource->lastVersionPath;
@@ -124,7 +132,9 @@ final class ApiController extends Controller
     {
         $val = [];
         if (($val['title'] = !$request->hasData('title'))
-            || ($val['uri'] = (!$request->hasData('uri') || \filter_var($request->getDataString('uri'), \FILTER_VALIDATE_URL) === false))
+            || ($val['uri'] = (!$request->hasData('uri')
+                || (\filter_var($request->getDataString('uri'), \FILTER_VALIDATE_URL) === false && \stripos($request->getDataString('uri'), 'www.') !== 0))
+            )
         ) {
             return $val;
         }
@@ -330,7 +340,7 @@ final class ApiController extends Controller
         $totalCount = \count($toCheck);
         $maxLoops   = (int) \min(60 * 10, $totalCount * 10 / 4); // At most run 600 times or 2.5 times the resource count
         $startTime  = \time();
-        $minTime    = $startTime + ((int) \max(10 * $totalCount, 60 * 5)); // At least run 10 seconds per element or 5 minutes
+        $minTime    = $startTime + ((int) \max(10 * $totalCount, 60)); // At least run 10 seconds per element or 5 minutes
         $maxTime    = $startTime + ((int) \min(60 * $totalCount, 60 * 60 * 3)); // At most run 60 seconds per element or 3 hours
 
         while (!empty($toCheck)) {
@@ -404,7 +414,20 @@ final class ApiController extends Controller
                             continue;
                         }
 
-                        $extension = ($pos = \strrpos($file, '.')) !== false ? \substr($file, $pos + 1) : '';
+                        $extension         = ($pos = \strrpos($file, '.')) !== false ? \substr($file, $pos + 1) : '';
+                        $possibleExtension = MimeType::mimeToExtension(\mime_content_type($path . '/' . $file));
+
+                        $newFileName = FileUtils::makeSafeFileName($file);
+                        if ($possibleExtension !== null && $possibleExtension !== $extension) {
+                            $extension    = $possibleExtension;
+                            $newFileName .= '.' . $extension;
+                        }
+
+                        if ($file !== $newFileName) {
+                            \rename($path . '/' . $file, $path . '/' . $newFileName);
+                            $file = $newFileName;
+                        }
+
                         if (StringUtils::endsWith($file, '.' . $extension)) {
                             $fileName                   = $file;
                             $toCheck[$index]['handled'] = true;
@@ -666,10 +689,20 @@ final class ApiController extends Controller
         }
 
         // Make sure that no wkhtmltoimage processes are running
-        if (OperatingSystem::getSystem() === SystemType::LINUX) {
-            SystemUtils::runProc('pkill', '-f wkhtmltoimage', true);
-        } else {
-            SystemUtils::runProc('taskkill', '/F /IM wkhtmltoimage.exe', true);
+        $time = \time();
+        if ($time - $minTime < 3) {
+            // The shortest time interval we give the script to download the images
+            \sleep(3);
+        }
+
+        if ($time > $minTime) {
+            // @todo: create a separate function which is called async minTime - time seconds after
+            // This solution is just a workaround for small lists which would otherwise be forced to wait at least 60 seconds.
+            if (OperatingSystem::getSystem() === SystemType::LINUX) {
+                SystemUtils::runProc('pkill', '-f wkhtmltoimage', true);
+            } else {
+                SystemUtils::runProc('taskkill', '/F /IM wkhtmltoimage.exe', true);
+            }
         }
 
         Directory::delete($basePath . '/temp');

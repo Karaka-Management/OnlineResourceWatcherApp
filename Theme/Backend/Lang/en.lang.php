@@ -53,6 +53,7 @@ return ['OnlineResourceWatcher' => [
     'SignIn'                   => 'Sign In',
     'Status'                   => 'Status',
     'Submit'                   => 'Submit',
+    'Title'                    => 'Title',
     'Terms'                    => 'Terms',
     'Trigger'                  => 'Trigger',
     'Type'                     => 'Type',
