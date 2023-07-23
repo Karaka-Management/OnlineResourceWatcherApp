@@ -6,10 +6,6 @@ use phpOMS\Uri\UriFactory;
 
 <div class="row row-simple">
     <?php
-
-        $old = \reset($reports);
-        $new = \end($reports);
-
         $old = null;
         $new = null;
 
@@ -113,7 +109,7 @@ use phpOMS\Uri\UriFactory;
         </div>
     </div>
 
-    <?php else : ?>
+    <?php elseif ($type !== 'img' && $old !== null) : ?>
     <div class="col-xs-6 col-simple">
         <div class="portlet col-simple">
             <div class="portlet-body col-simple">
