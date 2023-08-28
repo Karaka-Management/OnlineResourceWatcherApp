@@ -191,11 +191,7 @@ final class ApiController extends Controller
         $resource->path  = $request->getDataString('path') ?? '';
 
         // @todo: check if user is part of organization below AND has free resources to add!!!
-        $resource->organization = new NullAccount(
-            !$request->hasData('organization')
-                ? 1
-                : (int) ($request->getData('organization'))
-            );
+        $resource->organization = new NullAccount($request->getDataInt('organization') ?? 1);
 
         return $resource;
     }
@@ -514,9 +510,16 @@ final class ApiController extends Controller
 
                 $hasDifferentHash = $md5Old !== $md5New;
 
-                // @todo: check if old path exists and if not, don't calculate a diff
-
                 $difference = 0;
+
+                // Is new file -> always different -> no content inspection required
+                if ($hasDifferentHash && !\is_file($oldPath)) {
+                    $difference = 1;
+
+                    $hasDifferentHash = false;
+                }
+
+                // Different file hash -> content inspection required
                 if ($hasDifferentHash) {
                     if (\in_array($extension, self::TEXT_RENDERABLE)) {
                         $contentOld = \Modules\Media\Controller\ApiController::loadFileContent($oldPath, $extension);
