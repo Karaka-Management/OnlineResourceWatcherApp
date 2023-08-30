@@ -12,7 +12,6 @@
  */
 declare(strict_types=1);
 
-use Modules\OnlineResourceWatcher\Models\ReportStatus;
 use phpOMS\Uri\UriFactory;
 
 /** @var \Modules\OnlineResourceWatcher\Models\Resource */
