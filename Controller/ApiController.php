@@ -410,8 +410,9 @@ final class ApiController extends Controller
                             continue;
                         }
 
-                        $extension         = ($pos = \strrpos($file, '.')) !== false ? \substr($file, $pos + 1) : '';
-                        $possibleExtension = MimeType::mimeToExtension(\mime_content_type($path . '/' . $file));
+                        $extension         = ($pos = \strrpos($file, '.')) === false ? '' : \substr($file, $pos + 1);
+                        $mimeContentType   = \mime_content_type($path . '/' . $file);
+                        $possibleExtension = MimeType::mimeToExtension($mimeContentType === false ? '' : $mimeContentType);
 
                         $newFileName = FileUtils::makeSafeFileName($file);
                         if ($possibleExtension !== null && $possibleExtension !== $extension) {

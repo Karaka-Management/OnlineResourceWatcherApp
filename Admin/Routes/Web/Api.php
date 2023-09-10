@@ -57,6 +57,27 @@ return [
         ],
     ],
 
+    '^.*/orw/resource/inform.*$' => [
+        [
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiInformCreate',
+            'verb'       => RouteVerb::PUT,
+            'permission' => [
+                'module' => ApiController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::RESOURCE,
+            ],
+        ],
+        [
+            'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiInformDelete',
+            'verb'       => RouteVerb::DELETE,
+            'permission' => [
+                'module' => ApiController::NAME,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionCategory::RESOURCE,
+            ],
+        ],
+    ],
+
     '^.*/orw/resource/render.*$' => [
         [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceRender',
