@@ -44,7 +44,7 @@ final class Installer extends InstallerAbstract
      */
     public static function install(ApplicationAbstract $app, ModuleInfo $info, SettingsInterface $cfgHandler) : void
     {
-        if (OperatingSystem::getSystem() === SystemType::LINUX && !\is_writable('/var/www')) {
+        if (OperatingSystem::getSystem() === SystemType::LINUX && !\is_writable(__DIR__ . '/../')) {
             $app->logger->error(
                 'Directory /var/www is not writable. Please allow the apache user (www-data) to write to this directory.'
             );
