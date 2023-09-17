@@ -703,7 +703,7 @@ final class ApiController extends Controller
             // @todo: create a separate function which is called async minTime - time seconds after
             // This solution is just a workaround for small lists which would otherwise be forced to wait at least 60 seconds.
             if (OperatingSystem::getSystem() === SystemType::LINUX) {
-                SystemUtils::runProc('pkill', '-f wkhtmltoimage', true);
+                SystemUtils::runProc('pkill', '-9 -f wkhtmltoimage', true);
             } else {
                 SystemUtils::runProc('taskkill', '/F /IM wkhtmltoimage.exe', true);
             }
