@@ -133,7 +133,7 @@ final class ApiController extends Controller
         $val = [];
         if (($val['title'] = !$request->hasData('title'))
             || ($val['uri'] = (!$request->hasData('uri')
-                || (\filter_var($request->getDataString('uri'), \FILTER_VALIDATE_URL) === false && \stripos($request->getDataString('uri'), 'www.') !== 0))
+                || (\filter_var($request->getDataString('uri'), \FILTER_VALIDATE_URL) === false && \stripos($request->getDataString('uri') ?? '', 'www.') !== 0))
             )
         ) {
             return $val;
@@ -937,8 +937,8 @@ final class ApiController extends Controller
     {
         $inform           = new Inform();
         $inform->account  = $request->getDataInt('account');
-        $inform->email    = $request->getDataString('email');
-        $inform->resource = $request->getDataInt('resource');
+        $inform->email    = $request->getDataString('email') ?? '';
+        $inform->resource = $request->getDataInt('resource') ?? 0;
 
         return $inform;
     }
