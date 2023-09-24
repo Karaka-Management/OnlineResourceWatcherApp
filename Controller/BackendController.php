@@ -158,9 +158,7 @@ final class BackendController extends Controller
      */
     public function viewResourceCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
-        $view = new View($this->app->l11nManager, $request, $response);
-
-        return $view;
+        return new View($this->app->l11nManager, $request, $response);
     }
 
     /**
@@ -177,9 +175,7 @@ final class BackendController extends Controller
      */
     public function viewReportList(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
-        $view = new View($this->app->l11nManager, $request, $response);
-
-        return $view;
+        return new View($this->app->l11nManager, $request, $response);
     }
 
     /**
@@ -196,8 +192,6 @@ final class BackendController extends Controller
      */
     public function viewReport(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
     {
-        $view = new View($this->app->l11nManager, $request, $response);
-
-        return $view;
+        return new View($this->app->l11nManager, $request, $response);
     }
 }
