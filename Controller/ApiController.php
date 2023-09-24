@@ -246,11 +246,13 @@ final class ApiController extends Controller
             ->where('createdAt', $dateTime, '>=')
             ->execute();
 
+        /*
         foreach ($reports as $report) {
             // @todo: get templates
             // @todo: get users to inform
             // @todo: inform users
         }
+        */
     }
 
     /**
