@@ -61,7 +61,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -69,7 +69,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiResourceRender(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiResourceRender(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         /** @var \Modules\OnlineResourceWatcher\Models\Resource $resource */
         $resource = ResourceMapper::get()
@@ -147,7 +147,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -155,7 +155,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiResourceCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiResourceCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateResourceCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -201,7 +201,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -209,7 +209,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiCheckResources(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiCheckResources(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         /** @var Resource[] $resources */
         $resources = ResourceMapper::getAll()
@@ -229,13 +229,13 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
      * @since 1.0.0
      */
-    public function informUsers(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function informUsers(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $dateTime = new \DateTime('now');
         $dateTime = $dateTime->modify('-1 hour');
@@ -721,7 +721,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -729,7 +729,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiResourceUpdate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiResourceUpdate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateResourceUpdate($request))) {
             $response->data['resource_create'] = new FormValidation($val);
@@ -797,7 +797,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -805,7 +805,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiResourceGet(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiResourceGet(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
     }
 
@@ -814,7 +814,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -822,7 +822,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiResourceDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiResourceDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateResourceDelete($request))) {
             $response->data['resource_create'] = new FormValidation($val);
@@ -872,7 +872,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -880,7 +880,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiInformCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiInformCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateInformCreate($request))) {
             $response->header->status = RequestStatusCode::R_400;
@@ -950,7 +950,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -958,7 +958,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiInformDelete(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiInformDelete(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         if (!empty($val = $this->validateInformDelete($request))) {
             $response->data['resource_create'] = new FormValidation($val);
