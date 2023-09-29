@@ -16,6 +16,7 @@ namespace Modules\OnlineResourceWatcher\tests\Controller;
 
 use Model\CoreSettings;
 use Modules\Admin\Models\AccountPermission;
+use Modules\Admin\Models\LocalizationMapper;
 use phpOMS\Account\Account;
 use phpOMS\Account\AccountManager;
 use phpOMS\Account\PermissionType;
@@ -63,6 +64,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
         $this->app->dispatcher      = new Dispatcher($this->app);
         $this->app->eventManager    = new EventManager($this->app->dispatcher);
         $this->app->l11nManager     = new L11nManager();
+        $this->app->l11nServer      = LocalizationMapper::get()->where('id', 1)->execute();
         $this->app->eventManager->importFromFile(__DIR__ . '/../../../Web/Api/Hooks.php');
 
         $account = new Account();
@@ -93,7 +95,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
      * @covers Modules\OnlineResourceWatcher\Controller\ApiController
      * @group module
      */
-    public function testApiAccountCreate() : void
+    public function testApiResourceCreate() : void
     {
         $response = new HttpResponse();
         $request  = new HttpRequest(new HttpUri(''));
