@@ -108,4 +108,24 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
 
         self::assertGreaterThan(0, $response->getDataArray('')['response']->id);
     }
+
+    public function testInvalidapiResourceCreate() : void
+    {
+        $response = new HttpResponse();
+        $request  = new HttpRequest(new HttpUri(''));
+
+        $request->header->account = 1;
+        $this->module->apiResourceCreate($request, $response);
+        self::assertEquals(RequestStatusCode::R_400, $response->header->status);
+    }
+
+    public function testInvalidapiInformDelete() : void
+    {
+        $response = new HttpResponse();
+        $request  = new HttpRequest(new HttpUri(''));
+
+        $request->header->account = 1;
+        $this->module->apiInformDelete($request, $response);
+        self::assertEquals(RequestStatusCode::R_400, $response->header->status);
+    }
 }
