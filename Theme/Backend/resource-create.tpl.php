@@ -73,9 +73,9 @@ use phpOMS\Uri\UriFactory;
             <table class="default">
                 <thead>
                     <tr>
-                        <td><?= $this->getHtml('ID', '0', '0'); ?><i class="sort-asc fa fa-chevron-up"></i><i class="sort-desc fa fa-chevron-down"></i>
-                        <td><?= $this->getHtml('User', '0', '0'); ?><i class="sort-asc fa fa-chevron-up"></i><i class="sort-desc fa fa-chevron-down"></i>
-                        <td><?= $this->getHtml('Email', '0', '0'); ?><i class="sort-asc fa fa-chevron-up"></i><i class="sort-desc fa fa-chevron-down"></i>
+                        <td><?= $this->getHtml('ID', '0', '0'); ?><i class="sort-asc g-icon">expand_less</i><i class="sort-desc g-icon">expand_more</i>
+                        <td><?= $this->getHtml('User', '0', '0'); ?><i class="sort-asc g-icon">expand_less</i><i class="sort-desc g-icon">expand_more</i>
+                        <td><?= $this->getHtml('Email', '0', '0'); ?><i class="sort-asc g-icon">expand_less</i><i class="sort-desc g-icon">expand_more</i>
                 <tbody>
                     <?php $c = 0; foreach ([] as $key => $value) : ++$c; $url = UriFactory::build('{/base}/admin/account/settings?{?}&id=' . $value->id); ?>
                     <tr data-href="<?= $url; ?>">

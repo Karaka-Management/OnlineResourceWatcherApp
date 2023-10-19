@@ -94,10 +94,10 @@ $next = $tableView->getNextLink(
             <?php if ($this->getData('hasPrevious') || $this->getData('hasNext')) : ?>
             <div class="portlet-foot">
                 <?php if ($this->getData('hasPrevious')) : ?>
-                <a tabindex="0" class="button" href="<?= UriFactory::build($previous); ?>"><i class="fa fa-chevron-left"></i></a>
+                <a tabindex="0" class="button" href="<?= UriFactory::build($previous); ?>"><i class="g-icon">chevron_left</i></a>
                 <?php endif; ?>
                 <?php if ($this->getData('hasNext')) : ?>
-                <a tabindex="0" class="button" href="<?= UriFactory::build($next); ?>"><i class="fa fa-chevron-right"></i></a>
+                <a tabindex="0" class="button" href="<?= UriFactory::build($next); ?>"><i class="g-icon">chevron_right</i></a>
                 <?php endif; ?>
             </div>
             <?php endif; ?>
