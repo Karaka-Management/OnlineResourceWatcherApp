@@ -115,7 +115,7 @@ class Resource implements \JsonSerializable
      * The owner/creator of the resource can be different
      * from the group/organization this resource belongs to.
      *
-     * @todo: consider to use groups instead of organizations?
+     * @todo consider to use groups instead of organizations?
      * groups would be better for internal purposes (e.g. departments) but accounts are better for external purposes (different customers)
      *
      * @var Account

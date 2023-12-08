@@ -77,7 +77,7 @@ final class ApiController extends Controller
             ->execute();
 
         if ($request->hasData('path')) {
-            // @todo: check if user has permission?
+            // @todo check if user has permission?
             $this->app->moduleManager->get('Media', 'Api')->apiMediaExport($request, $response, ['guard' => __DIR__ . '/../Files']);
             return;
         }
@@ -190,7 +190,7 @@ final class ApiController extends Controller
         $resource->owner = new NullAccount($request->header->account);
         $resource->path  = $request->getDataString('path') ?? '';
 
-        // @todo: check if user is part of organization below AND has free resources to add!!!
+        // @todo check if user is part of organization below AND has free resources to add!!!
         $resource->organization = new NullAccount($request->getDataInt('organization') ?? 1);
 
         return $resource;
@@ -248,9 +248,9 @@ final class ApiController extends Controller
 
         /*
         foreach ($reports as $report) {
-            // @todo: get templates
-            // @todo: get users to inform
-            // @todo: inform users
+            // @todo get templates
+            // @todo get users to inform
+            // @todo inform users
         }
         */
     }
@@ -265,7 +265,7 @@ final class ApiController extends Controller
      * @return array
      *
      * @since 1.0.0
-     * @todo: implement iterative approach where you can define a "offset" and "limit" to check only a few resources at a time
+     * @todo implement iterative approach where you can define a "offset" and "limit" to check only a few resources at a time
      */
     public function checkResources(RequestAbstract $request, array $resources, mixed $data = null) : array
     {
@@ -616,7 +616,7 @@ final class ApiController extends Controller
                         }
                     }
 
-                    // @todo: move to informUsers function
+                    // @todo move to informUsers function
                     $owner              = new Inform();
                     $owner->email       = $resource->owner->getEmail();
                     $resource->inform[] = $owner;
@@ -686,7 +686,7 @@ final class ApiController extends Controller
 
                 // Directory::delete($basePath . '/temp/' . $resource->id);
 
-                // @todo: delete older history depending on plan
+                // @todo delete older history depending on plan
 
                 unset($toCheck[$index]);
             }
@@ -702,7 +702,7 @@ final class ApiController extends Controller
         }
 
         if ($time > $minTime) {
-            // @todo: create a separate function which is called async minTime - time seconds after
+            // @todo create a separate function which is called async minTime - time seconds after
             // This solution is just a workaround for small lists which would otherwise be forced to wait at least 60 seconds.
             if (OperatingSystem::getSystem() === SystemType::LINUX) {
                 SystemUtils::runProc('pkill', '-9 -f wkhtmltoimage', true);
