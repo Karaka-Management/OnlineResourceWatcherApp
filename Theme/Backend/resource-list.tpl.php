@@ -44,7 +44,7 @@ $next = $tableView->getNextLink(
                 <?= $tableView->renderTitle(
                     $this->getHtml('Resources')
                 ); ?>
-                <a class="button button end-xs save" href="<?= UriFactory::build('{/base}/'); ?>orw/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
+                <a class="button end-xs save" href="<?= UriFactory::build('{/base}/'); ?>orw/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
             </div>
             <div class="slider">
             <table id="<?= $tableView->id; ?>" class="default sticky">

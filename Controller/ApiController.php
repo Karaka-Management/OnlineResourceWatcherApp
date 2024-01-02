@@ -52,8 +52,20 @@ use phpOMS\Utils\StringUtils;
  */
 final class ApiController extends Controller
 {
+    /**
+     * Text renderable file formats
+     *
+     * @var string[]
+     * @since 1.0.0
+     */
     public const TEXT_RENDERABLE = ['md', 'txt', 'doc', 'docx', 'pdf', 'xls', 'xlsx'];
 
+    /**
+     * Image renderable file formats
+     *
+     * @var string[]
+     * @since 1.0.0
+     */
     public const IMG_RENDERABLE = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'svg'];
 
     /**
@@ -78,7 +90,9 @@ final class ApiController extends Controller
 
         if ($request->hasData('path')) {
             // @todo check if user has permission?
-            $this->app->moduleManager->get('Media', 'Api')->apiMediaExport($request, $response, ['guard' => __DIR__ . '/../Files']);
+            $this->app->moduleManager->get('Media', 'Api')
+                ->apiMediaExport($request, $response, ['guard' => __DIR__ . '/../Files']);
+
             return;
         }
 
@@ -220,7 +234,9 @@ final class ApiController extends Controller
             ->where('checkedAt', (new \DateTime('now'))->sub(new \DateInterval('PT12H')), '<')
             ->execute();
 
-        $this->checkResources($request, $resources);
+        $changes = $this->checkResources($request, $resources);
+        $this->informEmail($changes);
+
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Resources', 'Resources were checked.', null);
     }
 
@@ -246,13 +262,125 @@ final class ApiController extends Controller
             ->where('createdAt', $dateTime, '>=')
             ->execute();
 
-        /*
-        foreach ($reports as $report) {
-            // @todo get templates
-            // @todo get users to inform
-            // @todo inform users
+        $ids = \array_map(
+            function (Report $report) : void {
+                $report->resource;
+            },
+            $reports
+        );
+
+        $resources = ResourceMapper::getAll()
+            ->with('owner')
+            ->with('owner/l11n')
+            ->where('id', $ids, 'IN')
+            ->execute();
+
+        $this->informEmail($resources);
+        $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Inform', 'Users were informed', null);
+    }
+
+    /**
+     * Inform users about changed resources via email
+     *
+     * @param Resource[] $resources Changed resources
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function informEmail(array $resources) : void
+    {
+        $handler = $this->app->moduleManager->get('Admin', 'Api')->setUpServerMailHandler();
+
+        /** @var \Model\Setting $emailSettings */
+        $emailSettings = $this->app->appSettings->get(
+            names: SettingsEnum::MAIL_SERVER_ADDR,
+            module: 'OnlineResourceWatcher'
+        );
+
+        /** @var \Model\Setting $templateSettings */
+        $templateSettings = $this->app->appSettings->get(
+            names: OrwSettingsEnum::ORW_CHANGE_MAIL_TEMPLATE,
+            module: 'OnlineResourceWatcher'
+        );
+
+        /** @var \Modules\Messages\Models\Email $baseEmail */
+        $baseEmail = EmailMapper::get()
+            ->with('l11n')
+            ->where('id', (int) $templateSettings->content)
+            ->execute();
+
+        /** @var \Modules\OnlineResourceWatcher\Models\InformBlacklist[] */
+        $blacklist = InformBlacklistMapper::getAll()
+            ->execute();
+
+        foreach ($resources as $resource) {
+            $owner              = new Inform();
+            $owner->email       = $resource->owner->getEmail();
+            $resource->inform[] = $owner;
+
+            foreach ($resource->inform as $inform) {
+                if (empty($inform->email)) {
+                    continue;
+                }
+
+                foreach ($blacklist as $block) {
+                    if (\stripos($inform->email, $block->email) !== false) {
+                        continue 2;
+                    }
+                }
+
+                $mail = clone $baseEmail;
+                $mail->setFrom($emailSettings->content);
+
+                $mailL11n = $baseEmail->getL11nByLanguage($resource->owner->l11n->language);
+                if ($mailL11n->id === 0) {
+                    $mailL11n = $baseEmail->getL11nByLanguage($this->app->l11nServer->language);
+                }
+
+                if ($mailL11n->id === 0) {
+                    $mailL11n = $baseEmail->getL11nByLanguage('en');
+                }
+
+                $mail->subject = $mailL11n->subject;
+
+                $mail->body = \str_replace(
+                    [
+                        '{resource.id}',
+                        '{email}',
+                        '{resource.url}',
+                        '{owner_email}',
+                    ],
+                    [
+                        $resource->id,
+                        $inform->email,
+                        $resource->uri,
+                        $resource->owner->getEmail(),
+                    ],
+                    $mailL11n->body
+                );
+                $mail->msgHTML($mail->body);
+
+                $mail->bodyAlt = \str_replace(
+                    [
+                        '{resource.id}',
+                        '{email}',
+                        '{resource.url}',
+                        '{owner_email}',
+                    ],
+                    [
+                        $resource->id,
+                        $inform->email,
+                        $resource->uri,
+                        $resource->owner->getEmail(),
+                    ],
+                    $mailL11n->bodyAlt
+                );
+
+                $mail->addTo($inform->email);
+                $handler->send($mail);
+            }
         }
-        */
     }
 
     /**
@@ -262,7 +390,7 @@ final class ApiController extends Controller
      * @param array           $resources Resources to check
      * @param mixed           $data      Generic data
      *
-     * @return array
+     * @return Resource[]
      *
      * @since 1.0.0
      * @todo implement iterative approach where you can define a "offset" and "limit" to check only a few resources at a time
@@ -309,30 +437,6 @@ final class ApiController extends Controller
                 );
             }
         }
-
-        $handler = $this->app->moduleManager->get('Admin', 'Api')->setUpServerMailHandler();
-
-        /** @var \Model\Setting $emailSettings */
-        $emailSettings = $this->app->appSettings->get(
-            names: SettingsEnum::MAIL_SERVER_ADDR,
-            module: 'OnlineResourceWatcher'
-        );
-
-        /** @var \Model\Setting $templateSettings */
-        $templateSettings = $this->app->appSettings->get(
-            names: OrwSettingsEnum::ORW_CHANGE_MAIL_TEMPLATE,
-            module: 'OnlineResourceWatcher'
-        );
-
-        /** @var \Modules\Messages\Models\Email $baseEmail */
-        $baseEmail = EmailMapper::get()
-            ->with('l11n')
-            ->where('id', (int) $templateSettings->content)
-            ->execute();
-
-        /** @var \Modules\OnlineResourceWatcher\Models\InformBlacklist[] */
-        $blacklist = InformBlacklistMapper::getAll()
-            ->execute();
 
         // Check downloaded resources
         $totalCount = \count($toCheck);
@@ -593,7 +697,9 @@ final class ApiController extends Controller
                     $resource->lastVersionDate = $report->createdAt;
                     $resource->hash            = $md5New;
 
-                    $changed[] = $report;
+                    $resource->reports[] = $report;
+
+                    $changed[] = $resource;
 
                     Directory::copy($path, $basePath . '/' . $resource->id . '/' . $check['timestamp']);
 
@@ -615,69 +721,6 @@ final class ApiController extends Controller
                             );
                         }
                     }
-
-                    // @todo move to informUsers function
-                    $owner              = new Inform();
-                    $owner->email       = $resource->owner->getEmail();
-                    $resource->inform[] = $owner;
-
-                    foreach ($resource->inform as $inform) {
-                        foreach ($blacklist as $block) {
-                            if (\stripos($inform->email, $block->email) !== false) {
-                                continue 2;
-                            }
-                        }
-
-                        $mail = clone $baseEmail;
-                        $mail->setFrom($emailSettings->content);
-
-                        $mailL11n = $baseEmail->getL11nByLanguage($resource->owner->l11n->language);
-                        if ($mailL11n->id === 0) {
-                            $mailL11n = $baseEmail->getL11nByLanguage($this->app->l11nServer->language);
-                        }
-
-                        if ($mailL11n->id === 0) {
-                            $mailL11n = $baseEmail->getL11nByLanguage('en');
-                        }
-
-                        $mail->subject = $mailL11n->subject;
-
-                        $mail->body = \str_replace(
-                            [
-                                '{resource.id}',
-                                '{email}',
-                                '{resource.url}',
-                                '{owner_email}',
-                            ],
-                            [
-                                $resource->id,
-                                $inform->email,
-                                $resource->uri,
-                                $resource->owner->getEmail(),
-                            ],
-                            $mailL11n->body
-                        );
-                        $mail->msgHTML($mail->body);
-
-                        $mail->bodyAlt = \str_replace(
-                            [
-                                '{resource.id}',
-                                '{email}',
-                                '{resource.url}',
-                                '{owner_email}',
-                            ],
-                            [
-                                $resource->id,
-                                $inform->email,
-                                $resource->uri,
-                                $resource->owner->getEmail(),
-                            ],
-                            $mailL11n->bodyAlt
-                        );
-
-                        $mail->addTo($inform->email);
-                        $handler->send($mail);
-                    }
                 }
 
                 $this->createModel($request->header->account, $report, ReportMapper::class, 'report', $request->getOrigin());
@@ -694,21 +737,11 @@ final class ApiController extends Controller
             \usleep(100000); // 100ms delay to give the tools time to download between steps
         }
 
-        // Make sure that no wkhtmltoimage processes are running
-        $time = \time();
-        if ($time - $minTime < 3) {
-            // The shortest time interval we give the script to download the images
-            \sleep(3);
-        }
-
-        if ($time > $minTime) {
-            // @todo create a separate function which is called async minTime - time seconds after
-            // This solution is just a workaround for small lists which would otherwise be forced to wait at least 60 seconds.
-            if (OperatingSystem::getSystem() === SystemType::LINUX) {
-                SystemUtils::runProc('pkill', '-9 -f wkhtmltoimage', true);
-            } else {
-                SystemUtils::runProc('taskkill', '/F /IM wkhtmltoimage.exe', true);
-            }
+        // Kill running processes in x seconds that shouldn't be running any longer
+        if (OperatingSystem::getSystem() === SystemType::LINUX) {
+            SystemUtils::runProc('sleep', \max(0, $time - $minTime) . ' && pkill -9 -f wkhtmltoimage', true);
+        } else {
+            SystemUtils::runProc('timeout', '/t ' . \max(0, $time - $minTime) . ' > NUL && taskkill /F /IM wkhtmltoimage.exe', true);
         }
 
         Directory::delete($basePath . '/temp');
@@ -900,9 +933,9 @@ final class ApiController extends Controller
             return;
         }
 
-        $resource = $this->createInformFromRequest($request);
-        $this->createModel($request->header->account, $resource, InformMapper::class, 'resource', $request->getOrigin());
-        $this->createStandardCreateResponse($request, $response, $resource);
+        $inform = $this->createInformFromRequest($request);
+        $this->createModel($request->header->account, $inform, InformMapper::class, 'inform', $request->getOrigin());
+        $this->createStandardCreateResponse($request, $response, $inform);
     }
 
     /**

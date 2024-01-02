@@ -70,7 +70,7 @@ use phpOMS\Uri\UriFactory;
     <div class="col-xs-12">
         <div class="portlet">
             <div class="portlet-head"><?= $this->getHtml('Inform', '0', '0'); ?></div>
-            <table class="default">
+            <table class="default sticky">
                 <thead>
                     <tr>
                         <td><?= $this->getHtml('ID', '0', '0'); ?><i class="sort-asc g-icon">expand_less</i><i class="sort-desc g-icon">expand_more</i>

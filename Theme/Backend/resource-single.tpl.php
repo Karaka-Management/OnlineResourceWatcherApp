@@ -60,7 +60,7 @@ $reports  = $resource->reports;
         <div class="portlet">
             <div class="portlet-head"><?= $this->getHtml('History'); ?></div>
             <div class="slider">
-            <table class="default">
+            <table class="default sticky">
 				<thead>
 					<tr>
 						<td><?= $this->getHtml('Date'); ?>
