@@ -36,8 +36,8 @@ final class InformBlacklistMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'orw_resource_blacklist_id'                => ['name' => 'orw_resource_blacklist_id',                'type' => 'int',               'internal' => 'id'],
-        'orw_resource_blacklist_mail'              => ['name' => 'orw_resource_blacklist_mail',             'type' => 'string',            'internal' => 'email',],
+        'orw_resource_blacklist_id'   => ['name' => 'orw_resource_blacklist_id',                'type' => 'int',               'internal' => 'id'],
+        'orw_resource_blacklist_mail' => ['name' => 'orw_resource_blacklist_mail',             'type' => 'string',            'internal' => 'email',],
     ];
 
     /**

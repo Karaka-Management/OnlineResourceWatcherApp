@@ -57,7 +57,7 @@ return [
         ],
     ],
 
-    '^.*/orw/resource/inform.*$' => [
+    '^.*/orw/resource/inform(\?.*$|$)' => [
         [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiInformCreate',
             'verb'       => RouteVerb::PUT,
@@ -78,7 +78,7 @@ return [
         ],
     ],
 
-    '^.*/orw/resource/render.*$' => [
+    '^.*/orw/resource/render(\?.*$|$)' => [
         [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceRender',
             'verb'       => RouteVerb::GET,

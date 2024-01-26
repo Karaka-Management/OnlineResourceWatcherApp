@@ -52,6 +52,9 @@ use phpOMS\Uri\UriFactory;
                             } elseif (\stripos($file, '.pdf') !== false) {
                                 $type = 'pdf';
                                 break;
+                            } elseif (\stripos($file, '.htm') !== false) {
+                                $type = 'htm';
+                                break;
                             }
                         }
                     }
@@ -85,6 +88,9 @@ use phpOMS\Uri\UriFactory;
                             } elseif (\stripos($file, '.pdf') !== false) {
                                 $type = 'pdf';
                                 break;
+                            } elseif (\stripos($file, '.htm') !== false) {
+                                $type = 'htm';
+                                break;
                             }
                         }
                     }
@@ -109,11 +115,11 @@ use phpOMS\Uri\UriFactory;
         </div>
     </div>
 
-    <?php elseif ($type !== 'img' && $old !== null) : ?>
+    <?php elseif ($type === 'pdf' && $old !== null) : ?>
     <div class="col-xs-6 col-simple">
         <div class="portlet col-simple">
             <div class="portlet-body col-simple">
-                <iframe class="col-simple" id="iRenderFrame" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode(UriFactory::build('{/api}orw/resource/render?path=' . $oldWebPath)); ?>" loading="lazy" allowfullscreen></iframe>
+                <iframe class="col-simple" id="iRenderOld" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode(UriFactory::build('{/api}orw/resource/render?path=' . $oldWebPath)); ?>" loading="lazy" allowfullscreen></iframe>
             </div>
         </div>
     </div>
@@ -121,7 +127,23 @@ use phpOMS\Uri\UriFactory;
     <div class="col-xs-6 col-simple">
         <div class="portlet col-simple">
             <div class="portlet-body col-simple">
-                <iframe class="col-simple" id="iRenderFrame" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode(UriFactory::build('{/api}orw/resource/render?path=' . $newWebPath)); ?>" loading="lazy" allowfullscreen></iframe>
+                <iframe class="col-simple" id="iRenderNew" src="Resources/mozilla/Pdf/web/viewer.html?file=<?= \urlencode(UriFactory::build('{/api}orw/resource/render?path=' . $newWebPath)); ?>" loading="lazy" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+    <?php elseif ($old !== null) : ?>
+    <div class="col-xs-6 col-simple">
+        <div class="portlet col-simple">
+            <div class="portlet-body col-simple">
+                <iframe class="col-simple" id="iRenderOld" sandbox="allow-scripts" src="<?= $oldWebPath; ?>" loading="lazy" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-6 col-simple">
+        <div class="portlet col-simple">
+            <div class="portlet-body col-simple">
+                <iframe class="col-simple" id="iRenderNew" sandbox="allow-scripts" src="<?= $newWebPath; ?>" loading="lazy" allowfullscreen></iframe>
             </div>
         </div>
     </div>

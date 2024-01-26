@@ -393,7 +393,6 @@ final class ApiController extends Controller
      * @return Resource[]
      *
      * @since 1.0.0
-     * @todo implement iterative approach where you can define a "offset" and "limit" to check only a few resources at a time
      */
     public function checkResources(RequestAbstract $request, array $resources, mixed $data = null) : array
     {
@@ -412,7 +411,7 @@ final class ApiController extends Controller
             $path      = $basePath . '/';
             $timestamp = \time();
 
-            $path     .= 'temp/' . $resource->id . '/' . $timestamp;
+            $path .= 'temp/' . $resource->id . '/' . $timestamp;
             $toCheck[] = [
                 'resource'  => $resource,
                 'timestamp' => $timestamp,
@@ -455,8 +454,8 @@ final class ApiController extends Controller
                 $resource = $check['resource'];
 
                 // Too many tries
-                // 1. Too many iterations and at least the min execution time is reached
-                // 2. Execution takes longer than max time
+                //      1. Too many iterations and at least the min execution time is reached
+                //      2. Execution takes longer than max time
                 if (($check['loop'] > $maxLoops && $time > $minTime) || $time > $maxTime) {
                     $report              = new Report();
                     $report->resource    = $resource->id;
@@ -522,7 +521,7 @@ final class ApiController extends Controller
 
                         $newFileName = FileUtils::makeSafeFileName($file);
                         if ($possibleExtension !== null && $possibleExtension !== $extension) {
-                            $extension    = $possibleExtension;
+                            $extension = $possibleExtension;
                             $newFileName .= '.' . $extension;
                         }
 
@@ -568,6 +567,9 @@ final class ApiController extends Controller
 
                     if ($extension === 'htm') {
                         try {
+                            \var_dump(\exec('whoami'));
+                            \var_dump(\exec('wkhtmltoimage ' . \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg')));
+                            echo 'wkhtmltoimage ' . \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg') . "\n";
                             SystemUtils::runProc(
                                 OperatingSystem::getSystem() === SystemType::WIN ? 'wkhtmltoimage.exe' : 'wkhtmltoimage',
                                 \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg'),

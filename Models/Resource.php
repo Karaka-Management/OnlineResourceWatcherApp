@@ -172,18 +172,6 @@ class Resource implements \JsonSerializable
     }
 
     /**
-     * Get status
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    public function getStatus() : int
-    {
-        return $this->status;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function jsonSerialize() : mixed

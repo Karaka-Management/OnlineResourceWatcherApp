@@ -36,13 +36,13 @@ final class ReportMapper extends DataMapperFactory
      * @since 1.0.0
      */
     public const COLUMNS = [
-        'orw_resource_report_id'                 => ['name' => 'orw_resource_report_id',                'type' => 'int',               'internal' => 'id'],
-        'orw_resource_report_status'             => ['name' => 'orw_resource_report_status',            'type' => 'int',               'internal' => 'status',],
-        'orw_resource_report_metric'             => ['name' => 'orw_resource_report_metric',             'type' => 'int',            'internal' => 'changeMetric',],
-        'orw_resource_report_path'               => ['name' => 'orw_resource_report_path',              'type' => 'string',            'internal' => 'versionPath',],
-        'orw_resource_report_change'             => ['name' => 'orw_resource_report_change',             'type' => 'string',            'internal' => 'change',],
-        'orw_resource_report_resource'           => ['name' => 'orw_resource_report_resource',      'type' => 'int',               'internal' => 'resource',],
-        'orw_resource_report_created_at'         => ['name' => 'orw_resource_report_created_at',        'type' => 'DateTimeImmutable', 'internal' => 'createdAt',],
+        'orw_resource_report_id'         => ['name' => 'orw_resource_report_id',                'type' => 'int',               'internal' => 'id'],
+        'orw_resource_report_status'     => ['name' => 'orw_resource_report_status',            'type' => 'int',               'internal' => 'status',],
+        'orw_resource_report_metric'     => ['name' => 'orw_resource_report_metric',             'type' => 'int',            'internal' => 'changeMetric',],
+        'orw_resource_report_path'       => ['name' => 'orw_resource_report_path',              'type' => 'string',            'internal' => 'versionPath',],
+        'orw_resource_report_change'     => ['name' => 'orw_resource_report_change',             'type' => 'string',            'internal' => 'change',],
+        'orw_resource_report_resource'   => ['name' => 'orw_resource_report_resource',      'type' => 'int',               'internal' => 'resource',],
+        'orw_resource_report_created_at' => ['name' => 'orw_resource_report_created_at',        'type' => 'DateTimeImmutable', 'internal' => 'createdAt',],
     ];
 
     /**

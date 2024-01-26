@@ -40,8 +40,8 @@ class InformBlacklist implements \JsonSerializable
     public function toArray() : array
     {
         return [
-            'id'      => $this->id,
-            'email'   => $this->email,
+            'id'    => $this->id,
+            'email' => $this->email,
         ];
     }
 

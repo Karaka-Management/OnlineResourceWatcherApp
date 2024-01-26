@@ -20,9 +20,9 @@ use phpOMS\Uri\UriFactory;
  */
 $resources = $this->data['resources'] ?? [];
 
-$tableView            = $this->data['tableView'];
-$tableView->id        = 'resourceList';
-$tableView->baseUri   = '{/prefix}orw/resource/list';
+$tableView          = $this->data['tableView'];
+$tableView->id      = 'resourceList';
+$tableView->baseUri = '{/prefix}orw/resource/list';
 $tableView->setObjects($resources);
 
 $previous = $tableView->getPreviousLink(
@@ -82,7 +82,7 @@ $next = $tableView->getNextLink(
                     <tr tabindex="0" data-href="<?= $url; ?>">
                         <td><?= $resource->id; ?>
                         <td><?= $this->printHtml($resource->title); ?>
-                        <td><?= $this->printHtml((string) $resource->getStatus()); ?>
+                        <td><?= $this->printHtml((string) $resource->status); ?>
                         <td><?= $this->printHtml($resource->checkedAt?->format('Y-m-d H:i')); ?>
                         <td><?= $this->printHtml($resource->createdAt->format('Y-m-d')); ?>
                 <?php endforeach; ?>

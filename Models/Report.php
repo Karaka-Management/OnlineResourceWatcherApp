@@ -66,11 +66,11 @@ class Report implements \JsonSerializable
     public function toArray() : array
     {
         return [
-            'id'               => $this->id,
-            'createdAt'        => $this->createdAt,
-            'resource'         => $this->resource,
-            'status'           => $this->status,
-            'changemetric'     => $this->changeMetric,
+            'id'           => $this->id,
+            'createdAt'    => $this->createdAt,
+            'resource'     => $this->resource,
+            'status'       => $this->status,
+            'changemetric' => $this->changeMetric,
         ];
     }
 

@@ -56,7 +56,7 @@ final class BackendController extends Controller
         foreach ($searchFieldData as $key => $data) {
             if ($data === '1') {
                 $split  = \explode('-', $key);
-                $member =  \end($split);
+                $member = \end($split);
 
                 $searchField[] = $member;
             }
@@ -130,7 +130,7 @@ final class BackendController extends Controller
     public function viewResource(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
-        $view->setTemplate('/Modules/OnlineResourceWatcher/Theme/Backend/resource-single');
+        $view->setTemplate('/Modules/OnlineResourceWatcher/Theme/Backend/resource-view');
 
         /** @var \Modules\OnlineResourceWatcher\Models\Resource $resource */
         $resource = ResourceMapper::get()
