@@ -24,6 +24,7 @@ return ['OnlineResourceWatcher' => [
     'BillingSettings' => 'Billing Settings',
     'Bills'           => 'Bills',
     'By'              => 'By',
+    'Difference'              => 'Unterschiede',
     'Cancel'          => 'Cancel',
     'Checked'         => 'Checked',
     'City'            => 'City',

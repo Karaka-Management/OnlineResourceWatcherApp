@@ -66,7 +66,7 @@ final class ApiController extends Controller
      * @var string[]
      * @since 1.0.0
      */
-    public const IMG_RENDERABLE = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'svg'];
+    public const IMG_RENDERABLE = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg'];
 
     /**
      * Api method to create resource
@@ -439,10 +439,10 @@ final class ApiController extends Controller
 
         // Check downloaded resources
         $totalCount = \count($toCheck);
-        $maxLoops   = (int) \min(60 * 10, $totalCount * 10 / 4); // At most run 600 times or 2.5 times the resource count
+        $maxLoops   = 60 * 10; // At most wait 600 times per individual resource
         $startTime  = \time();
-        $minTime    = $startTime + ((int) \max(10 * $totalCount, 60)); // At least run 10 seconds per element or 5 minutes
-        $maxTime    = $startTime + ((int) \min(60 * $totalCount, 60 * 60 * 3)); // At most run 60 seconds per element or 3 hours
+        $minTime    = $startTime + ((int) \max(15 * $totalCount, 60 * 15)); // At least run 15 seconds per element or 15 minutes in total
+        $maxTime    = $startTime + ((int) \min(60 * $totalCount, 60 * 60 * 3)); // At most run 60 seconds per element or 3 hours in total
 
         while (!empty($toCheck)) {
             $time = \time();
@@ -484,6 +484,7 @@ final class ApiController extends Controller
                 if (!\is_dir($path)) {
                     // Either the download takes too long or the download failed!
                     // Let's go to the next element and re-check later on.
+                    // However, an element will only get checked a finite amount of times (limited by checks AND/OR total time)
                     continue;
                 }
 
@@ -567,9 +568,7 @@ final class ApiController extends Controller
 
                     if ($extension === 'htm') {
                         try {
-                            \var_dump(\exec('whoami'));
-                            \var_dump(\exec('wkhtmltoimage ' . \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg')));
-                            echo 'wkhtmltoimage ' . \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg') . "\n";
+                            // Tool: software used is wkhtmltopdf
                             SystemUtils::runProc(
                                 OperatingSystem::getSystem() === SystemType::WIN ? 'wkhtmltoimage.exe' : 'wkhtmltoimage',
                                 \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg'),
@@ -631,53 +630,58 @@ final class ApiController extends Controller
                 // Different file hash -> content inspection required
                 if ($hasDifferentHash) {
                     if (\in_array($extension, self::TEXT_RENDERABLE)) {
-                        $contentOld = \Modules\Media\Controller\ApiController::loadFileContent($oldPath, $extension);
-                        $contentNew = \Modules\Media\Controller\ApiController::loadFileContent($newPath, $extension);
+                        $contentOld = \Modules\Media\Controller\ApiController::loadFileContent($oldPath, $extension, 'txt', ['path' => $resource->xpath]);
+                        $contentNew = \Modules\Media\Controller\ApiController::loadFileContent($newPath, $extension, 'txt', ['path' => $resource->xpath]);
+
+                        $contentOld = \preg_replace('/(\ {2,}|\t)/', ' ', $contentOld);
+                        $contentOld = \preg_replace('/(\s{2,})/', "\n", $contentOld);
+
+                        $contentNew = \preg_replace('/(\ {2,}|\t)/', ' ', $contentNew);
+                        $contentNew = \preg_replace('/(\s{2,})/', "\n", $contentNew);
 
                         // Calculate difference index
                         $difference = \levenshtein($contentOld, $contentNew);
 
-                        // Handle xpath
-                        if ($difference > 0
-                            && $extension === 'htm'
-                            && $resource->path !== ''
-                        ) {
-                            $xmlOld = new \DOMDocument();
-                            $xmlNew = new \DOMDocument();
+                        $diffPath = \dirname($newPath) . '/_' . \basename($newPath);
 
-                            $xmlOld->loadHtml($contentOld);
-                            $xmlNew->loadHtml($contentNew);
+                        \file_put_contents(
+                            $diffPath,
+                            \phpOMS\Utils\StringUtils::createDiffMarkup(
+                                $contentOld,
+                                $contentNew,
+                                ' '
+                            )
+                        );
 
-                            $xpathOld = new \DOMXpath($xmlOld);
-                            $xpathNew = new \DOMXpath($xmlNew);
-
-                            $elementsOld = $xpathOld->query($resource->path);
-                            $elementsNew = $xpathNew->query($resource->path);
-
-                            $subcontentOld = '';
-                            if ($elementsOld !== false) {
-                                foreach ($elementsOld as $node) {
-                                    foreach ($node->childNodes as $child) {
-                                        $subcontentOld .= $xmlOld->saveXML($child);
-                                    }
-                                }
-                            }
-
-                            $subcontentNew = '';
-                            if ($elementsNew !== false) {
-                                foreach ($elementsNew as $node) {
-                                    foreach ($node->childNodes as $child) {
-                                        $subcontentNew .= $xmlNew->saveXML($child);
-                                    }
-                                }
-                            }
-
-                            // Calculate difference index
-                            $difference = \levenshtein($subcontentOld, $subcontentNew);
-                        }
+                        // @todo allow $resource->path handling for html paths
                     } elseif (\in_array($extension, self::IMG_RENDERABLE)) {
+                        $diffPath = \dirname($newPath) . '/_' . \basename($newPath);
+
+                        // Tool: software used is imagemagick
+                        SystemUtils::runProc(
+                            OperatingSystem::getSystem() === SystemType::WIN ? 'compare.exe' : 'compare',
+                            '-compose src ' . $oldPath . ' ' . $newPath . ' ' . $diffPath
+                        );
+
+                        // @todo allow $resource->path handling for x1/y1 -> x2/y2 coordinates
+
                         // Difference index is always 0/1. Comparing pixels is too slow and doesn't add much value
-                        $difference = 1; //ImageUtils::difference($oldPath, $newPath, $path . '/_' . \basename($newPath), 0); // too slow
+                        $difference = 1;
+                    } elseif ($extension === 'pdf') {
+                        $diffPath = \dirname($newPath) . '/_' . \basename($newPath, '.pdf') . '.htm';
+
+                        \file_put_contents(
+                            $diffPath,
+                            \phpOMS\Utils\StringUtils::createDiffMarkup(
+                                \Modules\Media\Controller\ApiController::loadFileContent($oldPath, $extension),
+                                \Modules\Media\Controller\ApiController::loadFileContent($newPath, $extension),
+                                ' '
+                            )
+                        );
+
+                        // @todo allow $resource->path handling for page/headline searches
+
+                        $difference = 1;
                     } else {
                         // All other files always have a difference index of 0/1
                         $difference = 1;
@@ -708,6 +712,7 @@ final class ApiController extends Controller
                     // If is htm/html create image
                     if ($extension === 'htm') {
                         try {
+                            // Tool: software used is wkhtmltopdf
                             SystemUtils::runProc(
                                 OperatingSystem::getSystem() === SystemType::WIN ? 'wkhtmltoimage.exe' : 'wkhtmltoimage',
                                 \escapeshellarg($resource->uri) . ' ' . \escapeshellarg($basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/index.jpg'),
@@ -729,8 +734,6 @@ final class ApiController extends Controller
                 $resource->checkedAt = $report->createdAt;
                 $this->updateModel($request->header->account, $old, $resource, ResourceMapper::class, 'resource', $request->getOrigin());
 
-                // Directory::delete($basePath . '/temp/' . $resource->id);
-
                 // @todo delete older history depending on plan
 
                 unset($toCheck[$index]);
@@ -740,10 +743,11 @@ final class ApiController extends Controller
         }
 
         // Kill running processes in x seconds that shouldn't be running any longer
+        $time = \time();
         if (OperatingSystem::getSystem() === SystemType::LINUX) {
-            SystemUtils::runProc('sleep', \max(0, $time - $minTime) . ' && pkill -9 -f wkhtmltoimage', true);
+            SystemUtils::runProc('sleep', \max(0, $minTime - $time) . ' && pkill -9 -f wkhtmltoimage', true);
         } else {
-            SystemUtils::runProc('timeout', '/t ' . \max(0, $time - $minTime) . ' > NUL && taskkill /F /IM wkhtmltoimage.exe', true);
+            SystemUtils::runProc('timeout', '/t ' . \max(0, $minTime - $time) . ' > NUL && taskkill /F /IM wkhtmltoimage.exe', true);
         }
 
         Directory::delete($basePath . '/temp');
