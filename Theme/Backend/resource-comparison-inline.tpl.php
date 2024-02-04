@@ -26,12 +26,8 @@ use phpOMS\Uri\UriFactory;
                             continue;
                         }
 
-                        $old = $new;
+                        $old = $new ?? $report;
                         $new = $report;
-
-                        if ($old === null) {
-                            $old = $report;
-                        }
                     }
 
                     if ($resource->checkedAt !== null) :

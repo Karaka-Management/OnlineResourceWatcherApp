@@ -295,8 +295,12 @@ final class ApiController extends Controller
         /** @var \Model\Setting $emailSettings */
         $emailSettings = $this->app->appSettings->get(
             names: SettingsEnum::MAIL_SERVER_ADDR,
-            module: 'OnlineResourceWatcher'
+            module: 'Admin'
         );
+
+        if (empty($emailSettings->content)) {
+            return;
+        }
 
         /** @var \Model\Setting $templateSettings */
         $templateSettings = $this->app->appSettings->get(
@@ -343,39 +347,17 @@ final class ApiController extends Controller
                 }
 
                 $mail->subject = $mailL11n->subject;
+                $mail->body = $mailL11n->body;
+                $mail->bodyAlt = $mailL11n->bodyAlt;
 
-                $mail->body = \str_replace(
-                    [
-                        '{resource.id}',
-                        '{email}',
-                        '{resource.url}',
-                        '{owner_email}',
-                    ],
-                    [
-                        $resource->id,
-                        $inform->email,
-                        $resource->uri,
-                        $resource->owner->getEmail(),
-                    ],
-                    $mailL11n->body
-                );
+                $mail->template = [
+                    '{resource.id}' => $resource->id,
+                    '{email}' => $inform->email,
+                    '{resource.url}' => $resource->uri,
+                    '{owner_email}' => $resource->owner->getEmail(),
+                ];
+
                 $mail->msgHTML($mail->body);
-
-                $mail->bodyAlt = \str_replace(
-                    [
-                        '{resource.id}',
-                        '{email}',
-                        '{resource.url}',
-                        '{owner_email}',
-                    ],
-                    [
-                        $resource->id,
-                        $inform->email,
-                        $resource->uri,
-                        $resource->owner->getEmail(),
-                    ],
-                    $mailL11n->bodyAlt
-                );
 
                 $mail->addTo($inform->email);
                 $handler->send($mail);
@@ -652,8 +634,6 @@ final class ApiController extends Controller
                                 ' '
                             )
                         );
-
-                        // @todo allow $resource->path handling for html paths
                     } elseif (\in_array($extension, self::IMG_RENDERABLE)) {
                         $diffPath = \dirname($newPath) . '/_' . \basename($newPath);
 
