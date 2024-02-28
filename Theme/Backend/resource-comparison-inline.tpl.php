@@ -33,42 +33,6 @@ use phpOMS\Uri\UriFactory;
                     if ($resource->checkedAt !== null) :
                         $type = '';
 
-                        if ($new !== null) {
-                            $newBasePath = __DIR__ . '/../../Files/' . $resource->path . '/' . $new->versionPath;
-                            $newWebPath  = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $new->versionPath;
-
-                            if (\is_file($newBasePath . '/index.jpg')) {
-                                $type = 'img';
-                                $newWebPath .= '/index.jpg';
-                            } else {
-                                $files = \scandir($newBasePath);
-                                if ($files !== false) {
-                                    foreach ($files as $file) {
-                                        if ($file === '.' || $file === '..' || \str_starts_with($file, '_')) {
-                                            continue;
-                                        }
-
-                                        $newWebPath .= '/' . $file;
-
-                                        if (\stripos($file, '.jpg') !== false
-                                            || \stripos($file, '.jpeg') !== false
-                                            || \stripos($file, '.png') !== false
-                                            || \stripos($file, '.gif') !== false
-                                        ) {
-                                            $type = 'img';
-                                            break;
-                                        } elseif (\stripos($file, '.pdf') !== false) {
-                                            $type = 'pdf';
-                                            break;
-                                        } elseif (\stripos($file, '.htm') !== false) {
-                                            $type = 'htm';
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
                         if ($old !== null) {
                             $oldBasePath = __DIR__ . '/../../Files/' . $resource->path . '/' . $old->versionPath;
                             $oldWebPath  = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $old->versionPath;
@@ -76,7 +40,7 @@ use phpOMS\Uri\UriFactory;
                             if (\is_file($oldBasePath . '/index.jpg')) {
                                 $type = 'img';
                                 $oldWebPath .= '/index.jpg';
-                            } else {
+                            } elseif (\is_dir($oldBasePath)) {
                                 $files = \scandir($oldBasePath);
                                 if ($files !== false) {
                                     foreach ($files as $file) {
@@ -90,6 +54,7 @@ use phpOMS\Uri\UriFactory;
                                             || \stripos($file, '.jpeg') !== false
                                             || \stripos($file, '.png') !== false
                                             || \stripos($file, '.gif') !== false
+                                            || \stripos($file, '.webp') !== false
                                         ) {
                                             $type = 'img';
                                             break;
@@ -102,6 +67,48 @@ use phpOMS\Uri\UriFactory;
                                         }
                                     }
                                 }
+                            } else {
+                                $oldWebPath = '../../../../Web/Backend/img/404.svg';
+                                $type = 'img';
+                            }
+                        }
+
+                        if ($new !== null) {
+                            $newBasePath = __DIR__ . '/../../Files/' . $resource->path . '/' . $new->versionPath;
+                            $newWebPath  = 'Modules/OnlineResourceWatcher/Files/' . $resource->path . '/' . $new->versionPath;
+
+                            if (\is_file($newBasePath . '/index.jpg')) {
+                                $type = 'img';
+                                $newWebPath .= '/index.jpg';
+                            } elseif (\is_dir($newBasePath)) {
+                                $files = \scandir($newBasePath);
+                                if ($files !== false) {
+                                    foreach ($files as $file) {
+                                        if ($file === '.' || $file === '..' || \str_starts_with($file, '_')) {
+                                            continue;
+                                        }
+
+                                        $newWebPath .= '/' . $file;
+
+                                        if (\stripos($file, '.jpg') !== false
+                                            || \stripos($file, '.jpeg') !== false
+                                            || \stripos($file, '.png') !== false
+                                            || \stripos($file, '.gif') !== false
+                                            || \stripos($file, '.webp') !== false
+                                        ) {
+                                            $type = 'img';
+                                            break;
+                                        } elseif (\stripos($file, '.pdf') !== false) {
+                                            $type = 'pdf';
+                                            break;
+                                        } elseif (\stripos($file, '.htm') !== false) {
+                                            $type = 'htm';
+                                            break;
+                                        }
+                                    }
+                                }
+                            } else {
+                                $newWebPath = $oldWebPath;
                             }
                         }
 

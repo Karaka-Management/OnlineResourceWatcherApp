@@ -76,5 +76,5 @@ $reports  = $resource->reports;
         </div>
     </div>
 </div>
-
+<!-- @bug Some iframes reset the session because the page they load have relative paths -> loading the page itself -> resetting the session because it's loaded in an iframe -->
 <?php include __DIR__ . '/resource-comparison-inline.tpl.php';

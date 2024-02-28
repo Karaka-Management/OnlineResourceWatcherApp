@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Modules\OnlineResourceWatcher\Controller;
 
 use Modules\Admin\Models\NullAccount;
-use Modules\Admin\Models\SettingsEnum;
 use Modules\Messages\Models\EmailMapper;
 use Modules\OnlineResourceWatcher\Models\Inform;
 use Modules\OnlineResourceWatcher\Models\InformBlacklistMapper;
@@ -292,16 +291,6 @@ final class ApiController extends Controller
     {
         $handler = $this->app->moduleManager->get('Admin', 'Api')->setUpServerMailHandler();
 
-        /** @var \Model\Setting $emailSettings */
-        $emailSettings = $this->app->appSettings->get(
-            names: SettingsEnum::MAIL_SERVER_ADDR,
-            module: 'Admin'
-        );
-
-        if (empty($emailSettings->content)) {
-            return;
-        }
-
         /** @var \Model\Setting $templateSettings */
         $templateSettings = $this->app->appSettings->get(
             names: OrwSettingsEnum::ORW_CHANGE_MAIL_TEMPLATE,
@@ -335,32 +324,39 @@ final class ApiController extends Controller
                 }
 
                 $mail = clone $baseEmail;
-                $mail->setFrom($emailSettings->content);
 
-                $mailL11n = $baseEmail->getL11nByLanguage($resource->owner->l11n->language);
-                if ($mailL11n->id === 0) {
-                    $mailL11n = $baseEmail->getL11nByLanguage($this->app->l11nServer->language);
+                $status = false;
+                if ($mail->id !== 0) {
+                    $status = $this->app->moduleManager->get('Admin', 'Api')->setupEmailDefaults($mail, $this->app->l11nServer->language);
                 }
 
-                if ($mailL11n->id === 0) {
-                    $mailL11n = $baseEmail->getL11nByLanguage('en');
-                }
-
-                $mail->subject = $mailL11n->subject;
-                $mail->body = $mailL11n->body;
-                $mail->bodyAlt = $mailL11n->bodyAlt;
-
-                $mail->template = [
-                    '{resource.id}' => $resource->id,
-                    '{email}' => $inform->email,
-                    '{resource.url}' => $resource->uri,
-                    '{owner_email}' => $resource->owner->getEmail(),
-                ];
+                $mail->template = \array_merge(
+                    $mail->template,
+                    [
+                        '{resource.id}' => $resource->id,
+                        '{email}' => $inform->email,
+                        '{resource.url}' => $resource->uri,
+                        '{owner_email}' => $resource->owner->getEmail(),
+                    ]
+                );
 
                 $mail->msgHTML($mail->body);
 
                 $mail->addTo($inform->email);
-                $handler->send($mail);
+
+                if ($status) {
+                    $status = $handler->send($mail);
+                }
+
+                if (!$status) {
+                    \phpOMS\Log\FileLogger::getInstance()->error(
+                        \phpOMS\Log\FileLogger::MSG_FULL, [
+                            'message' => 'Couldn\'t send mail: ' . $mail->id,
+                            'line'    => __LINE__,
+                            'file'    => self::class,
+                        ]
+                    );
+                }
             }
         }
     }
@@ -405,7 +401,7 @@ final class ApiController extends Controller
             try {
                 SystemUtils::runProc(
                     OperatingSystem::getSystem() === SystemType::WIN ? 'wget.exe' : 'wget',
-                    '--retry-connrefused --waitretry=1 --read-timeout=10 --timeout=10 --dns-timeout=10 -t 2 --quota=25m --adjust-extension --span-hosts --convert-links --no-directories --restrict-file-names=windows --no-parent ‐‐execute robots=off --limit-rate=5m -U mozilla --accept css,png,jpg,jpeg,gif,htm,html,txt,md,pdf,xls,xlsx,doc,docx --directory-prefix=' . \escapeshellarg($path) . ' ‐‐output-document=index.htm ' . \escapeshellarg($resource->uri),
+                    '--retry-connrefused --waitretry=1 --read-timeout=10 --timeout=10 --dns-timeout=10 -t 2 --quota=25m --adjust-extension --span-hosts --convert-links --no-directories --restrict-file-names=windows --no-parent ‐‐execute robots=off --limit-rate=5m -U mozilla --accept css,png,jpg,jpeg,webp,gif,svg,htm,html,txt,md,pdf,xls,xlsx,doc,docx --directory-prefix=' . \escapeshellarg($path) . ' ‐‐output-document=index.htm ' . \escapeshellarg($resource->uri),
                     true
                 );
             } catch (\Throwable $t) {
@@ -453,7 +449,7 @@ final class ApiController extends Controller
 
                     $this->app->logger->warning(
                         FileLogger::MSG_FULL, [
-                            'message' => 'Resource "' . $resource->id . ': ' . $resource->uri . '" took too long to download (' . $time . ' s).',
+                            'message' => 'Resource "' . $resource->id . ': ' . $resource->uri . '" took too long to download (' . ($time - $startTime) . ' s).',
                             'line'    => __LINE__,
                             'file'    => self::class,
                         ]
@@ -585,7 +581,7 @@ final class ApiController extends Controller
 
                 $lastVersionPath = $basePath . '/' . $resource->id . '/' . $lastVersionTimestamp;
                 $oldPath         = $lastVersionPath . '/' . $fileName;
-                $newPath         = $path . '/' . $fileName;
+                $newPath         = $basePath . '/' . $resource->id . '/' . $check['timestamp'] . '/' . $fileName;
 
                 if (!\is_file($newPath) || !$toCheck[$index]['handled']) {
                     continue;
@@ -626,6 +622,8 @@ final class ApiController extends Controller
 
                         $diffPath = \dirname($newPath) . '/_' . \basename($newPath);
 
+                        var_dump($diffPath);
+
                         \file_put_contents(
                             $diffPath,
                             \phpOMS\Utils\StringUtils::createDiffMarkup(
@@ -638,15 +636,20 @@ final class ApiController extends Controller
                         $diffPath = \dirname($newPath) . '/_' . \basename($newPath);
 
                         // Tool: software used is imagemagick
-                        SystemUtils::runProc(
+                        $comparison = SystemUtils::runProc(
                             OperatingSystem::getSystem() === SystemType::WIN ? 'compare.exe' : 'compare',
-                            '-compose src ' . $oldPath . ' ' . $newPath . ' ' . $diffPath
+                            '-verbose -metric AE -compose src ' . $oldPath . ' ' . $newPath . ' ' . $diffPath,
+                            false
                         );
 
                         // @todo allow $resource->path handling for x1/y1 -> x2/y2 coordinates
 
                         // Difference index is always 0/1. Comparing pixels is too slow and doesn't add much value
-                        $difference = 1;
+                        $comparisonTxt = \implode(' ', $comparison);
+
+                        \preg_match('/ all:\s*(\d+)/', $comparisonTxt, $found);
+
+                        $difference = ((int) $found[1]) < 10 ? 0 : 1;
                     } elseif ($extension === 'pdf') {
                         $diffPath = \dirname($newPath) . '/_' . \basename($newPath, '.pdf') . '.htm';
 
