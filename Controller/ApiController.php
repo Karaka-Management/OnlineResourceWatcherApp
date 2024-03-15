@@ -262,12 +262,13 @@ final class ApiController extends Controller
             ->execute();
 
         $ids = \array_map(
-            function (Report $report) : void {
-                $report->resource;
+            function (Report $report) : int {
+                return $report->resource;
             },
             $reports
         );
 
+        /** @var Resource[] $resources */
         $resources = ResourceMapper::getAll()
             ->with('owner')
             ->with('owner/l11n')
@@ -333,10 +334,10 @@ final class ApiController extends Controller
                 $mail->template = \array_merge(
                     $mail->template,
                     [
-                        '{resource.id}' => $resource->id,
-                        '{email}' => $inform->email,
+                        '{resource.id}'  => (string) $resource->id,
+                        '{email}'        => $inform->email,
                         '{resource.url}' => $resource->uri,
-                        '{owner_email}' => $resource->owner->getEmail(),
+                        '{owner_email}'  => $resource->owner->getEmail(),
                     ]
                 );
 
@@ -612,23 +613,24 @@ final class ApiController extends Controller
                         $contentNew = \Modules\Media\Controller\ApiController::loadFileContent($newPath, $extension, 'txt', ['path' => $resource->xpath]);
 
                         $contentOld = \preg_replace('/(\ {2,}|\t)/', ' ', $contentOld);
-                        $contentOld = \preg_replace('/(\s{2,})/', "\n", $contentOld);
+                        $contentOld = \preg_replace('/(\s{2,})/', "\n", $contentOld ?? '');
 
                         $contentNew = \preg_replace('/(\ {2,}|\t)/', ' ', $contentNew);
-                        $contentNew = \preg_replace('/(\s{2,})/', "\n", $contentNew);
+                        $contentNew = \preg_replace('/(\s{2,})/', "\n", $contentNew ?? '');
 
-                        // Calculate difference index
-                        $difference = \levenshtein($contentOld, $contentNew);
+                        $difference = 1;
+                        if ($contentNew !== null && $contentOld !== null) {
+                            // Calculate difference index
+                            $difference = \levenshtein($contentOld, $contentNew);
+                        }
 
                         $diffPath = \dirname($newPath) . '/_' . \basename($newPath);
-
-                        var_dump($diffPath);
 
                         \file_put_contents(
                             $diffPath,
                             \phpOMS\Utils\StringUtils::createDiffMarkup(
-                                $contentOld,
-                                $contentNew,
+                                $contentOld ?? '',
+                                $contentNew ?? '',
                                 ' '
                             )
                         );

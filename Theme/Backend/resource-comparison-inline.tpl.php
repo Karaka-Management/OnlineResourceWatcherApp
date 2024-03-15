@@ -69,7 +69,7 @@ use phpOMS\Uri\UriFactory;
                                 }
                             } else {
                                 $oldWebPath = '../../../../Web/Backend/img/404.svg';
-                                $type = 'img';
+                                $type       = 'img';
                             }
                         }
 
@@ -112,7 +112,7 @@ use phpOMS\Uri\UriFactory;
                             }
                         }
 
-                        $base = __DIR__ . '/../../../../';
+                        $base        = __DIR__ . '/../../../../';
                         $newDiffPath = '';
 
                         if ($type === 'pdf') {
