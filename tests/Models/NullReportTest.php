@@ -19,31 +19,23 @@ use Modules\OnlineResourceWatcher\Models\NullReport;
 /**
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\OnlineResourceWatcher\Models\NullReport::class)]
 final class NullReportTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @covers \Modules\OnlineResourceWatcher\Models\NullReport
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testNull() : void
     {
         self::assertInstanceOf('\Modules\OnlineResourceWatcher\Models\Report', new NullReport());
     }
 
-    /**
-     * @covers \Modules\OnlineResourceWatcher\Models\NullReport
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testId() : void
     {
         $null = new NullReport(2);
         self::assertEquals(2, $null->id);
     }
 
-    /**
-     * @covers \Modules\OnlineResourceWatcher\Models\NullReport
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testJsonSerialize() : void
     {
         $null = new NullReport(2);

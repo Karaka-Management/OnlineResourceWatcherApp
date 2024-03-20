@@ -19,31 +19,23 @@ use Modules\OnlineResourceWatcher\Models\NullInform;
 /**
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\OnlineResourceWatcher\Models\NullInform::class)]
 final class NullInformTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @covers \Modules\OnlineResourceWatcher\Models\NullInform
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testNull() : void
     {
         self::assertInstanceOf('\Modules\OnlineResourceWatcher\Models\Inform', new NullInform());
     }
 
-    /**
-     * @covers \Modules\OnlineResourceWatcher\Models\NullInform
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testId() : void
     {
         $null = new NullInform(2);
         self::assertEquals(2, $null->id);
     }
 
-    /**
-     * @covers \Modules\OnlineResourceWatcher\Models\NullInform
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testJsonSerialize() : void
     {
         $null = new NullInform(2);

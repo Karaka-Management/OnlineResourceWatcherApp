@@ -19,31 +19,23 @@ use Modules\OnlineResourceWatcher\Models\NullInformBlacklist;
 /**
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\OnlineResourceWatcher\Models\NullInformBlacklist::class)]
 final class NullInformBlacklistTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @covers \Modules\OnlineResourceWatcher\Models\NullInformBlacklist
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testNull() : void
     {
         self::assertInstanceOf('\Modules\OnlineResourceWatcher\Models\InformBlacklist', new NullInformBlacklist());
     }
 
-    /**
-     * @covers \Modules\OnlineResourceWatcher\Models\NullInformBlacklist
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testId() : void
     {
         $null = new NullInformBlacklist(2);
         self::assertEquals(2, $null->id);
     }
 
-    /**
-     * @covers \Modules\OnlineResourceWatcher\Models\NullInformBlacklist
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testJsonSerialize() : void
     {
         $null = new NullInformBlacklist(2);

@@ -33,10 +33,10 @@ use phpOMS\Router\WebRouter;
 use phpOMS\Utils\TestUtils;
 
 /**
- * @testdox Modules\OnlineResourceWatcher\tests\Controller\ApiControllerTest: OnlineResourceWatcher api controller
- *
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\Modules\OnlineResourceWatcher\Controller\ApiController::class)]
+#[\PHPUnit\Framework\Attributes\TestDox('Modules\OnlineResourceWatcher\tests\Controller\ApiControllerTest: OnlineResourceWatcher api controller')]
 final class ApiControllerTest extends \PHPUnit\Framework\TestCase
 {
     protected ApplicationAbstract $app;
@@ -91,10 +91,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
         TestUtils::setMember($this->module, 'app', $this->app);
     }
 
-    /**
-     * @covers \Modules\OnlineResourceWatcher\Controller\ApiController
-     * @group module
-     */
+    #[\PHPUnit\Framework\Attributes\Group('module')]
     public function testApiResourceCreate() : void
     {
         $response = new HttpResponse();
