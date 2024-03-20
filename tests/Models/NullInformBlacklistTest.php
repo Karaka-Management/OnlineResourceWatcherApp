@@ -22,7 +22,7 @@ use Modules\OnlineResourceWatcher\Models\NullInformBlacklist;
 final class NullInformBlacklistTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\OnlineResourceWatcher\Models\NullInformBlacklist
+     * @covers \Modules\OnlineResourceWatcher\Models\NullInformBlacklist
      * @group module
      */
     public function testNull() : void
@@ -31,7 +31,7 @@ final class NullInformBlacklistTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\OnlineResourceWatcher\Models\NullInformBlacklist
+     * @covers \Modules\OnlineResourceWatcher\Models\NullInformBlacklist
      * @group module
      */
     public function testId() : void
@@ -41,7 +41,7 @@ final class NullInformBlacklistTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\OnlineResourceWatcher\Models\NullInformBlacklist
+     * @covers \Modules\OnlineResourceWatcher\Models\NullInformBlacklist
      * @group module
      */
     public function testJsonSerialize() : void

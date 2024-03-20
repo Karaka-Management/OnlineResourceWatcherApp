@@ -92,7 +92,7 @@ final class ApiControllerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\OnlineResourceWatcher\Controller\ApiController
+     * @covers \Modules\OnlineResourceWatcher\Controller\ApiController
      * @group module
      */
     public function testApiResourceCreate() : void

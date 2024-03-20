@@ -22,7 +22,7 @@ use Modules\OnlineResourceWatcher\Models\NullResource;
 final class NullResourceTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @covers Modules\OnlineResourceWatcher\Models\NullResource
+     * @covers \Modules\OnlineResourceWatcher\Models\NullResource
      * @group module
      */
     public function testNull() : void
@@ -31,7 +31,7 @@ final class NullResourceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\OnlineResourceWatcher\Models\NullResource
+     * @covers \Modules\OnlineResourceWatcher\Models\NullResource
      * @group module
      */
     public function testId() : void
@@ -41,7 +41,7 @@ final class NullResourceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Modules\OnlineResourceWatcher\Models\NullResource
+     * @covers \Modules\OnlineResourceWatcher\Models\NullResource
      * @group module
      */
     public function testJsonSerialize() : void
