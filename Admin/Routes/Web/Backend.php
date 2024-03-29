@@ -18,7 +18,7 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
 return [
-    '^.*/orw/resource/list(\?.*$|$)' => [
+    '^/orw/resource/list(\?.*$|$)' => [
         [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewResourceList',
             'verb'       => RouteVerb::GET,
@@ -29,7 +29,7 @@ return [
             ],
         ],
     ],
-    '^.*/orw/resource(\?.*$|$)' => [
+    '^/orw/resource(\?.*$|$)' => [
         [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewResource',
             'verb'       => RouteVerb::GET,
@@ -40,7 +40,7 @@ return [
             ],
         ],
     ],
-    '^.*/orw/resource/create(\?.*$|$)' => [
+    '^/orw/resource/create(\?.*$|$)' => [
         [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewResourceCreate',
             'verb'       => RouteVerb::GET,
@@ -51,7 +51,7 @@ return [
             ],
         ],
     ],
-    '^.*/orw/resource/report/list(\?.*$|$)' => [
+    '^/orw/resource/report/list(\?.*$|$)' => [
         [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewReportList',
             'verb'       => RouteVerb::GET,
@@ -62,7 +62,7 @@ return [
             ],
         ],
     ],
-    '^.*/orw/resource/report(\?.*$|$)' => [
+    '^/orw/resource/report(\?.*$|$)' => [
         [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\BackendController:viewReport',
             'verb'       => RouteVerb::GET,
