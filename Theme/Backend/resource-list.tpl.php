@@ -44,7 +44,7 @@ $next = $tableView->getNextLink(
                 <?= $tableView->renderTitle(
                     $this->getHtml('Resources')
                 ); ?>
-                <a class="button end-xs save" href="<?= UriFactory::build('{/base}/'); ?>orw/resources/create"><?= $this->getHtml('New', '0', '0'); ?></a>
+                <a class="button end-xs save" href="<?= UriFactory::build('{/base}/'); ?>orw/resource/create"><?= $this->getHtml('New', '0', '0'); ?></a>
             </div>
             <div class="slider">
             <table id="<?= $tableView->id; ?>" class="default sticky">
@@ -91,6 +91,7 @@ $next = $tableView->getNextLink(
                 <?php endif; ?>
             </table>
             </div>
+            <!--
             <?php if ($this->getData('hasPrevious') || $this->getData('hasNext')) : ?>
             <div class="portlet-foot">
                 <?php if ($this->getData('hasPrevious')) : ?>
@@ -101,6 +102,7 @@ $next = $tableView->getNextLink(
                 <?php endif; ?>
             </div>
             <?php endif; ?>
+            -->
         </div>
     </div>
 </div>

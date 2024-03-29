@@ -158,7 +158,10 @@ final class BackendController extends Controller
      */
     public function viewResourceCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
-        return new View($this->app->l11nManager, $request, $response);
+        $view = new View($this->app->l11nManager, $request, $response);
+        $view->setTemplate('/Modules/OnlineResourceWatcher/Theme/Backend/resource-create');
+
+        return $view;
     }
 
     /**

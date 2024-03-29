@@ -21,7 +21,7 @@ $reports  = $resource->reports;
 <div class="row">
     <div class="col-xs-12 col-sm-8">
         <div class="portlet">
-            <form id="iResource" action="<?= UriFactory::build('{/api}resource'); ?>" method="post">
+            <form id="iResource" action="<?= UriFactory::build('{/api}orw/resource?csrf={$CSRF}'); ?>" method="post">
                 <div class="portlet-head"><?= $this->getHtml('Resource'); ?></div>
                 <div class="portlet-body">
                     <div class="form-group">
@@ -32,8 +32,8 @@ $reports  = $resource->reports;
                     <div class="form-group">
                         <label for="iStatus"><?= $this->getHtml('Status'); ?></label>
                         <select id="iStatus" name="status">
-                            <option value="1"<?= $resource->status === 1 ? ' selected' : ''; ?>>Active</option>
-                            <option value="2"<?= $resource->status === 2 ? ' selected' : ''; ?>>Inactive</option>
+                            <option value="1"<?= $resource->status === 1 ? ' selected' : ''; ?>><?= $this->getHtml(':status-1'); ?></option>
+                            <option value="2"<?= $resource->status === 2 ? ' selected' : ''; ?>><?= $this->getHtml(':status-2'); ?></option>
                         </select>
                     </div>
 

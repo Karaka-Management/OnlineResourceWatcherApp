@@ -18,76 +18,30 @@ use phpOMS\Uri\UriFactory;
 <div class="row">
     <div class="col-xs-12 col-md-6">
         <div class="portlet">
-            <form id="iUserSettings" action="<?= UriFactory::build('{/api}user/settings'); ?>" method="post">
-                <div class="portlet-head"><?= $this->getHtml('CreateResource', '0', '0'); ?></div>
+            <form id="iResource" action="<?= UriFactory::build('{/api}orw/resource?csrf={$CSRF}'); ?>" method="put">
+                <div class="portlet-head"><?= $this->getHtml('CreateResource', 'OnlineResourceWatcher', 'Backend'); ?></div>
                 <div class="portlet-body">
-                    <div class="form-group">
-                        <label for="iLogin"><?= $this->getHtml('Url', '0', '0'); ?></label>
-                        <input id="iLogin" name="rul" type="text" required>
+                <div class="form-group">
+                        <label for="iName"><?= $this->getHtml('Name'); ?></label>
+                        <input id="iName" name="name" type="text">
                     </div>
 
                     <div class="form-group">
-                        <label for="iElement"><?= $this->getHtml('Element', '0', '0'); ?></label>
-                        <input id="iElement" name="element" type="text">
+                        <label for="iUrl"><?= $this->getHtml('Url'); ?></label>
+                        <input id="iUrl" name="uri" type="text" required>
                     </div>
 
+                    <!--
                     <div class="form-group">
-                        <label for="iHeader"><?= $this->getHtml('Header', '0', '0'); ?></label>
-                        <textarea id="iHeader" name="header"></textarea>
+                        <label for="iXPath"><?= $this->getHtml('XPath'); ?></label>
+                        <input id="iXPath" name="xpath" type="text">
                     </div>
+                    -->
                 </div>
                 <div class="portlet-foot">
                     <input id="iSubmitUser" name="submitUser" type="submit" value="<?= $this->getHtml('Create', '0', '0'); ?>">
                 </div>
             </form>
-        </div>
-    </div>
-
-    <div class="col-xs-12 col-md-6">
-        <div class="portlet">
-            <form id="iAddAccountToGroup" action="<?= UriFactory::build('{/api}admin/group/account'); ?>" method="put">
-                <div class="portlet-head"><?= $this->getHtml('Inform', '0', '0'); ?></div>
-                <div class="portlet-body">
-                    <div class="form-group">
-                        <label for="iAccount"><?= $this->getHtml('Name', '0', '0'); ?></label>
-                        <input id="iAccount" name="account" type="text">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="iAccount"><?= $this->getHtml('Email', '0', '0'); ?></label>
-                        <input id="iAccount" name="email" type="email">
-                    </div>
-                </div>
-                <div class="portlet-foot">
-                    <input type="submit" value="<?= $this->getHtml('Add', '0', '0'); ?>">
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-xs-12">
-        <div class="portlet">
-            <div class="portlet-head"><?= $this->getHtml('Inform', '0', '0'); ?></div>
-            <table class="default sticky">
-                <thead>
-                    <tr>
-                        <td><?= $this->getHtml('ID', '0', '0'); ?><i class="sort-asc g-icon">expand_less</i><i class="sort-desc g-icon">expand_more</i>
-                        <td><?= $this->getHtml('User', '0', '0'); ?><i class="sort-asc g-icon">expand_less</i><i class="sort-desc g-icon">expand_more</i>
-                        <td><?= $this->getHtml('Email', '0', '0'); ?><i class="sort-asc g-icon">expand_less</i><i class="sort-desc g-icon">expand_more</i>
-                <tbody>
-                    <?php $c = 0; foreach ([] as $key => $value) : ++$c; $url = UriFactory::build('{/base}/admin/account/settings?{?}&id=' . $value->id); ?>
-                    <tr data-href="<?= $url; ?>">
-                        <td>
-                        <td>
-                        <td>
-                    <?php endforeach; ?>
-                    <?php if ($c === 0) : ?>
-                        <tr><td colspan="3" class="empty"><?= $this->getHtml('Empty', '0', '0'); ?>
-                    <?php endif; ?>
-            </table>
-            <div class="portlet-foot"></div>
         </div>
     </div>
 </div>

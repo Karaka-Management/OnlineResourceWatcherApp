@@ -93,4 +93,6 @@ return ['OnlineResourceWatcher' => [
     'rstatus-1'       => 'Resource added',
     'rstatus-2'       => 'No change',
     'rstatus-3'       => 'Changed',
+    ':status-1'       => 'Active',
+    ':status-2'       => 'Inactive',
 ]];
