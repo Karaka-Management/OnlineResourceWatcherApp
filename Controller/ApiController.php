@@ -231,7 +231,7 @@ final class ApiController extends Controller
             ->with('inform')
             ->where('status', ResourceStatus::ACTIVE)
             ->where('checkedAt', (new \DateTime('now'))->sub(new \DateInterval('PT12H')), '<')
-            ->execute();
+            ->executeGetArray();
 
         $changes = $this->checkResources($request, $resources);
         $this->informEmail($changes);
@@ -259,7 +259,7 @@ final class ApiController extends Controller
         $reports = ReportMapper::getAll()
             ->where('status', ReportStatus::CHANGE)
             ->where('createdAt', $dateTime, '>=')
-            ->execute();
+            ->executeGetArray();
 
         $ids = \array_map(
             function (Report $report) : int {
@@ -273,7 +273,7 @@ final class ApiController extends Controller
             ->with('owner')
             ->with('owner/l11n')
             ->where('id', $ids, 'IN')
-            ->execute();
+            ->executeGetArray();
 
         $this->informEmail($resources);
         $this->fillJsonResponse($request, $response, NotificationLevel::OK, 'Inform', 'Users were informed', null);
@@ -306,7 +306,7 @@ final class ApiController extends Controller
 
         /** @var \Modules\OnlineResourceWatcher\Models\InformBlacklist[] */
         $blacklist = InformBlacklistMapper::getAll()
-            ->execute();
+            ->executeGetArray();
 
         foreach ($resources as $resource) {
             $owner              = new Inform();
