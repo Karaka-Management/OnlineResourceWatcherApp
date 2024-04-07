@@ -23,6 +23,7 @@ return [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceCreate',
             'verb'       => RouteVerb::PUT,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => ApiController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -33,6 +34,7 @@ return [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceUpdate',
             'verb'       => RouteVerb::SET,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => ApiController::NAME,
                 'type'   => PermissionType::MODIFY,
@@ -43,6 +45,7 @@ return [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceGet',
             'verb'       => RouteVerb::GET,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => ApiController::NAME,
                 'type'   => PermissionType::READ,
@@ -53,6 +56,7 @@ return [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceDelete',
             'verb'       => RouteVerb::DELETE,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => ApiController::NAME,
                 'type'   => PermissionType::DELETE,
@@ -66,6 +70,7 @@ return [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiInformCreate',
             'verb'       => RouteVerb::PUT,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => ApiController::NAME,
                 'type'   => PermissionType::READ,
@@ -76,6 +81,7 @@ return [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiInformDelete',
             'verb'       => RouteVerb::DELETE,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => ApiController::NAME,
                 'type'   => PermissionType::READ,
@@ -89,6 +95,7 @@ return [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiResourceRender',
             'verb'       => RouteVerb::GET,
             'csrf'       => true,
+            'active' => true,
             'permission' => [
                 'module' => ApiController::NAME,
                 'type'   => PermissionType::READ,

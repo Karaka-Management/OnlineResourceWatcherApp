@@ -186,7 +186,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Method to create news article from request.
+     * Method to create Resource from request.
      *
      * @param RequestAbstract $request Request
      *
@@ -800,7 +800,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Method to create news article from request.
+     * Method to create Resource from request.
      *
      * @param RequestAbstract $request Request
      *
@@ -951,7 +951,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Method to create news article from request.
+     * Method to create Inform from request.
      *
      * @param RequestAbstract $request Request
      *
