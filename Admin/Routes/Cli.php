@@ -20,7 +20,7 @@ return [
     '^.*/orw/check -i all*$' => [
         [
             'dest'       => '\Modules\OnlineResourceWatcher\Controller\ApiController:apiCheckResources',
-            'active' => true,
+            'active'     => true,
             'permission' => [
                 'module' => ApiController::NAME,
                 'type'   => PermissionType::CREATE,
