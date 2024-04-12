@@ -26,7 +26,6 @@ use Modules\OnlineResourceWatcher\Models\Resource;
 use Modules\OnlineResourceWatcher\Models\ResourceMapper;
 use Modules\OnlineResourceWatcher\Models\ResourceStatus;
 use Modules\OnlineResourceWatcher\Models\SettingsEnum as OrwSettingsEnum;
-use phpOMS\Log\FileLogger;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\NotificationLevel;
@@ -407,7 +406,7 @@ final class ApiController extends Controller
                 );
             } catch (\Throwable $t) {
                 $this->app->logger?->error(
-                    FileLogger::MSG_FULL, [
+                    \phpOMS\Log\FileLogger::MSG_FULL, [
                         'message' => $t->getMessage(),
                         'line'    => __LINE__,
                         'file'    => self::class,
@@ -449,7 +448,7 @@ final class ApiController extends Controller
                     unset($toCheck[$index]);
 
                     $this->app->logger?->warning(
-                        FileLogger::MSG_FULL, [
+                        \phpOMS\Log\FileLogger::MSG_FULL, [
                             'message' => 'Resource "' . $resource->id . ': ' . $resource->uri . '" took too long to download (' . ($time - $startTime) . ' s).',
                             'line'    => __LINE__,
                             'file'    => self::class,
@@ -555,7 +554,7 @@ final class ApiController extends Controller
                             );
                         } catch (\Throwable $t) {
                             $this->app->logger?->error(
-                                FileLogger::MSG_FULL, [
+                                \phpOMS\Log\FileLogger::MSG_FULL, [
                                     'message' => $t->getMessage(),
                                     'line'    => __LINE__,
                                     'file'    => self::class,
@@ -705,7 +704,7 @@ final class ApiController extends Controller
                             );
                         } catch (\Throwable $t) {
                             $this->app->logger?->error(
-                                FileLogger::MSG_FULL, [
+                                \phpOMS\Log\FileLogger::MSG_FULL, [
                                     'message' => $t->getMessage(),
                                     'line'    => __LINE__,
                                     'file'    => self::class,
