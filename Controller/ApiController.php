@@ -351,7 +351,7 @@ final class ApiController extends Controller
                 if (!$status) {
                     \phpOMS\Log\FileLogger::getInstance()->error(
                         \phpOMS\Log\FileLogger::MSG_FULL, [
-                            'message' => 'Couldn\'t send mail: ' . $mail->id,
+                            'message' => 'Couldn\'t send resource mail: ' . $mail->id . ' - ' . $resource->id,
                             'line'    => __LINE__,
                             'file'    => self::class,
                         ]
