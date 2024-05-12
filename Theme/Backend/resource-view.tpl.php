@@ -20,7 +20,7 @@ $reports  = $resource->reports;
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-8">
-        <div class="portlet">
+        <section class="portlet">
             <form id="iResource" action="<?= UriFactory::build('{/api}orw/resource?csrf={$CSRF}'); ?>" method="post">
                 <div class="portlet-head"><?= $this->getHtml('Resource'); ?></div>
                 <div class="portlet-body">
@@ -53,11 +53,11 @@ $reports  = $resource->reports;
                     <input id="iSubmitUser" name="submitUser" type="submit" value="<?= $this->getHtml('Save', '0', '0'); ?>">
                 </div>
             </form>
-        </div>
+        </section>
     </div>
 
     <div class="col-xs-12 col-sm-4">
-        <div class="portlet">
+        <section class="portlet">
             <div class="portlet-head"><?= $this->getHtml('History'); ?></div>
             <div class="slider">
             <table class="default sticky">
@@ -73,7 +73,7 @@ $reports  = $resource->reports;
 					<?php endforeach; ?>
 			</table>
             </div>
-        </div>
+        </section>
     </div>
 </div>
 <!-- @bug Some iframes reset the session because the page they load have relative paths -> loading the page itself -> resetting the session because it's loaded in an iframe -->

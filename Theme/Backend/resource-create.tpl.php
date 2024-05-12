@@ -17,7 +17,7 @@ use phpOMS\Uri\UriFactory;
 ?>
 <div class="row">
     <div class="col-xs-12 col-md-6">
-        <div class="portlet">
+        <section class="portlet">
             <form id="iResource" action="<?= UriFactory::build('{/api}orw/resource?csrf={$CSRF}'); ?>" method="put">
                 <div class="portlet-head"><?= $this->getHtml('CreateResource', 'OnlineResourceWatcher', 'Backend'); ?></div>
                 <div class="portlet-body">
@@ -42,6 +42,6 @@ use phpOMS\Uri\UriFactory;
                     <input id="iSubmitUser" name="submitUser" type="submit" value="<?= $this->getHtml('Create', '0', '0'); ?>">
                 </div>
             </form>
-        </div>
+        </section>
     </div>
 </div>
