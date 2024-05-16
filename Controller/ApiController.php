@@ -109,7 +109,7 @@ final class ApiController extends Controller
 
             if ($files !== false) {
                 foreach ($files as $file) {
-                    if ($file === '.' || $files === '..') {
+                    if ($file === '.' || $file === '..') {
                         continue;
                     }
 

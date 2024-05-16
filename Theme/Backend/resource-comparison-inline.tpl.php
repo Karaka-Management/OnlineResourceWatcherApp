@@ -4,7 +4,7 @@ declare(strict_types=1);
 use Modules\OnlineResourceWatcher\Models\ReportStatus;
 use phpOMS\Uri\UriFactory;
 
-$base = __DIR__ . '/../../../../';
+$base        = __DIR__ . '/../../../../';
 $newDiffPath = '';
 ?>
 
