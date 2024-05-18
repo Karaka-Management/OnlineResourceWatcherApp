@@ -69,7 +69,7 @@ $reports  = $resource->reports;
 					<?php foreach ($reports as $report) : ?>
 					<tr>
 						<td><?= $this->printHtml($report->createdAt->format('Y-m-d')); ?>
-						<td><?= $this->getHtml('rstatus-' . $report->status); ?>
+						<td><?= $this->getHtml(':rstatus-' . $report->status); ?>
 					<?php endforeach; ?>
 			</table>
             </div>
