@@ -27,6 +27,7 @@ return ['OnlineResourceWatcher' => [
     'Resource'        => 'Resource',
     'Resources'       => 'Resources',
     'Status'          => 'Status',
+    'Type'            => 'Type',
     'Url'             => 'Url',
     'XPath'           => 'XPath',
     ':rstatus--1'      => 'Download error',
