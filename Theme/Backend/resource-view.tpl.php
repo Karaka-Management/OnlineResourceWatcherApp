@@ -26,7 +26,7 @@ $reports  = $resource->reports;
                 <div class="portlet-body">
                     <div class="form-group">
                         <label for="iName"><?= $this->getHtml('Name'); ?></label>
-                        <input id="iName" name="name" type="text" value="<?= $this->printHtml($resource->title); ?>">
+                        <input id="iName" name="title" type="text" value="<?= $this->printHtml($resource->title); ?>">
                     </div>
 
                     <div class="form-group">

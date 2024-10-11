@@ -18,12 +18,13 @@ use phpOMS\Uri\UriFactory;
 <div class="row">
     <div class="col-xs-12 col-md-6">
         <section class="portlet">
-            <form id="iResource" action="<?= UriFactory::build('{/api}orw/resource?csrf={$CSRF}'); ?>" method="put">
+            <form id="iResource" action="<?= UriFactory::build('{/api}orw/resource?csrf={$CSRF}'); ?>" method="put"
+                data-redirect="<?= UriFactory::build('{%}'); ?>">
                 <div class="portlet-head"><?= $this->getHtml('CreateResource', 'OnlineResourceWatcher', 'Backend'); ?></div>
                 <div class="portlet-body">
                 <div class="form-group">
                         <label for="iName"><?= $this->getHtml('Name'); ?></label>
-                        <input id="iName" name="name" type="text">
+                        <input id="iName" name="title" type="text">
                     </div>
 
                     <div class="form-group">

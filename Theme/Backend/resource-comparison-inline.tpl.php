@@ -117,10 +117,12 @@ $newDiffPath = '';
                         $base        = __DIR__ . '/../../../../';
                         $newDiffPath = '';
 
-                        if ($type === 'pdf') {
-                            $newDiffPath = \dirname($newWebPath) . '/_' . \basename($newWebPath, '.pdf') . '.htm';
-                        } else {
-                            $newDiffPath = \dirname($newWebPath) . '/_' . \basename($newWebPath);
+                        if ($new !== null) {
+                            if ($type === 'pdf') {
+                                $newDiffPath = \dirname($newWebPath) . '/_' . \basename($newWebPath, '.pdf') . '.htm';
+                            } else {
+                                $newDiffPath = \dirname($newWebPath) . '/_' . \basename($newWebPath);
+                            }
                         }
                 ?>
 
@@ -168,7 +170,7 @@ $newDiffPath = '';
                 <div class="col-xs-6 col-simple">
                     <div class="portlet col-simple">
                         <div class="portlet-body col-simple">
-                            <?php if (\is_file($base . $newDiffPath)) : ?>
+                            <?php if ($new !== null && \is_file($base . $newDiffPath)) : ?>
                             <iframe class="col-simple" id="iRenderNew" sandbox="allow-scripts" src="<?= $newDiffPath; ?>" loading="lazy" allowfullscreen></iframe>
                             <?php endif; ?>
                         </div>
